@@ -152,60 +152,30 @@ def get_species_recommendations(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def get_species_recommendations(request):
-    """API endpoint for species recommendations using actual dataset"""
+def get_climate_data(request):
+    """API endpoint to get climate data from GPS coordinates using real dataset"""
     
     try:
         data = json.loads(request.body)
         
-        base_conditions = {
-            'region': data.get('region', 'Central'),
-            'county': data.get('county', 'Nairobi'),
-            'soil_type': data.get('soil_type', 'Clay'),
-            'rainfall_mm': float(data.get('rainfall_mm', 600)),
-            'temperature_c': float(data.get('temperature_c', 20)),
-            'altitude_m': float(data.get('altitude_m', 1500)),
-            'soil_ph': float(data.get('soil_ph', 6.5)),
-            'planting_season': data.get('planting_season', 'Wet'),
-            'planting_method': data.get('planting_method', 'Seedling'),
-            'care_level': 'Medium',
-            'water_source': 'Rain-fed',
-            'tree_age_months': 12
-        }
+        latitude = float(data.get('latitude', -1.2921))
+        longitude = float(data.get('longitude', 36.8219))
+        altitude = data.get('altitude')
         
-        species_list = ['Indigenous Mix', 'Grevillea', 'Acacia', 'Pine', 'Eucalyptus', 'Cedar']
-        recommendations = []
+        # Get climate data using real dataset averages
+        location_data = tree_predictor.get_climate_from_gps(latitude, longitude, altitude)
         
-        dataset_path = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'cleaned_tree_data.csv')
-        df = pd.read_csv(dataset_path)
+        return JsonResponse({
+            'success': True,
+            'location_data': location_data
+        })
         
-        # Use actual trained ML model for predictions
-        if tree_predictor and tree_predictor.model:
-            for species in species_list:
-                test_data = {
-                    **base_conditions,
-                    'tree_species': species
-                }
-                
-                try:
-                    result = tree_predictor.predict_survival(test_data)
-                    if result['success']:
-                        recommendations.append({
-                            'species': species,
-                            'survival_probability': result['survival_probability'],
-                            'survival_percentage': int(result['survival_percentage']),
-                            'risk_level': result['risk_level']
-                        })
-                except Exception as e:
-                    print(f"Error predicting for {species}: {e}")
-                    continue
-        else:
-            # Fallback to dataset statistics if model not available
-            for species in species_list:
-                similar_conditions = df[
-                    (df['tree_species'] == species) &
-                    (df['region'] == base_conditions['region']) &
-                    (df['planting_season'] == base_conditions['planting_season'])
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'location_data': {}
+        })
                 ]
                 
                 if len(similar_conditions) > 0:
