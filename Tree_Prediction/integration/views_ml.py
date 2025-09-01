@@ -176,52 +176,6 @@ def get_climate_data(request):
             'error': str(e),
             'location_data': {}
         })
-                ]
-                
-                if len(similar_conditions) > 0:
-                    survival_rate = similar_conditions['survived'].mean()
-                else:
-                    species_data = df[df['tree_species'] == species]
-                    survival_rate = species_data['survived'].mean() if len(species_data) > 0 else 0.5
-                
-                survival_percentage = int(round(survival_rate * 100))
-                
-                def get_risk_level(rate):
-                    if rate >= 0.8: return "Low"
-                    elif rate >= 0.6: return "Medium"
-                    elif rate >= 0.4: return "High"
-                    else: return "Very High"
-                
-                recommendations.append({
-                    'species': species,
-                    'survival_probability': round(survival_rate, 3),
-                    'survival_percentage': survival_percentage,
-                    'risk_level': get_risk_level(survival_rate)
-                })
-        
-        recommendations.sort(key=lambda x: x['survival_probability'], reverse=True)
-        
-        return JsonResponse({
-            'success': True,
-            'recommendations': recommendations[:5]
-        })
-        
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e),
-            'recommendations': []
-        })
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def get_climate_data(request):
-    """API endpoint to get climate data from GPS coordinates using real dataset"""
-    
-    try:
-        data = json.loads(request.body)
-        
-        latitude = float(data.get('latitude', -1.2921))
         longitude = float(data.get('longitude', 36.8219))
         altitude = data.get('altitude')
         
