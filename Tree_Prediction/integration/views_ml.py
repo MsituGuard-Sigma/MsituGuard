@@ -176,20 +176,3 @@ def get_climate_data(request):
             'error': str(e),
             'location_data': {}
         })
-        longitude = float(data.get('longitude', 36.8219))
-        altitude = data.get('altitude')
-        
-        # Get climate data using real dataset averages
-        location_data = tree_predictor.get_climate_from_gps(latitude, longitude, altitude)
-        
-        return JsonResponse({
-            'success': True,
-            'location_data': location_data
-        })
-        
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e),
-            'location_data': {}
-        })
