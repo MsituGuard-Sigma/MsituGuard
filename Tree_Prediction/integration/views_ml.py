@@ -2,95 +2,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
-# Import the ML predictor
-import os
-import pandas as pd
-from django.conf import settings
+from .ml_utils import tree_predictor
+from App.models import TreePrediction
+from App.mistral_ai import mistral_ai
+from App.hybrid_predictor import hybrid_predictor
 
-# Simple GPS to dataset mapping without ML model dependency
-def get_climate_from_dataset(latitude, longitude, altitude=None):
-    """Get climate data from GPS using our trained dataset"""
-    try:
-        # Load our actual training dataset
-        dataset_path = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'cleaned_tree_data.csv')
-        df = pd.read_csv(dataset_path)
-        
-        # Map GPS to region (same logic as our trained model)
-        def map_gps_to_region(lat, lon):
-            if -1.45 <= lat <= -1.15 and 36.6 <= lon <= 37.1:
-                return 'Nairobi'
-            elif -1.0 <= lat <= 0.5 and 36.5 <= lon <= 37.5:
-                return 'Central'
-            elif -4.7 <= lat <= -1.6 and 39.0 <= lon <= 41.9:
-                return 'Coast'
-            elif -1.0 <= lat <= 1.5 and 34.0 <= lon <= 35.5:
-                return 'Western'
-            elif -3.0 <= lat <= 1.0 and 37.5 <= lon <= 40.0:
-                return 'Eastern'
-            elif -2.0 <= lat <= 2.0 and 35.0 <= lon <= 37.0:
-                return 'Rift Valley'
-            elif 1.0 <= lat <= 5.0 and 35.0 <= lon <= 42.0:
-                return 'Northern'
-            elif -1.0 <= lat <= 4.0 and 38.0 <= lon <= 42.0:
-                return 'North Eastern'
-            elif -1.5 <= lat <= 0.5 and 33.8 <= lon <= 35.5:
-                return 'Nyanza'
-            else:
-                return 'Central'
-        
-        region = map_gps_to_region(latitude, longitude)
-        
-        # Get real averages from our training data for this region
-        region_data = df[df['region'] == region]
-        
-        if len(region_data) > 0:
-            # Use actual dataset averages
-            climate_data = {
-                'region': region,
-                'county': region_data['county'].mode().iloc[0],
-                'rainfall_mm': int(region_data['rainfall_mm'].mean()),
-                'temperature_c': round(region_data['temperature_c'].mean(), 1),
-                'altitude_m': altitude if altitude and altitude > 0 else int(region_data['altitude_m'].mean()),
-                'soil_type': region_data['soil_type'].mode().iloc[0],
-                'soil_ph': round(region_data['soil_ph'].mean(), 1),
-                'planting_season': 'Wet' if pd.Timestamp.now().month in [3,4,5,10,11,12] else 'Dry'
-            }
-        else:
-            # Fallback to Central region data
-            central_data = df[df['region'] == 'Central']
-            climate_data = {
-                'region': 'Central',
-                'county': central_data['county'].mode().iloc[0],
-                'rainfall_mm': int(central_data['rainfall_mm'].mean()),
-                'temperature_c': round(central_data['temperature_c'].mean(), 1),
-                'altitude_m': altitude if altitude and altitude > 0 else int(central_data['altitude_m'].mean()),
-                'soil_type': central_data['soil_type'].mode().iloc[0],
-                'soil_ph': round(central_data['soil_ph'].mean(), 1),
-                'planting_season': 'Wet' if pd.Timestamp.now().month in [3,4,5,10,11,12] else 'Dry'
-            }
-        
-        return climate_data
-        
-    except Exception as e:
-        print(f"Error loading dataset: {e}")
-        return {
-            'region': 'Central',
-            'county': 'Nyeri',
-            'rainfall_mm': 1200,
-            'temperature_c': 20.5,
-            'altitude_m': altitude if altitude and altitude > 0 else 1850,
-            'soil_type': 'Clay',
-            'soil_ph': 6.8,
-            'planting_season': 'Wet'
-        }
 
-# Try to import ML predictor, but don't fail if it doesn't work
-try:
-    from .ml_utils import tree_predictor
-    print("ML predictor imported successfully")
-except Exception as e:
-    print(f"ML predictor import failed: {e}")
-    tree_predictor = None
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -117,81 +34,41 @@ def predict_tree_survival(request):
             'tree_age_months': int(data.get('tree_age_months', 12))
         }
         
-        # Try to use trained ML model first
-        if tree_predictor and hasattr(tree_predictor, 'model') and tree_predictor.model:
-            try:
-                result = tree_predictor.predict_survival(tree_data)
-                if result.get('success'):
-                    return JsonResponse(result)
-            except Exception as e:
-                print(f"ML prediction error: {e}")
+        # Get hybrid prediction (ML + AI)
+        result = hybrid_predictor.hybrid_predict(tree_data)
         
-        # Use our dataset-based prediction as backup
-        try:
-            dataset_path = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'cleaned_tree_data.csv')
-            df = pd.read_csv(dataset_path)
-            
-            # Find similar conditions in our dataset
-            similar_conditions = df[
-                (df['tree_species'] == tree_data['tree_species']) &
-                (df['region'] == tree_data['region']) &
-                (df['planting_season'] == tree_data['planting_season'])
-            ]
-            
-            if len(similar_conditions) > 0:
-                # Calculate survival rate from actual data
-                survival_rate = similar_conditions['survived'].mean()
-                survival_percentage = round(survival_rate * 100, 1)
-                
-                def get_risk_level(rate):
-                    if rate >= 0.8: return "Low"
-                    elif rate >= 0.6: return "Medium"
-                    elif rate >= 0.4: return "High"
-                    else: return "Very High"
-                
-                risk = get_risk_level(survival_rate)
-                recommendation = f"Based on {len(similar_conditions)} similar plantings in our dataset, {tree_data['tree_species']} has {survival_percentage}% survival rate in {tree_data['region']} region during {tree_data['planting_season'].lower()} season."
-                
-                return JsonResponse({
-                    'success': True,
-                    'survival_probability': round(survival_rate, 3),
-                    'survival_percentage': survival_percentage,
-                    'recommendation': recommendation,
-                    'risk_level': risk
-                })
+        # Save prediction to database for logged-in users
+        if request.user.is_authenticated and result.get('success', False):
+            # Determine survival level based on probability
+            prob = result.get('survival_probability', 0)
+            if prob >= 0.7:
+                survival_level = 'high'
+            elif prob >= 0.5:
+                survival_level = 'medium'
             else:
-                # General species success rate
-                species_data = df[df['tree_species'] == tree_data['tree_species']]
-                if len(species_data) > 0:
-                    survival_rate = species_data['survived'].mean()
-                    survival_percentage = round(survival_rate * 100, 1)
-                    
-                    survival_percentage = round(survival_rate * 100, 1)
-                    
-                    def get_risk_level(rate):
-                        if rate >= 0.8: return "Low"
-                        elif rate >= 0.6: return "Medium"
-                        elif rate >= 0.4: return "High"
-                        else: return "Very High"
-                    
-                    return JsonResponse({
-                        'success': True,
-                        'survival_probability': round(survival_rate, 3),
-                        'survival_percentage': survival_percentage,
-                        'recommendation': f"Based on our dataset, {tree_data['tree_species']} has {survival_percentage}% average survival rate across Kenya.",
-                        'risk_level': get_risk_level(survival_rate)
-                    })
-                
-        except Exception as e:
-            print(f"Dataset prediction error: {e}")
+                survival_level = 'low'
+            
+            TreePrediction.objects.create(
+                user=request.user,
+                tree_species=tree_data['tree_species'],
+                region=tree_data['region'],
+                county=tree_data['county'],
+                soil_type=tree_data['soil_type'],
+                rainfall_mm=tree_data['rainfall_mm'],
+                temperature_c=tree_data['temperature_c'],
+                altitude_m=tree_data['altitude_m'],
+                soil_ph=tree_data['soil_ph'],
+                planting_season=tree_data['planting_season'],
+                planting_method=tree_data['planting_method'],
+                care_level=tree_data['care_level'],
+                water_source=tree_data['water_source'],
+                tree_age_months=tree_data['tree_age_months'],
+                survival_probability=prob,
+                survival_level=survival_level,
+                recommended_species=json.dumps(result.get('recommended_species', []))
+            )
         
-        # Final fallback
-        return JsonResponse({
-            'success': False,
-            'error': 'Unable to load prediction models or dataset',
-            'survival_probability': 0.5,
-            'recommendation': 'Please try again later'
-        })
+        return JsonResponse(result)
         
     except Exception as e:
         return JsonResponse({
@@ -199,6 +76,78 @@ def predict_tree_survival(request):
             'error': str(e),
             'survival_probability': 0.5,
             'recommendation': 'Error in prediction'
+        })
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def get_species_recommendations(request):
+    """API endpoint for species recommendations based on location - requires login"""
+    
+    try:
+        # Check if user is authenticated
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False,
+                'error': 'Login required for species recommendations',
+                'login_required': True,
+                'recommendations': []
+            })
+        
+        data = json.loads(request.body)
+        
+        location_data = {
+            'region': data.get('region', 'Central'),
+            'county': data.get('county', 'Nairobi'),
+            'soil_type': data.get('soil_type', 'Loam'),
+            'rainfall_mm': float(data.get('rainfall_mm', 600)),
+            'temperature_c': float(data.get('temperature_c', 20)),
+            'altitude_m': float(data.get('altitude_m', 1500)),
+            'soil_ph': float(data.get('soil_ph', 6.5)),
+            'planting_season': data.get('planting_season', 'Wet'),
+            'water_source': data.get('water_source', 'Rain-fed'),
+            'tree_species': data.get('tree_species', 'Acacia')
+        }
+        
+        # Get ML-based recommendations
+        recommendations = tree_predictor.get_species_recommendations(location_data)
+        
+        # Get current species survival rate for AI context
+        current_prediction = tree_predictor.predict_survival(location_data)
+        survival_rate = int(current_prediction.get('survival_probability', 0.5) * 100)
+        
+        # Enhance with MISTRAL AI recommendations (with fallback)
+        try:
+            print(f"Calling MISTRAL AI with API key available: {bool(mistral_ai.api_key)}")
+            ai_recommendations = mistral_ai.get_tree_recommendations(location_data, survival_rate)
+            ai_species = mistral_ai.get_alternative_species(location_data)
+            ai_explanation = mistral_ai.explain_prediction_factors(location_data, survival_rate)
+            print(f"MISTRAL AI responses - recommendations: {len(ai_recommendations) if ai_recommendations else 0} chars")
+        except Exception as e:
+            print(f"MISTRAL AI error in species recommendations: {e}")
+            import traceback
+            print(f"Full traceback: {traceback.format_exc()}")
+            # Fallback recommendations
+            ai_recommendations = "Unable to generate recommendations."
+            ai_species = "Unable to generate species suggestions."
+            ai_explanation = "Unable to generate analysis."
+        
+        print(f"Final response - ai_recommendations: {ai_recommendations[:100]}...")
+        print(f"Final response - ai_species: {ai_species[:100]}...")
+        print(f"Final response - ai_explanation: {ai_explanation[:100]}...")
+        
+        return JsonResponse({
+            'success': True,
+            'recommendations': recommendations,
+            'ai_recommendations': ai_recommendations,
+            'ai_species_suggestions': ai_species,
+            'ai_explanation': ai_explanation
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'recommendations': []
         })
 
 @csrf_exempt
@@ -304,10 +253,10 @@ def get_climate_data(request):
         
         latitude = float(data.get('latitude', -1.2921))
         longitude = float(data.get('longitude', 36.8219))
-        altitude = data.get('altitude', 1500)
+        altitude = data.get('altitude')
         
-        # Get climate data from our actual training dataset
-        location_data = get_climate_from_dataset(latitude, longitude, altitude)
+        # Get climate data using real dataset averages
+        location_data = tree_predictor.get_climate_from_gps(latitude, longitude, altitude)
         
         return JsonResponse({
             'success': True,
