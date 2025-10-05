@@ -31,10 +31,10 @@ class TreeSurvivalPredictor:
             model_dir = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'models')
             
             # Load with error handling for version compatibility
-            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model.pkl'))
-            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler.pkl'))
-            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders.pkl'))
-            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns.pkl'))
+            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model_corrected.pkl'))
+            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler_corrected.pkl'))
+            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders_corrected.pkl'))
+            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns_corrected.pkl'))
             
             print("Model loaded successfully!")
             

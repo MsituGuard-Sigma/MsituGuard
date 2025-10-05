@@ -351,14 +351,19 @@
                                 <h4 class="fw-bold mb-3" style="color: #16a34a;">Success!</h4>
                                 <p class="mb-4" style="color: #15803d; font-size: 1.1rem;">{{ message }}</p>
                                 <div class="text-center">
-                                    <a href="{% url 'home' %}" class="btn btn-success btn-lg">
+                                    <a href="{% url 'public_tree_form' %}" class="btn btn-success btn-lg me-2">
+                                        <i class="fas fa-seedling me-2"></i>Plant More Trees
+                                    </a>
+                                    <a href="{% url 'home' %}" class="btn btn-outline-success btn-lg">
                                         <i class="fas fa-home me-2"></i>Back to Homepage
                                     </a>
                                 </div>
                             </div>
                         {% endif %}
                     {% endfor %}
-                {% else %}
+                {% endif %}
+                
+                {% if not messages %}
                     <div class="feature-card">
                         <div class="text-center mb-4">
                             <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
@@ -516,7 +521,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12 text-center">
-                                    <button type="submit" id="submitBtn" class="btn-register">
+                                    <button type="submit" id="submitBtn" class="btn-register" onclick="return validateForm()">
                                         <i class="fas fa-seedling me-2"></i>Register My Trees
                                     </button>
                                     <p class="text-muted mt-3 mb-0">We'll create your account and send verification email</p>
@@ -773,6 +778,32 @@ function checkFormCompletion() {
 }
 
 document.getElementById('treeSpeciesSelect').addEventListener('change', checkFormCompletion);
+
+// Clear form after successful submission
+window.addEventListener('load', function() {
+    // Check if there's a success message
+    const successMessage = document.querySelector('.success-message');
+    if (successMessage) {
+        // Clear the form
+        const form = document.querySelector('form');
+        if (form) {
+            form.reset();
+            // Clear hidden fields
+            document.getElementById('regionField').value = '';
+            document.getElementById('countyField').value = '';
+            document.getElementById('latitudeField').value = '';
+            document.getElementById('longitudeField').value = '';
+            document.getElementById('soilTypeField').value = '';
+            // Hide soil badge
+            document.getElementById('soilBadge').style.display = 'none';
+            // Reset GPS button
+            const gpsBtn = document.getElementById('getLocationBtn');
+            gpsBtn.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i>GPS';
+            gpsBtn.style.background = '#22c55e';
+            gpsBtn.disabled = false;
+        }
+    }
+});
 </script>
 
 {% endblock %}

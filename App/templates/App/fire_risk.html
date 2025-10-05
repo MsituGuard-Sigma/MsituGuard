@@ -315,7 +315,7 @@
                 <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
                     <i class="fas fa-fire"></i>
                 </div>
-                <h1 class="display-4 fw-bold mb-3">🔥 Fire Safety Center</h1>
+                <h1 class="display-4 fw-bold mb-3">Fire Safety Center</h1>
                 <p class="lead fs-5">Real-time fire risk assessment and community fire reporting</p>
             </div>
         </div>
@@ -330,16 +330,16 @@
                     {% if user.is_authenticated %}
                         {% if not has_location %}
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assessRiskModal">
-                            📊 Assess Fire Risk
+                            <i class="fas fa-chart-line me-2"></i>Assess Fire Risk
                         </button>
                         {% endif %}
                     {% else %}
                         <a href="{% url 'login' %}" class="btn btn-primary">
-                            📊 Login for Risk Assessment
+                            <i class="fas fa-sign-in-alt me-2"></i>Login for Risk Assessment
                         </a>
                     {% endif %}
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportFireModal">
-                        🚨 Report Fire Observation
+                        <i class="fas fa-exclamation-triangle me-2"></i>Report Fire Observation
                     </button>
                 </div>
             </div>
@@ -355,7 +355,7 @@
                     <div class="fire-icon primary">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">📊 Assess Fire Risk</h5>
+                    <h5 class="fw-bold mb-3">Assess Fire Risk</h5>
                     <p class="text-muted mb-3">Get real-time fire risk analysis for your location based on weather and environmental data.</p>
                     {% if user.is_authenticated %}
                     <p class="text-success"><small><i class="fas fa-check-circle me-1"></i>Click "Assess Fire Risk" above to analyze current conditions in your area.</small></p>
@@ -371,7 +371,7 @@
                     <div class="fire-icon danger">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h5 class="fw-bold mb-3">🚨 Report Fire Observation</h5>
+                    <h5 class="fw-bold mb-3">Report Fire Observation</h5>
                     <p class="text-muted mb-3">Spotted smoke, flames, or signs of fire? Report it immediately to help protect our forests.</p>
                     {% if not user.is_authenticated %}
                     <p class="text-danger"><small><i class="fas fa-fire me-1"></i>No login required for urgent fire reports - help save our forests!</small></p>
@@ -388,7 +388,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>🔥 Current Fire Risk Assessment</h5>
+                    <h5><i class="fas fa-fire me-2"></i>Current Fire Risk Assessment</h5>
                 </div>
                 <div class="card-body">
                     <div class="risk-banner p-4 rounded mb-4" style="background: {{ prediction.color }}20; border: 2px solid {{ prediction.color }};">
@@ -412,7 +412,7 @@
                         <div class="col-md-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h6 class="card-title">🌤️ Weather Conditions</h6>
+                                    <h6 class="card-title"><i class="fas fa-cloud-sun me-2"></i>Weather Conditions</h6>
                                     <ul class="list-unstyled mb-0">
                                         <li><strong>Temperature:</strong> {{ prediction.weather.temp_c }}°C</li>
                                         <li><strong>Humidity:</strong> {{ prediction.weather.humidity }}%</li>
@@ -425,7 +425,7 @@
                         <div class="col-md-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h6 class="card-title">🌿 Vegetation Index</h6>
+                                    <h6 class="card-title"><i class="fas fa-leaf me-2"></i>Vegetation Index</h6>
                                     {% if prediction.ndvi %}
                                         <p class="mb-0"><strong>NDVI:</strong> {{ prediction.ndvi|floatformat:3 }}</p>
                                         <small class="text-muted">Vegetation density indicator</small>
@@ -438,7 +438,7 @@
                         <div class="col-md-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h6 class="card-title">🔥 Recent Fire Activity</h6>
+                                    <h6 class="card-title"><i class="fas fa-fire me-2"></i>Recent Fire Activity</h6>
                                     <p class="mb-0"><strong>{{ prediction.recent_fires }}</strong> fires</p>
                                     <small class="text-muted">Within 25km (last 7 days)</small>
                                 </div>
@@ -487,25 +487,25 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h5>📊 How Fire Risk Assessment Works</h5>
+                    <h5><i class="fas fa-info-circle me-2"></i>How Fire Risk Assessment Works</h5>
                     <div class="row">
                         <div class="col-md-3 text-center">
-                            <div class="mb-2">🌡️</div>
+                            <div class="mb-2"><i class="fas fa-thermometer-half" style="font-size: 1.5rem; color: #f59e0b;"></i></div>
                             <strong>Weather Data</strong>
                             <small class="d-block text-muted">Temperature, humidity, wind, rainfall</small>
                         </div>
                         <div class="col-md-3 text-center">
-                            <div class="mb-2">🌿</div>
+                            <div class="mb-2"><i class="fas fa-leaf" style="font-size: 1.5rem; color: #22c55e;"></i></div>
                             <strong>Vegetation</strong>
                             <small class="d-block text-muted">Plant density and dryness levels</small>
                         </div>
                         <div class="col-md-3 text-center">
-                            <div class="mb-2">🔥</div>
+                            <div class="mb-2"><i class="fas fa-fire" style="font-size: 1.5rem; color: #ef4444;"></i></div>
                             <strong>Fire History</strong>
                             <small class="d-block text-muted">Recent fires in your area</small>
                         </div>
                         <div class="col-md-3 text-center">
-                            <div class="mb-2">📊</div>
+                            <div class="mb-2"><i class="fas fa-chart-bar" style="font-size: 1.5rem; color: #3b82f6;"></i></div>
                             <strong>Risk Level</strong>
                             <small class="d-block text-muted">LOW, MODERATE, HIGH, EXTREME</small>
                         </div>
@@ -524,7 +524,7 @@
                     <div class="fire-icon danger me-3">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h5 class="fw-bold mb-0">📈 My Fire Risk Assessments</h5>
+                    <h5 class="fw-bold mb-0"><i class="fas fa-chart-line me-2"></i>My Fire Risk Assessments</h5>
                 </div>
                 {% if recent_predictions %}
                     <div class="table-responsive">
@@ -579,7 +579,7 @@
                     <div class="fire-icon warning me-3">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h5 class="fw-bold mb-0">👥 Citizen Fire Reports</h5>
+                    <h5 class="fw-bold mb-0"><i class="fas fa-users me-2"></i>Citizen Fire Reports</h5>
                 </div>
                 {% if recent_reports %}
                     {% for report in recent_reports %}
@@ -619,10 +619,10 @@
                 <div class="fire-icon primary mx-auto mb-4">
                     <i class="fas fa-fire"></i>
                 </div>
-                <h5 class="fw-bold text-primary mb-3">🔥 Join Our Fire Safety Community</h5>
+                <h5 class="fw-bold text-primary mb-3"><i class="fas fa-fire me-2"></i>Join Our Fire Safety Community</h5>
                 <p class="text-muted mb-4">You can report fire observations without an account! To unlock additional features like fire risk assessment, viewing community reports, and earning tokens, please create an account.</p>
                 <div class="mt-3">
-                    <a href="{% url 'register' %}" class="btn-fire me-3">🌱 Create Free Account</a>
+                    <a href="{% url 'register' %}" class="btn-fire me-3"><i class="fas fa-user-plus me-2"></i>Create Free Account</a>
                     <a href="{% url 'login' %}" class="btn btn-outline-primary" style="border-radius: 25px; padding: 1rem 2rem;">Login</a>
                 </div>
                 <p class="text-muted mt-3"><small><i class="fas fa-users me-1"></i>Join thousands of Kenyans protecting our forests and environment!</small></p>
@@ -637,7 +637,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">📊 Assess Fire Risk</h5>
+                <h5 class="modal-title"><i class="fas fa-chart-line me-2"></i>Assess Fire Risk</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -646,7 +646,7 @@
                 <div class="text-center">
                     <div class="card border-success">
                         <div class="card-body">
-                            <h6 class="card-title text-success">📍 Detect My Location</h6>
+                            <h6 class="card-title text-success"><i class="fas fa-location-arrow me-2"></i>Detect My Location</h6>
                             <p class="card-text text-muted mb-3">Automatically detect your current location and get instant fire risk analysis</p>
                             <button id="detectLocationBtn" class="btn btn-success btn-lg">
                                 <i class="fas fa-location-arrow me-2"></i>Detect My Location
@@ -664,7 +664,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">🚨 Report Fire Observation</h5>
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Report Fire Observation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" action="{% url 'report_fire_observation' %}" enctype="multipart/form-data">

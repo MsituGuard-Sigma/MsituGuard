@@ -706,6 +706,19 @@
                 font-size: 0.9rem !important;
             }
             
+            /* Profile picture adjustments for mobile */
+            .btn-auth[title*="Profile"] {
+                border-radius: 25px !important;
+                padding: 0.3rem !important;
+                gap: 0.3rem !important;
+            }
+            
+            .btn-auth[title*="Profile"] > div {
+                width: 28px !important;
+                height: 28px !important;
+                border-width: 1px !important;
+            }
+            
             .btn-auth i {
                 margin: 0 !important;
                 font-size: 1rem !important;
@@ -801,6 +814,17 @@
                 font-size: 0.8rem !important;
             }
             
+            /* Profile picture for very small screens */
+            .btn-auth[title*="Profile"] {
+                border-radius: 20px !important;
+                padding: 0.25rem !important;
+            }
+            
+            .btn-auth[title*="Profile"] > div {
+                width: 26px !important;
+                height: 26px !important;
+            }
+            
             .btn-logout {
                 padding: 0.4rem !important;
                 min-width: 36px !important;
@@ -841,6 +865,12 @@
                 min-width: 34px !important;
                 height: 34px !important;
             }
+            
+            /* Profile picture for small Android phones */
+            .btn-auth[title*="Profile"] > div {
+                width: 24px !important;
+                height: 24px !important;
+            }
         }
         
         @media (max-width: 320px) {
@@ -857,6 +887,12 @@
                 padding: 0.3rem !important;
                 min-width: 32px !important;
                 height: 32px !important;
+            }
+            
+            /* Profile picture for iPhone SE */
+            .btn-auth[title*="Profile"] > div {
+                width: 22px !important;
+                height: 22px !important;
             }
             
             .hamburger-menu {
@@ -966,11 +1002,11 @@
                     {% if user.is_authenticated %}
                         
                         <a href="{% url 'profile_detail' %}" class="btn-auth btn-login" style="display: flex; align-items: center; gap: 0.5rem;" title="Profile - {{ user.username }}">
-                            <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.3);">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 2px solid #10b981; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">
                                 {% if user.profile.profile_picture %}
                                     <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 {% else %}
-                                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">
+                                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">
                                         {{ user.username|first|upper }}
                                     </div>
                                 {% endif %}
@@ -1012,6 +1048,7 @@
     <div class="container mt-4">
         {% if messages and request.resolver_match.url_name != 'alert_create' %}
             {% for message in messages %}
+                {% if 'Invalid verification link' not in message.message and 'Verification failed' not in message.message %}
                 <div class="alert-modern alert-{{ message.tags }}">
                     {% if 'token' in message.message|lower %}
                         <i class="fas fa-coins me-2 text-warning"></i>
@@ -1026,6 +1063,7 @@
                         </form>
                     {% endif %}
                 </div>
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% block content %}

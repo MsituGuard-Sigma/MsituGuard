@@ -107,6 +107,34 @@ class HybridTreePredictor:
                 tree_data, hybrid_probability, ml_probability, ai_probability
             )
             
+            # Calculate carbon credits potential
+            from .carbon_credits import carbon_calculator
+            
+            species_mapping = {
+                'Indigenous Mix': 'Indigenous Mix',
+                'Grevillea': 'Grevillea', 
+                'Acacia': 'Acacia',
+                'Pine': 'Pine',
+                'Cedar': 'Cedar',
+                'Eucalyptus': 'Eucalyptus',
+                'Cypress': 'Cypress',
+                'Neem': 'Neem',
+                'Wattle': 'Wattle',
+                'Bamboo': 'Bamboo'
+            }
+            
+            species = species_mapping.get(tree_data.get('tree_species', 'Indigenous Mix'), 'Indigenous Mix')
+            carbon_data = carbon_calculator.calculate_carbon_potential(
+                species=species,
+                age_months=tree_data.get('tree_age_months', 12),
+                survival_rate=int(hybrid_probability * 100),
+                location_data={
+                    'rainfall_mm': tree_data.get('rainfall_mm', 600),
+                    'temperature_c': tree_data.get('temperature_c', 22),
+                    'soil_ph': tree_data.get('soil_ph', 6.5)
+                }
+            )
+            
             return {
                 'success': True,
                 'survival_probability': hybrid_probability,
@@ -117,7 +145,8 @@ class HybridTreePredictor:
                 'prediction_method': prediction_method,
                 'ml_prediction': ml_probability,
                 'ai_prediction': ai_probability,
-                'model_agreement': agreement if ai_probability else None
+                'model_agreement': agreement if ai_probability else None,
+                'carbon_potential': carbon_data
             }
             
         except Exception as e:

@@ -368,11 +368,11 @@
                             <!-- User Info -->
                             <div class="d-flex align-items-center" style="padding-top: 1rem; border-top: 1px solid #f1f5f9;">
                                 <div style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; margin-right: 0.75rem; border: 2px solid #e2e8f0;">
-                                    {% if alert.user.profile.profile_picture %}
-                                        <img src="{{ alert.user.profile.profile_picture.url }}" alt="{{ alert.user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% if alert.reporter.profile.profile_picture %}
+                                        <img src="{{ alert.reporter.profile.profile_picture.url }}" alt="{{ alert.reporter.username }}" style="width: 100%; height: 100%; object-fit: cover;">
                                     {% else %}
                                         <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #6b7280, #4b5563); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">
-                                            {{ alert.user.username|first|upper }}
+                                            {{ alert.reporter.username|first|upper }}
                                         </div>
                                     {% endif %}
                                 </div>

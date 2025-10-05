@@ -272,6 +272,8 @@ class ProfileInline(admin.StackedInline):
 class UserAdmin(DefaultUserAdmin):
     inlines = [ProfileInline]
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_location', 'get_phone_number')
+    fieldsets = ('Social Links', {'fields': ('github_url', 'linkedin_url')}),
+
     
     # Custom methods to display profile information in the user list
     def get_location(self, obj):

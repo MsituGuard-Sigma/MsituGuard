@@ -1,0 +1,38 @@
+{% extends 'App/base.html' %}
+{% load static %}
+
+{% block title %}Sign in with Google - MsituGuard{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="auth-header">
+        <div class="logo">
+        </div>
+        <h2>Sign in with Google</h2>
+        <p>You are about to sign in using your Google account</p>
+    </div>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fab fa-google" style="font-size: 3rem; color: #2D5A87;"></i>
+            </div>
+            
+            <div class="success-message">
+                <p>Continue to authenticate with your Google account.</p>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">
+            <i class="fab fa-google"></i>
+            Continue with Google
+        </button>
+    </form>
+
+    <div class="auth-footer">
+        <p><a href="{% url 'registration:login' %}" class="link">Back to Login</a></p>
+    </div>
+</div>
+{% endblock %}

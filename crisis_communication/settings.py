@@ -44,6 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'App.apps.AppConfig',
     'captcha',
 ]
@@ -56,9 +61,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'App.middleware.SuppressOAuthMessagesMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
 
 ROOT_URLCONF = 'crisis_communication.urls'
@@ -120,8 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'App.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'App.backends.EmailBackend',
 ]
 
 
@@ -182,8 +189,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
-# LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 # settings.py
@@ -193,18 +199,61 @@ LOGIN_REDIRECT_URL = '/'
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
 
-# Gmail SMTP Configuration - Real email delivery
+# Gmail SMTP Configuration - Email delivery
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'melbrideb@gmail.com'
-EMAIL_HOST_PASSWORD = 'jqplujcnekpbemvl'  # Gmail App Password
-DEFAULT_FROM_EMAIL = 'MsituGuard <melbrideb@gmail.com>'
-SERVER_EMAIL = 'melbrideb@gmail.com'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default=None)
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default=None)
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='MsituGuard <noreply@msituguard.com>')
+SERVER_EMAIL = config('EMAIL_HOST_USER', default='noreply@msituguard.com')
 
-# For development - use console backend (comment out for real emails)
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Django Allauth Configuration
+SITE_ID = 1
+
+# Allauth settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+SOCIALACCOUNT_AUTO_SIGNUP = False
+# Disable login success messages for professional UX
+ACCOUNT_SESSION_REMEMBER = None
+SOCIALACCOUNT_STORE_TOKENS = False
+
+# Completely disable success messages
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.SUCCESS: '',
+}
+MESSAGE_LEVEL = messages.ERROR  # Only show error messages
+ACCOUNT_ADAPTER = 'App.adapters.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'App.adapters.CustomSocialAccountAdapter'
+
+# Google OAuth
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
+GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID', default=None)
+GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET', default=None)
+
+# Free geocoding APIs for location detection (no payment required)
+OPENSTREETMAP_API_URL = 'https://nominatim.openstreetmap.org/reverse'
+LOCATIONIQ_API_KEY = config('LOCATIONIQ_API_KEY', default=None)  # Free tier: 5000 requests/day
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -244,6 +293,27 @@ if not MISTRAL_API_KEY:
             continue
 
 print(f"Final MISTRAL_API_KEY status: {'Available' if MISTRAL_API_KEY else 'Not available'}")
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'App.adapters': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'allauth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 
 

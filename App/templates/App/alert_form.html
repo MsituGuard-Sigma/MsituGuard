@@ -290,7 +290,23 @@
 <!-- Alert Form Section -->
 <section class="py-5">
     <div class="container">
-        {% if messages %}
+        {% if submitted %}
+            <div class="success-card">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: white; font-size: 2rem;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-3" style="color: #166534;">Report Submitted Successfully!</h3>
+                <p class="mb-4" style="color: #15803d;">Thank you for protecting our environment! Your report has been submitted and will be reviewed by our organization partners. You'll receive email updates on the status.</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'my_reports' %}" class="btn-view-alerts">
+                        <i class="fas fa-eye me-2"></i>View My Reports
+                    </a>
+                    <a href="{% url 'alert_create' %}" class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 1.2rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-plus me-2"></i>Submit Another Report
+                    </a>
+                </div>
+            </div>
+        {% elif messages %}
             {% for message in messages %}
                 {% if message.tags == 'success' %}
                     <div class="success-card">

@@ -136,6 +136,7 @@
                 Hello {{ user.first_name }}! 🌿
             </div>
             
+            {% if not is_logged_in %}
             <div class="message">
                 <p>Thank you for contributing to Kenya's <strong>15 Billion Trees Initiative</strong>! Your commitment to environmental protection makes a real difference.</p>
                 
@@ -170,6 +171,36 @@
                     <li>Your tree planting is confirmed either way!</li>
                 </ol>
             </div>
+            {% else %}
+            <div class="message">
+                <p>Thank you for contributing to Kenya's <strong>15 Billion Trees Initiative</strong>! Your tree planting has been successfully recorded and linked to your account.</p>
+                
+                <p>Please verify this tree planting submission to confirm it's legitimate and add it to your environmental impact dashboard.</p>
+            </div>
+            
+            <div class="stats-box">
+                <div class="stats-title">🌟 Account Holder Benefits</div>
+                <div class="stats-text">
+                    Your verified tree planting will earn you tokens, badges, and carbon credits that you can track in your dashboard!
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ verification_url }}" class="verify-button">
+                    ✅ Verify Tree Planting
+                </a>
+            </div>
+            
+            <div class="message">
+                <p><strong>After verification:</strong></p>
+                <ul style="color: #4b5563; padding-left: 20px;">
+                    <li>Your tree planting will be added to your dashboard</li>
+                    <li>You'll earn tokens and environmental badges</li>
+                    <li>Carbon credits will be calculated for your trees</li>
+                    <li>Your conservation rank may increase</li>
+                </ul>
+            </div>
+            {% endif %}
             
             <div class="message">
                 <p><strong>No pressure!</strong> Your tree planting contribution is valuable regardless of whether you create an account. We just want to confirm it's legitimate.</p>

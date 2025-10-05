@@ -49,6 +49,11 @@ class Profile(models.Model):
     token_balance = models.PositiveIntegerField(default=0, help_text='Current token balance')
     total_tokens_earned = models.PositiveIntegerField(default=0, help_text='Total tokens earned all time')
     
+    # Carbon credits system
+    carbon_credits_balance = models.FloatField(default=0.0, help_text='Current carbon credits balance (tonnes CO2)')
+    total_carbon_credits_earned = models.FloatField(default=0.0, help_text='Total carbon credits earned all time')
+    estimated_carbon_value_kes = models.FloatField(default=0.0, help_text='Estimated value of carbon portfolio in KES')
+    
     @property
     def badges_list(self):
         if self.environmental_badges:
@@ -129,6 +134,24 @@ class Profile(models.Model):
         elif self.total_tokens_earned >= 10: return "🥉 Eco Warrior"
         elif self.total_tokens_earned >= 5: return "🌟 Nature Defender"
         return "🌱 Environmental Supporter"
+    
+    def add_carbon_credits(self, amount, description="Carbon credits earned"):
+        """Add carbon credits to user balance"""
+        self.carbon_credits_balance += amount
+        self.total_carbon_credits_earned += amount
+        # Update estimated value (300 KES per tonne CO2 - user rate)
+        self.estimated_carbon_value_kes = self.carbon_credits_balance * 300
+        self.save()
+    
+    @property
+    def carbon_portfolio_summary(self):
+        """Summary of user's carbon portfolio"""
+        return {
+            'balance': round(self.carbon_credits_balance, 3),
+            'total_earned': round(self.total_carbon_credits_earned, 3),
+            'estimated_value': round(self.estimated_carbon_value_kes, 2),
+            'co2_impact_kg': round(self.carbon_credits_balance * 1000, 1)
+        }
 
     def __str__(self):
         return self.user.username 
@@ -426,8 +449,14 @@ class TreePlanting(models.Model):
     # Future: ML prediction results will be stored here
     suitability_score = models.FloatField(null=True, blank=True, help_text='Tree survival prediction score')
     
+    # Carbon credits data
+    tree_age_months = models.PositiveIntegerField(default=0, help_text='Age of trees in months')
+    estimated_annual_co2_kg = models.FloatField(default=0.0, help_text='Estimated CO2 absorption per year (kg)')
+    carbon_credits_potential = models.FloatField(default=0.0, help_text='Potential carbon credits (tonnes CO2/year)')
+    
     # Token reward (will be awarded when verified)
     tokens_awarded = models.BooleanField(default=False)
+    carbon_credits_calculated = models.BooleanField(default=False)
     
     def award_tokens(self):
         """Award tokens for verified tree planting"""
@@ -460,6 +489,46 @@ class TreePlanting(models.Model):
             print(f"Tokens not awarded - already awarded: {self.tokens_awarded}, status: {self.status}, has planter: {bool(self.planter)}")
             return False
     
+    def calculate_carbon_potential(self):
+        """Calculate carbon credits potential for this tree planting"""
+        if not self.carbon_credits_calculated and self.status == 'verified':
+            from .carbon_credits import carbon_calculator
+            
+            # Use tree type as species (map to our species list)
+            species_mapping = {
+                'indigenous': 'Indigenous Mix',
+                'exotic': 'Grevillea',
+                'fruit': 'Indigenous Mix',
+                'bamboo': 'Bamboo',
+                'other': 'Indigenous Mix'
+            }
+            
+            species = species_mapping.get(self.tree_type, 'Indigenous Mix')
+            
+            # Calculate for each tree
+            carbon_data = carbon_calculator.calculate_carbon_potential(
+                species=species,
+                age_months=self.tree_age_months,
+                survival_rate=85,  # Assume 85% survival for verified trees
+                location_data=None  # Could be enhanced with GPS data
+            )
+            
+            # Store carbon data
+            self.estimated_annual_co2_kg = carbon_data['annual_co2_kg'] * self.number_of_trees
+            self.carbon_credits_potential = carbon_data['annual_co2_tonnes'] * self.number_of_trees
+            self.carbon_credits_calculated = True
+            
+            # Award carbon credits to user (for mature trees)
+            if self.tree_age_months >= 24 and self.planter:
+                self.planter.profile.add_carbon_credits(
+                    self.carbon_credits_potential,
+                    f'Carbon credits from {self.number_of_trees} trees'
+                )
+            
+            self.save(update_fields=['estimated_annual_co2_kg', 'carbon_credits_potential', 'carbon_credits_calculated'])
+            return True
+        return False
+    
     class Meta:
         ordering = ['-planted_date']
     
@@ -468,6 +537,16 @@ class TreePlanting(models.Model):
         if self.planter:
             return f"{self.planter.first_name} {self.planter.last_name}".strip() or self.planter.username
         return f"{self.planter_name} (Unregistered)" if self.planter_name else "Unknown Planter"
+    
+    @property
+    def carbon_summary(self):
+        """Summary of carbon impact for this planting"""
+        return {
+            'annual_co2_kg': self.estimated_annual_co2_kg,
+            'carbon_credits': self.carbon_credits_potential,
+            'estimated_value_kes': self.carbon_credits_potential * 500,
+            'trees_count': self.number_of_trees
+        }
     
     def __str__(self):
         return f"{self.title} - {self.number_of_trees} trees by {self.planter_display_name}"
@@ -573,3 +652,35 @@ class TreePrediction(models.Model):
     def __str__(self):
         user_name = self.user.username if self.user else 'Anonymous'
         return f"{user_name} - {self.tree_species} ({self.survival_level}) - {self.created_at.date()}"
+
+class CarbonTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('sell', 'Sell Credits'),
+        ('fund', 'Fund Project'),
+        ('trade', 'Trade Credits'),
+        ('earn', 'Earn Credits'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    amount = models.FloatField(help_text='Amount in tonnes CO2')
+    value_kes = models.FloatField(default=0.0, help_text='Value in KES')
+    description = models.CharField(max_length=200)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Optional fields for specific transaction types
+    project_name = models.CharField(max_length=200, blank=True, help_text='For project funding')
+    buyer_name = models.CharField(max_length=200, blank=True, help_text='For credit sales')
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.get_transaction_type_display()} - {self.amount}t CO2"

@@ -9,6 +9,7 @@ Pillow==10.4.0
 requests==2.31.0
 cloudinary==1.36.0
 django-cloudinary-storage==0.3.0
+django-allauth==0.57.0
 # ML and AI dependencies
 scikit-learn==1.5.2
 pandas==2.2.3

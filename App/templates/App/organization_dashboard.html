@@ -171,156 +171,308 @@
         margin-bottom: 0;
     }
     
-    /* Mobile Responsiveness */
+    /* Enhanced Mobile Responsiveness */
     @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem !important;
+        }
+        
         .dashboard-header {
-            padding: 1.5rem 0;
-            margin-bottom: 1.5rem;
+            padding: 1.5rem 0 !important;
+            margin-bottom: 1.5rem !important;
         }
         
         .dashboard-header h1 {
-            font-size: 1.5rem;
+            font-size: 1.4rem !important;
         }
         
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem !important;
         }
         
         .section-subtitle {
-            font-size: 1rem;
+            font-size: 0.95rem !important;
         }
         
         .section-icon {
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 1.5rem !important;
         }
         
         .stat-card {
-            padding: 1rem;
-            margin-bottom: 1rem;
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.8rem !important;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem !important;
         }
         
         .reports-header {
-            padding: 1rem;
+            padding: 1rem !important;
         }
         
         .reports-header .row {
-            flex-direction: column;
-            gap: 1rem;
+            flex-direction: column !important;
+            gap: 1rem !important;
         }
         
         .reports-header .col-md-6:last-child {
-            text-align: left;
+            text-align: left !important;
         }
         
         .reports-header .d-flex {
-            justify-content: flex-start;
-            flex-wrap: wrap;
+            justify-content: flex-start !important;
+            flex-wrap: wrap !important;
+            gap: 0.5rem !important;
+        }
+        
+        .reports-header h4 {
+            font-size: 1.1rem !important;
         }
         
         .action-btn {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-            margin: 0.2rem;
+            padding: 0.5rem 0.8rem !important;
+            font-size: 0.8rem !important;
+            margin: 0.25rem !important;
+            min-height: 36px !important;
         }
         
         .report-card {
-            margin-bottom: 1rem;
+            margin-bottom: 1rem !important;
         }
         
         .report-card .card-header,
         .report-card .card-body,
         .report-card .card-footer {
-            padding: 0.8rem;
+            padding: 1rem !important;
+        }
+        
+        .report-card h6 {
+            font-size: 0.95rem !important;
+        }
+        
+        .report-type,
+        .report-status {
+            font-size: 0.75rem !important;
+            padding: 0.25rem 0.6rem !important;
         }
         
         .input-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1rem !important;
         }
         
         .form-select {
-            margin-bottom: 1rem;
+            margin-bottom: 1rem !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .form-control {
+            font-size: 0.9rem !important;
         }
         
         .modal-dialog {
-            margin: 1rem;
+            margin: 1rem !important;
         }
         
         .modal-body .row {
-            flex-direction: column;
+            flex-direction: column !important;
         }
         
         .modal-body .col-md-4,
         .modal-body .col-md-8 {
-            margin-bottom: 1rem;
+            margin-bottom: 1rem !important;
+        }
+        
+        .modal-header h5 {
+            font-size: 1.1rem !important;
+        }
+        
+        .col-md-3,
+        .col-md-4,
+        .col-md-6,
+        .col-lg-4 {
+            margin-bottom: 1rem !important;
+        }
+        
+        .table-responsive {
+            font-size: 0.85rem !important;
+        }
+        
+        .table th,
+        .table td {
+            padding: 0.5rem 0.25rem !important;
+        }
+        
+        .badge {
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0.5rem !important;
         }
     }
     
     @media (max-width: 480px) {
         .container-fluid {
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding: 0.75rem !important;
+        }
+        
+        .dashboard-header {
+            padding: 1rem 0 !important;
+            margin-bottom: 1rem !important;
         }
         
         .dashboard-header h1 {
-            font-size: 1.3rem;
+            font-size: 1.2rem !important;
         }
         
         .section-title {
-            font-size: 1.3rem;
+            font-size: 1.2rem !important;
+        }
+        
+        .section-subtitle {
+            font-size: 0.85rem !important;
         }
         
         .section-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1.2rem;
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 1.2rem !important;
+        }
+        
+        .stat-card {
+            padding: 0.75rem !important;
+            margin-bottom: 0.75rem !important;
         }
         
         .stat-number {
-            font-size: 1.8rem;
+            font-size: 1.5rem !important;
         }
         
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.8rem !important;
         }
         
-        .action-btn {
-            padding: 0.3rem 0.6rem;
-            font-size: 0.75rem;
-            display: block;
-            width: 100%;
-            margin: 0.2rem 0;
+        .reports-header {
+            padding: 0.75rem !important;
         }
         
         .reports-header h4 {
-            font-size: 1.1rem;
+            font-size: 1rem !important;
+        }
+        
+        .action-btn {
+            padding: 0.4rem 0.6rem !important;
+            font-size: 0.75rem !important;
+            display: block !important;
+            width: 100% !important;
+            margin: 0.25rem 0 !important;
+            min-height: 40px !important;
+        }
+        
+        .report-card .card-header,
+        .report-card .card-body,
+        .report-card .card-footer {
+            padding: 0.75rem !important;
         }
         
         .report-card h6 {
-            font-size: 0.9rem;
+            font-size: 0.85rem !important;
         }
         
         .report-type,
         .report-status {
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem !important;
+            padding: 0.2rem 0.5rem !important;
+        }
+        
+        .form-select,
+        .form-control {
+            font-size: 0.85rem !important;
+            padding: 0.6rem 0.8rem !important;
         }
         
         .modal-dialog {
-            margin: 0.5rem;
-        }
-        
-        .modal-header h5 {
-            font-size: 1rem;
+            margin: 0.5rem !important;
         }
         
         .modal-body {
-            padding: 1rem;
+            padding: 0.75rem !important;
+        }
+        
+        .modal-header h5 {
+            font-size: 0.95rem !important;
+        }
+        
+        .table-responsive {
+            font-size: 0.75rem !important;
+        }
+        
+        .table th,
+        .table td {
+            padding: 0.4rem 0.2rem !important;
+        }
+        
+        .badge {
+            font-size: 0.65rem !important;
+            padding: 0.2rem 0.4rem !important;
+        }
+        
+        .report-card img {
+            max-height: 100px !important;
+        }
+        
+        .form-check-input {
+            width: 1.2em !important;
+            height: 1.2em !important;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem !important;
+        }
+        
+        .mb-5 {
+            margin-bottom: 2rem !important;
+        }
+    }
+    
+    /* Touch-friendly improvements */
+    @media (max-width: 768px) {
+        .btn,
+        .action-btn {
+            min-height: 44px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .d-grid.gap-2 {
+            gap: 0.75rem !important;
+        }
+        
+        .report-card {
+            transition: transform 0.2s ease;
+        }
+        
+        .report-card:active {
+            transform: scale(0.98);
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            transform: none;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25) !important;
         }
     }
 </style>
@@ -331,6 +483,70 @@
         <div class="container">
             <h1><i class="fas fa-building me-3"></i>Organization Dashboard</h1>
             <p class="mb-0 opacity-90">Environmental Reports Management System</p>
+        </div>
+    </div>
+    
+    <!-- Organization Earnings Overview -->
+    <div class="section-divider mb-5">
+        <div class="text-center mb-4">
+            <div class="section-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                <i class="fas fa-coins"></i>
+            </div>
+            <h2 class="section-title">Verification Earnings</h2>
+            <p class="section-subtitle">Bonus income for helping protect Kenya's environment</p>
+        </div>
+        
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    {% with calculated_earnings=verified_tree_plantings|add:verified_count %}
+                    <div class="stat-number text-success">KES {% widthratio calculated_earnings 1 5 %}</div>
+                    {% endwith %}
+                    <div class="stat-label">Expected Earnings</div>
+                    <small class="text-muted">Verification Payments</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number text-info">{{ verified_tree_plantings }}</div>
+                    <div class="stat-label">Trees Verified</div>
+                    <small class="text-muted">KES 5 each</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number text-warning">{{ verified_count }}</div>
+                    <div class="stat-label">Reports Verified</div>
+                    <small class="text-muted">KES 5 each</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 20px; padding: 2rem;">
+                        <h4 class="fw-bold mb-3" style="color: #15803d;">Payment Structure</h4>
+                        <div class="row text-center">
+                            <div class="col-md-6">
+                                <div style="background: rgba(255,255,255,0.7); border-radius: 15px; padding: 1.5rem; margin-bottom: 1rem;">
+                                    <h5 style="color: #16a34a; margin-bottom: 0.5rem;">Tree Verification</h5>
+                                    <p style="color: #15803d; font-size: 1.2rem; font-weight: bold; margin: 0;">KES 5</p>
+                                    <small style="color: #166534;">per verified planting</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="background: rgba(255,255,255,0.7); border-radius: 15px; padding: 1.5rem; margin-bottom: 1rem;">
+                                    <h5 style="color: #16a34a; margin-bottom: 0.5rem;">Report Verification</h5>
+                                    <p style="color: #15803d; font-size: 1.2rem; font-weight: bold; margin: 0;">KES 5</p>
+                                    <small style="color: #166534;">per verified report</small>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0" style="color: #15803d; font-weight: 600;">Payments are automatically added to your account when you verify activities</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -613,7 +829,7 @@
                         <!-- Card Footer -->
                         <div class="card-footer">
                             <div class="d-grid gap-2">
-                                <button class="action-btn btn-details" onclick="viewTreeDetails('{{ planting.id }}', '{{ planting.title }}', '{{ planting.location_name }}', '{{ planting.description }}', '{{ planting.number_of_trees }}', '{{ planting.planter_display_name }}', {{ planting.planter|yesno:'true,false' }}, {{ planting.latitude|default:'null' }}, {{ planting.longitude|default:'null' }})">
+                                <button class="action-btn btn-details" onclick="viewTreeDetails('{{ planting.id }}', '{{ planting.title }}', '{{ planting.location_name }}', '{{ planting.description }}', '{{ planting.number_of_trees }}', '{{ planting.planter_display_name }}', {{ planting.planter|yesno:'true,false' }}, {{ planting.latitude|default:'null' }}, {{ planting.longitude|default:'null' }}, '{{ planting.get_tree_type_display }}')">
                                     <i class="fas fa-eye me-1"></i>View Details
                                 </button>
                                 {% if planting.status != 'verified' %}
@@ -1365,10 +1581,11 @@ function updateStatus(reportId, newStatus) {
 }
 
 // Tree planting functions
-function viewTreeDetails(plantingId, title, location, description, numTrees, planter, isRegistered, latitude, longitude) {
+function viewTreeDetails(plantingId, title, location, description, numTrees, planter, isRegistered, latitude, longitude, treeType) {
     // Populate modal
     document.getElementById('treeModalTitle').textContent = title;
     document.getElementById('treePlantingLocation').textContent = location;
+    document.getElementById('treePlantingType').textContent = treeType || 'Not specified';
     document.getElementById('treePlantingCount').textContent = numTrees;
     document.getElementById('treePlantingPlanter').textContent = planter + (isRegistered ? '' : ' (Unregistered)');
     document.getElementById('treePlantingDescription').textContent = description;

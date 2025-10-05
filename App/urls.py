@@ -39,7 +39,6 @@ urlpatterns = [
     path('profile/', ProfileDetailView.as_view(), name='profile_detail'),
     path('request-verification/', request_verification, name='request_verification'),
     # path('profile/remove_picture/', remove_profile_picture, name='remove_profile_picture'),
-    path('accounts/', include('django.contrib.auth.urls')),
     path('reports/', AlertListView.as_view(), name='alert_list'),
     path('reports/new/', AlertCreateView.as_view(), name='alert_create'),  # Use alert_create
     path('my-reports/', MyReportsView.as_view(), name='my_reports'),
@@ -73,6 +72,7 @@ urlpatterns = [
     # path('password/', auth_vie
     # ws.PasswordChangeView.as_view(template_name='registration/change-password.html')),
     path('change_password/', views.PasswordChangeView.as_view(template_name = "registration/password_change.html"), name="change-password"),
+    path('password_change/', views.PasswordChangeView.as_view(template_name = "registration/password_change.html"), name="password_change"),
     path('password_success/', views.password_success, name="password_success"),
     path('ussd_callback/', ussd_callback, name='ussd_callback'),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
@@ -93,6 +93,7 @@ urlpatterns = [
     # Rewards system URLs
     path('rewards/', RewardsView.as_view(), name='rewards'),
     path('redeem-reward/<int:reward_id>/', redeem_reward, name='redeem_reward'),
+    path('carbon-transaction/', views.carbon_transaction, name='carbon_transaction'),
     
     # Fire Risk Prediction URLs
     path('fire-risk/', views.FireRiskView.as_view(), name='fire_risk'),
@@ -113,6 +114,10 @@ urlpatterns = [
     path('api/climate-data/', get_climate_data, name='get_climate_data'),
     path('api/detect-soil/', views.detect_soil_api, name='detect_soil_api'),
     path('tree-prediction/', views.TreePredictionView.as_view(), name='tree_prediction'),
+    path('welcome/', TemplateView.as_view(template_name='App/welcome.html'), name='welcome'),
+    
+    # Platform Revenue Dashboard (Admin only)
+    path('platform-revenue/', views.PlatformRevenueView.as_view(), name='platform_revenue'),
 
 
 

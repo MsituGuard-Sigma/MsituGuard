@@ -6,7 +6,7 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
-from .models import Profile, Resource, EmergencyContact, Report, ResourceRequest, ForumPost, Comment, TreePlanting, Token, Reward, UserReward, FireRiskPrediction, CitizenFireReport, TreePrediction #Post
+from .models import Profile, Resource, EmergencyContact, Report, ResourceRequest, ForumPost, Comment, TreePlanting, Token, Reward, UserReward, FireRiskPrediction, CitizenFireReport, TreePrediction, CarbonTransaction #Post
 # Keep Alert as alias for backward compatibility
 Alert = Report
 from .forms import UserRegistrationForm,  ResourceForm, ReportForm, ProfileForm,  ResourceRequestForm, ForumPostForm,  FormComment, EditProfileForm, PasswordChangingForm
@@ -305,7 +305,7 @@ class AlertCreateView(LoginRequiredMixin, CreateView):
             # Use redirect to prevent form resubmission
             messages.success(self.request, 'Environmental Report Successfully Created! Your report has been submitted and will be reviewed immediately.')
             print(f"About to redirect")
-            return redirect('alert_create')
+            return render(self.request, self.template_name, {'submitted': True})
             
         except Exception as e:
             print(f"Form validation error: {e}")
@@ -738,6 +738,33 @@ def update_report_status(request, report_id):
             # Award tokens and send notification if verified
             if data['status'] == 'verified' and old_status != 'verified':
                 tokens_awarded = report.award_tokens()
+                
+                # Award small carbon credits for environmental monitoring
+                if not hasattr(report, 'carbon_credits_awarded') or not report.carbon_credits_awarded:
+                    # Award 0.001 tonnes CO2 credits for environmental monitoring
+                    report.reporter.profile.add_carbon_credits(
+                        0.001,
+                        f'Environmental monitoring: {report.title}'
+                    )
+                    
+                    # Create transaction record for carbon credits
+                    CarbonTransaction.objects.create(
+                        user=report.reporter,
+                        transaction_type='earn',
+                        amount=0.001,
+                        value_kes=0.3,
+                        description=f'Environmental monitoring: {report.title}'
+                    )
+                    
+                    print(f"Awarded 0.001 carbon credits to {report.reporter.username} for environmental report")
+                
+                # Award verification payment to organization (KES 5 per report verification)
+                if request.user.profile.account_type == 'organization':
+                    verification_payment = 5  # KES 5 per report verification
+                    # Add to organization's token balance as verification earnings
+                    request.user.profile.add_tokens(verification_payment, f'Report verification payment: {report.title}')
+                    print(f"Awarded KES {verification_payment} to organization {request.user.username} for report verification")
+                
                 if tokens_awarded:
                     send_report_verification_notification(report)
             
@@ -795,12 +822,46 @@ def update_tree_status(request, tree_id):
                 if tree_planting.planter:
                     # Registered user - award tokens and send reward notification
                     tokens_awarded = tree_planting.award_tokens()
-                    if tokens_awarded:
-                        print(f"Tokens awarded to registered user, sending reward email")
+                    
+                    # Skip the complex carbon calculation method
+                    carbon_awarded = True
+                    
+                    # Award immediate carbon credits for verified trees
+                    if not tree_planting.carbon_credits_calculated:
+                        # Simple carbon calculation: 0.025 tonnes CO2 per tree (25kg)
+                        credits_earned = tree_planting.number_of_trees * 0.025
+                        
+                        tree_planting.planter.profile.add_carbon_credits(
+                            credits_earned,
+                            f'Carbon credits from {tree_planting.number_of_trees} verified trees'
+                        )
+                        
+                        # Create transaction record for carbon credits
+                        CarbonTransaction.objects.create(
+                            user=tree_planting.planter,
+                            transaction_type='earn',
+                            amount=credits_earned,
+                            value_kes=credits_earned * 300,
+                            description=f'Carbon credits from {tree_planting.number_of_trees} verified trees'
+                        )
+                        
+                        tree_planting.carbon_credits_calculated = True
+                        tree_planting.save(update_fields=['carbon_credits_calculated'])
+                        print(f"Awarded {credits_earned:.3f} carbon credits to {tree_planting.planter.username}")
+                    
+                    # Award verification payment to organization (KES 5 per tree verification)
+                    if request.user.profile.account_type == 'organization':
+                        verification_payment = 5  # KES 5 per tree verification
+                        # Add to organization's token balance as verification earnings
+                        request.user.profile.add_tokens(verification_payment, f'Tree verification payment: {tree_planting.title}')
+                        print(f"Awarded KES {verification_payment} to organization {request.user.username} for tree verification")
+                    
+                    if tokens_awarded or carbon_awarded:
+                        print(f"Tokens and carbon credits awarded to registered user, sending reward email")
                         send_tree_verification_notification(tree_planting)
                     else:
-                        print(f"Tokens already awarded to registered user")
-                        # Still send notification even if tokens were already awarded
+                        print(f"Tokens and carbon credits already awarded to registered user")
+                        # Still send notification even if rewards were already awarded
                         send_tree_verification_notification(tree_planting)
                 else:
                     # Unregistered user - send registration encouragement email
@@ -850,11 +911,15 @@ def send_tree_verification_notification(tree_planting):
         profile = tree_planting.planter.profile
         print(f"Updated profile with total tokens: {profile.total_tokens_earned}")
         
+        # Get carbon credits information
+        carbon_summary = tree_planting.carbon_summary
+        carbon_portfolio = profile.carbon_portfolio_summary
+        
         # Create notification with rewards
         Notification.objects.create(
             user=tree_planting.planter,
             notification_type='tree_verified',
-            title='🎉 Tree Planting Verified - Tokens Earned!',
+            title='Tree Planting Verified - Tokens Earned!',
             message=f'Your tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens and the "{badge}" badge.',
             tree_planting=tree_planting
         )
@@ -898,7 +963,7 @@ def send_tree_verification_notification(tree_planting):
                     </div>
                     
                     <div class="rewards">
-                        <h3 style="color: #92400e; margin-top: 0;">🎉 Congratulations! You've Earned Tokens!</h3>
+                        <h3 style="color: #92400e; margin-top: 0;">🎉 Congratulations! You've Earned Rewards!</h3>
                         <div style="text-align: center;">
                             <div class="reward-item">
                                 <div style="font-size: 24px; font-weight: bold; color: #22c55e;">{tokens_earned}</div>
@@ -909,11 +974,34 @@ def send_tree_verification_notification(tree_planting):
                                 <div style="color: #6b7280; font-size: 14px;">New Badge</div>
                             </div>
                             <div class="reward-item">
+                                <div style="font-size: 20px; font-weight: bold; color: #0ea5e9;">{carbon_summary['carbon_credits']:.3f}t</div>
+                                <div style="color: #6b7280; font-size: 14px;">Carbon Credits</div>
+                            </div>
+                            <div class="reward-item">
                                 <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">{profile.total_tokens_earned}</div>
                                 <div style="color: #6b7280; font-size: 14px;">Total Tokens</div>
                             </div>
                         </div>
                         <p style="color: #92400e; margin: 10px 0; font-weight: 600;">Your Rank: {profile.conservation_rank}</p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #0ea5e9;">
+                        <h4 style="color: #0c4a6e; margin-top: 0;">💰 Carbon Credits Portfolio</h4>
+                        <div style="display: flex; justify-content: space-around; margin: 15px 0;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 18px; font-weight: bold; color: #0ea5e9;">{carbon_portfolio['balance']:.3f}t</div>
+                                <small style="color: #6b7280;">Total Credits</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 18px; font-weight: bold; color: #22c55e;">KES {carbon_portfolio['estimated_value']:.0f}</div>
+                                <small style="color: #6b7280;">Portfolio Value</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 18px; font-weight: bold; color: #f59e0b;">{carbon_portfolio['co2_impact_kg']:.1f}kg/year</div>
+                                <small style="color: #6b7280;">CO2 Absorbed</small>
+                            </div>
+                        </div>
+                        <p style="color: #0c4a6e; margin: 10px 0; font-size: 14px;">Your trees are generating verified carbon credits worth real money!</p>
                     </div>
                     
                     <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #0ea5e9;">
@@ -944,8 +1032,8 @@ def send_tree_verification_notification(tree_planting):
         print(f"Is first time planter: {user_tree_count == 1}")
         
         msg = EmailMultiAlternatives(
-            subject='🎉 Tree Planting Verified - Rewards Earned! - MsituGuard',
-            body=f'Hello {tree_planting.planter.first_name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens and the "{badge}" badge.',
+            subject='Tree Planting Verified - Tokens & Carbon Credits Earned! - MsituGuard',
+            body=f'Hello {tree_planting.planter.first_name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens, {carbon_summary["carbon_credits"]:.3f}t carbon credits, and the "{badge}" badge.',
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[tree_planting.planter.email]
         )
@@ -968,7 +1056,7 @@ def send_report_verification_notification(report):
         Notification.objects.create(
             user=report.reporter,
             notification_type='report_verified',
-            title='🎉 Environmental Report Verified - Token Earned!',
+            title='Environmental Report Verified - Token Earned!',
             message=f'Your report "{report.title}" has been verified! You earned 1 token.',
             report=report
         )
@@ -1024,7 +1112,7 @@ def send_report_verification_notification(report):
         """
         
         msg = EmailMultiAlternatives(
-            subject='🎉 Environmental Report Verified - Token Earned! - MsituGuard',
+            subject='Environmental Report Verified - Token Earned! - MsituGuard',
             body=f'Your report "{report.title}" has been verified! You earned 1 token. Login to redeem rewards.',
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[report.reporter.email]
@@ -1164,7 +1252,7 @@ def send_unregistered_reward_notification(tree_planting):
         """
         
         msg = EmailMultiAlternatives(
-            subject='🎉 Tree Planting Verified - Claim Your Rewards! - MsituGuard',
+            subject='Tree Planting Verified - Claim Your Rewards! - MsituGuard',
             body=f'Hello {name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens and the "{badge}" badge. Create your free account to claim your complete rewards: {register_url}',
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[email]
@@ -1193,7 +1281,7 @@ class TreeInitiativeView(TemplateView):
 class TreePlantingFormView(LoginRequiredMixin, CreateView):
     model = TreePlanting
     template_name = 'App/tree_planting_form.html'
-    fields = ['title', 'location_name', 'latitude', 'longitude', 'tree_type', 'number_of_trees', 'description', 'before_image', 'after_image', 'phoneNumber']
+    fields = ['location_name', 'latitude', 'longitude', 'tree_type', 'number_of_trees', 'description', 'after_image']
     login_url = 'login'
     
     def get_initial(self):
@@ -1210,8 +1298,11 @@ class TreePlantingFormView(LoginRequiredMixin, CreateView):
         
         form.instance.planter = self.request.user
         form.instance.status = 'planned' if not form.instance.after_image else 'planted'
+        form.instance.title = f'Tree Planting by {self.request.user.first_name or self.request.user.username}'
         self.object = form.save()
-        return render(self.request, self.template_name, {'submitted': True})
+        
+        messages.success(self.request, f'Tree planting registered successfully! {self.object.number_of_trees} trees recorded.')
+        return redirect('tree_planting_form')
 
 class TreePlantingsListView(ListView):
     model = TreePlanting
@@ -1488,7 +1579,7 @@ def public_tree_planting(request):
             email = request.POST.get('email')
             location = request.POST.get('location')
             number_of_trees = int(request.POST.get('number_of_trees', 1))
-            tree_type = request.POST.get('tree_type', 'indigenous')
+            tree_type = request.POST.get('tree_species', 'indigenous')
             planting_date = request.POST.get('planting_date')
             description = request.POST.get('description', '')
             before_image = request.FILES.get('before_image')
@@ -1548,8 +1639,8 @@ def public_tree_planting(request):
             # Send verification email with password
             send_verification_email(user, request, temp_password if created else None)
             
-            messages.success(request, f'Thank you {full_name}! Your tree planting contribution has been registered. Check your email to verify your account and get your login details.')
-            return redirect('public_tree_form')
+            messages.success(request, f'🌱 Thank you {full_name}! Your tree planting has been registered successfully. We\'ve sent verification details to your email.')
+            return redirect('http://localhost:8000/rewards/')
             
         except Exception as e:
             messages.error(request, f'Error submitting tree planting: {str(e)}')
@@ -1571,6 +1662,7 @@ def send_verification_email(user, request, temp_password=None):
             'verification_url': verification_url,
             'temp_password': temp_password,
             'login_url': request.build_absolute_uri(reverse('login')),
+            'is_logged_in': request.user.is_authenticated,
         })
         
         send_mail(
@@ -1595,14 +1687,17 @@ def verify_tree_planting_account(request, uidb64, token):
             user.save()
             
             return render(request, 'App/verification_success.html', {
-                'user_name': user.first_name
+                'user_name': user.first_name,
+                'is_logged_in': request.user.is_authenticated
             })
         else:
-            messages.error(request, 'Invalid verification link.')
+            return render(request, 'App/verification_error.html', {
+                'error_message': 'Invalid or expired verification link.'
+            })
     except Exception as e:
-        messages.error(request, 'Verification failed. Please try again.')
-    
-    return redirect('home')
+        return render(request, 'App/verification_error.html', {
+            'error_message': 'Verification failed. Please try again.'
+        })
 
 
 
@@ -1631,6 +1726,12 @@ class RewardsView(LoginRequiredMixin, TemplateView):
         # User's redeemed rewards
         context['redeemed_rewards'] = UserReward.objects.filter(user=user).order_by('-redeemed_at')[:5]
         
+        # Carbon credits info
+        context['carbon_portfolio'] = user.profile.carbon_portfolio_summary
+        
+        # Carbon transaction history
+        context['carbon_transactions'] = CarbonTransaction.objects.filter(user=user).order_by('-created_at')[:10]
+        
         return context
 
 @login_required
@@ -1646,6 +1747,85 @@ def redeem_reward(request, reward_id):
             messages.error(request, f'Insufficient tokens. You need {reward.token_cost} tokens but only have {user.profile.token_balance}.')
     
     return redirect('rewards')
+
+@login_required
+def carbon_transaction(request):
+    if request.method == 'POST':
+        import json
+        try:
+            data = json.loads(request.body)
+            transaction_type = data.get('type')
+            amount = float(data.get('amount', 0))
+            
+            user = request.user
+            profile = user.profile
+            
+            if transaction_type == 'sell' and profile.carbon_credits_balance >= amount:
+                # Smart pricing: Users get KES 300/tonne (they don't see the margin)
+                user_payment = amount * 300
+                
+                # Deduct credits from user
+                profile.carbon_credits_balance -= amount
+                profile.estimated_carbon_value_kes = profile.carbon_credits_balance * 300
+                profile.save()
+                
+                # Create transaction record
+                CarbonTransaction.objects.create(
+                    user=user,
+                    transaction_type='sell',
+                    amount=amount,
+                    value_kes=user_payment,
+                    description=f'Sold {amount}t CO2 credits to verified buyers',
+                    buyer_name='EcoCarbon Kenya Ltd'
+                )
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Successfully sold {amount}t CO2 credits for KES {user_payment:.0f}',
+                    'new_balance': profile.carbon_credits_balance
+                })
+            
+            elif transaction_type == 'fund' and profile.carbon_credits_balance >= amount:
+                # Project funding at KES 300/tonne value
+                project_value = amount * 300
+                
+                # Deduct credits from user
+                profile.carbon_credits_balance -= amount
+                profile.estimated_carbon_value_kes = profile.carbon_credits_balance * 300
+                profile.save()
+                
+                # Create transaction record
+                project_names = ['Mau Forest Restoration', 'Lake Victoria Cleanup', 'Maasai Mara Conservation']
+                project_name = project_names[hash(str(user.id)) % len(project_names)]
+                
+                CarbonTransaction.objects.create(
+                    user=user,
+                    transaction_type='fund',
+                    amount=amount,
+                    value_kes=project_value,
+                    description=f'Funded {project_name} project with {amount}t CO2 credits',
+                    project_name=project_name
+                )
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Successfully funded project with {amount}t CO2 credits',
+                    'new_balance': profile.carbon_credits_balance
+                })
+            
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Insufficient carbon credits balance'
+                })
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Transaction failed: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 # Fire Risk Prediction Views
 class FieldAssessmentView(LoginRequiredMixin, TemplateView):
@@ -2005,7 +2185,7 @@ class TreePredictionView(TemplateView):
         if self.request.user.is_authenticated:
             predictions = TreePrediction.objects.filter(
                 user=self.request.user
-            ).order_by('-created_at')[:10]
+            ).order_by('-created_at')[:5]
             
             # Add percentage calculation to each prediction
             for prediction in predictions:
@@ -2018,5 +2198,63 @@ class TreePredictionView(TemplateView):
         else:
             context['prediction_history'] = []
             context['total_predictions'] = 0
+        
+        return context
+
+class PlatformRevenueView(LoginRequiredMixin, TemplateView):
+    template_name = 'App/platform_revenue.html'
+    login_url = 'login'
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Only admin can access platform revenue dashboard
+        if not request.user.is_superuser:
+            messages.error(request, "Access denied. Admin privileges required.")
+            return redirect('home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Carbon credit transactions
+        all_transactions = CarbonTransaction.objects.all()
+        user_sales = all_transactions.filter(transaction_type='sell')  # Users selling to platform
+        
+        # Calculate actual platform revenue (only from completed user sales)
+        total_user_sales = sum(t.amount for t in user_sales)  # tonnes bought from users
+        
+        # Revenue calculations (KES) - Platform acts as marketplace with higher corporate rates
+        user_payments = total_user_sales * 300  # Platform pays users KES 300/tonne
+        corporate_revenue = total_user_sales * 1000  # Platform sells same credits to corporates at KES 1000/tonne
+        gross_profit = corporate_revenue - user_payments  # KES 700 margin per tonne
+        
+        # Organization verification payments
+        verified_reports = Report.objects.filter(status='verified').count()
+        verified_trees = TreePlanting.objects.filter(status='verified').count()
+        org_payments = (verified_reports + verified_trees) * 5  # KES 5 per verification
+        
+        # Net platform profit
+        net_profit = gross_profit - org_payments
+        
+        # Add margin calculation to transactions
+        recent_transactions = all_transactions.order_by('-created_at')[:10]
+        for transaction in recent_transactions:
+            if transaction.transaction_type == 'sell':
+                transaction.platform_margin = transaction.amount * 700  # KES 700 margin per tonne
+            else:
+                transaction.platform_margin = 0
+        
+        context.update({
+            'total_user_sales': total_user_sales,
+            'user_payments': user_payments,
+            'corporate_revenue': corporate_revenue,
+            'gross_profit': gross_profit,
+            'org_payments': org_payments,
+            'net_profit': net_profit,
+            'verified_reports': verified_reports,
+            'verified_trees': verified_trees,
+            'profit_margin': round((gross_profit / corporate_revenue * 100) if corporate_revenue > 0 else 0, 1),
+            'recent_transactions': recent_transactions,
+            'has_corporate_sales': total_user_sales > 0  # Only show corporate revenue if there are actual sales
+        })
         
         return context

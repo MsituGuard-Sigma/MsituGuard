@@ -7,11 +7,11 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import joblib
 import os
 
-def train_tree_survival_model():
-    """Train tree survival prediction model"""
+def train_corrected_tree_model():
+    """Train corrected tree survival prediction model with fixed dataset"""
     
-    # Load data
-    print("Loading cleaned tree data...")
+    # Load fixed data
+    print("Loading cleaned tree data (fixed)...")
     df = pd.read_csv('cleaned_tree_data_fixed.csv')
     
     # Feature engineering
@@ -64,7 +64,7 @@ def train_tree_survival_model():
         max_depth=10,
         random_state=42,
         class_weight='balanced',
-        n_jobs=1  # Avoid multiprocessing issues
+        n_jobs=1
     )
     
     model.fit(X_train_scaled, y_train)
@@ -73,7 +73,7 @@ def train_tree_survival_model():
     y_pred = model.predict(X_test_scaled)
     accuracy = accuracy_score(y_test, y_pred)
     
-    print(f"\nModel Performance:")
+    print(f"\nCorrected Model Performance:")
     print(f"Accuracy: {accuracy:.3f}")
     print(f"\nClassification Report:")
     print(classification_report(y_test, y_pred))
@@ -87,13 +87,13 @@ def train_tree_survival_model():
     print(f"\nTop 5 Most Important Features:")
     print(feature_importance.head())
     
-    # Create models directory
-    os.makedirs('models', exist_ok=True)
+    # Save corrected models to main models directory
+    main_model_dir = '../models'
+    os.makedirs(main_model_dir, exist_ok=True)
     
-    # Save model and encoders
-    print("\nSaving model and encoders...")
-    joblib.dump(model, 'models/tree_survival_model.pkl')
-    joblib.dump(scaler, 'models/tree_scaler.pkl')
+    print("\nSaving corrected model and encoders...")
+    joblib.dump(model, os.path.join(main_model_dir, 'tree_survival_model_corrected.pkl'))
+    joblib.dump(scaler, os.path.join(main_model_dir, 'tree_scaler_corrected.pkl'))
     
     # Save encoders
     encoders = {
@@ -107,17 +107,17 @@ def train_tree_survival_model():
         'water_source': le_water
     }
     
-    joblib.dump(encoders, 'models/tree_encoders.pkl')
-    joblib.dump(feature_columns, 'models/feature_columns.pkl')
+    joblib.dump(encoders, os.path.join(main_model_dir, 'tree_encoders_corrected.pkl'))
+    joblib.dump(feature_columns, os.path.join(main_model_dir, 'feature_columns_corrected.pkl'))
     
-    print("Model training completed successfully!")
+    print("Corrected model training completed successfully!")
     print("Files saved:")
-    print("- models/tree_survival_model.pkl")
-    print("- models/tree_scaler.pkl") 
-    print("- models/tree_encoders.pkl")
-    print("- models/feature_columns.pkl")
+    print("- ../models/tree_survival_model_corrected.pkl")
+    print("- ../models/tree_scaler_corrected.pkl") 
+    print("- ../models/tree_encoders_corrected.pkl")
+    print("- ../models/feature_columns_corrected.pkl")
     
     return model, scaler, encoders, feature_columns
 
 if __name__ == "__main__":
-    train_tree_survival_model()
+    train_corrected_tree_model()

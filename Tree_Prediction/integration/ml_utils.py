@@ -19,10 +19,10 @@ class TreeSurvivalPredictor:
         try:
             model_dir = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'models')
             
-            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model.pkl'))
-            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler.pkl'))
-            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders.pkl'))
-            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns.pkl'))
+            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model_corrected.pkl'))
+            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler_corrected.pkl'))
+            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders_corrected.pkl'))
+            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns_corrected.pkl'))
             
             print(f"Model loaded successfully from {model_dir}")
             
@@ -167,7 +167,7 @@ class TreeSurvivalPredictor:
         
         try:
             # Load dataset to get real averages by region
-            dataset_path = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'cleaned_tree_data.csv')
+            dataset_path = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'cleaned_tree_data_fixed.csv')
             df = pd.read_csv(dataset_path)
             
             # Determine region from coordinates

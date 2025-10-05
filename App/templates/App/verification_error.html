@@ -1,0 +1,139 @@
+{% extends 'App/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
+    :root {
+        --primary: #22c55e;
+        --primary-dark: #16a34a;
+        --primary-light: #dcfce7;
+        --accent: #059669;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --error: #ef4444;
+        --error-light: #fef2f2;
+    }
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        overflow-x: hidden;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9)), url('{% static 'images/Happy kids planting trees.jpg' %}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 4rem 0 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .error-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 28px;
+        padding: 4rem 3rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 2px solid rgba(239, 68, 68, 0.1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        text-align: center;
+        margin: 3rem 0;
+    }
+    
+    .error-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        color: white;
+        font-size: 3rem;
+        box-shadow: 0 15px 35px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-action {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin: 0.5rem;
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(34, 197, 94, 0.4);
+        color: white;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="text-center">
+            <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">Verification Error</h1>
+            <p class="lead fs-5">There was an issue with your verification link</p>
+        </div>
+    </div>
+</div>
+
+<!-- Error Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="error-card">
+                    <div class="error-icon">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    
+                    <h2 class="fw-bold mb-3" style="color: #dc2626;">⚠️ Verification Failed</h2>
+                    
+                    <p class="fs-5 mb-4" style="color: #991b1b;">
+                        {{ error_message }}
+                    </p>
+                    
+                    <div class="mb-4" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-radius: 15px; padding: 2rem; border: 2px solid rgba(239, 68, 68, 0.2);">
+                        <h5 style="color: #dc2626; margin-bottom: 1rem;">🔄 What you can do:</h5>
+                        <ul style="color: #991b1b; text-align: left; max-width: 400px; margin: 0 auto;">
+                            <li>Check if you've already verified this account</li>
+                            <li>Try submitting your tree planting again</li>
+                            <li>Contact support if the issue persists</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex gap-3 justify-content-center flex-wrap mb-3">
+                        <a href="{% url 'public_tree_form' %}" class="btn-action">
+                            <i class="fas fa-seedling me-2"></i>Submit Tree Planting
+                        </a>
+                        <a href="{% url 'home' %}" class="btn-action" style="background: linear-gradient(135deg, #6b7280, #4b5563);">
+                            <i class="fas fa-home me-2"></i>Go Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

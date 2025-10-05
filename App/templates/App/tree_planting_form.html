@@ -55,16 +55,18 @@
         <p class="lead">Contribute to Kenya's 15 billion trees goal</p>
     </div>
 
-    {% if submitted %}
-    <div class="alert alert-success text-center" style="border-radius: 20px; padding: 2rem;">
-        <div style="width: 60px; height: 60px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white;">
-            <i class="fas fa-check"></i>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success text-center" style="border-radius: 20px; padding: 2rem;">
+            <div style="width: 60px; height: 60px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white;">
+                <i class="fas fa-check"></i>
+            </div>
+            <h4>{{ message }}</h4>
+            <p>Your contribution to the 15 billion trees initiative has been recorded. Organizations will verify your planting soon.</p>
+            <a href="{% url 'tree_planting_form' %}" class="btn btn-success">Plant More Trees</a>
         </div>
-        <h4>Tree Planting Registered Successfully!</h4>
-        <p>Your contribution to the 15 billion trees initiative has been recorded. Organizations will verify your planting soon.</p>
-        <a href="{% url 'tree_initiative' %}" class="btn btn-success">Back to Initiative</a>
-    </div>
-    {% else %}
+        {% endfor %}
+    
     <div class="planting-form">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -124,7 +126,6 @@
             </button>
         </form>
     </div>
-    {% endif %}
 </div>
 
 <script>

@@ -1,5 +1,6 @@
 {% extends 'App/base.html' %}
 {% load static %}
+{% load socialaccount %}
 
 {% block title %}Login{% endblock %}
 
@@ -170,6 +171,62 @@
         font-size: 2rem;
         box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
     }
+    
+    .divider {
+        text-align: center;
+        margin: 2rem 0;
+        position: relative;
+    }
+    
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e2e8f0;
+    }
+    
+    .divider span {
+        background: #ffffff;
+        padding: 0 1rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    .social-login {
+        margin-bottom: 2rem;
+    }
+    
+    .btn-social {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-google:hover {
+        border-color: #10b981;
+        background: #10b981;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-social i {
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
 </style>
 
 <!-- Page Header -->
@@ -215,6 +272,17 @@
                     <i class="fas fa-sign-in-alt me-2"></i>Sign In
                 </button>
             </form>
+            
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <div class="social-login">
+            <a href="{% provider_login_url 'google' %}" class="btn btn-social btn-google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </a>
+        </div>
 
             <div class="auth-links">
                 <p><a href="{% url 'password_reset' %}"><i class="fas fa-key me-1"></i>Forgot Password?</a></p>

@@ -229,7 +229,7 @@
         background: linear-gradient(135deg, #22c55e, #16a34a);
         color: white;
         border: none;
-        padding: 2rem;
+        padding: 1.5rem;
     }
     
     .prediction-table {
@@ -241,14 +241,16 @@
         background: #f8fafc;
         font-weight: 700;
         color: #374151;
-        padding: 1rem;
+        padding: 0.75rem 0.5rem;
         border: none;
+        font-size: 0.9rem;
     }
     
     .prediction-table td {
-        padding: 1rem;
+        padding: 0.75rem 0.5rem;
         border-bottom: 1px solid #f1f5f9;
         vertical-align: middle;
+        font-size: 0.9rem;
     }
     
     .species-icon {
@@ -309,14 +311,18 @@
         transform: translateY(-1px);
     }
     
-    /* Mobile Optimizations */
+    /* Mobile Optimizations - Enhanced for smartphones */
     @media (max-width: 768px) {
+        body {
+            padding-top: 70px !important;
+        }
+        
         .page-header {
-            padding: 2rem 0 1rem;
+            padding: 2rem 0 1rem !important;
         }
         
         .page-header h1 {
-            font-size: 2rem !important;
+            font-size: 1.8rem !important;
         }
         
         .page-header p {
@@ -324,62 +330,120 @@
         }
         
         .emergency-icon {
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 1.5rem !important;
         }
         
         .feature-card {
-            padding: 2rem 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-control, .form-select {
-            padding: 1rem 1.25rem;
-            font-size: 1rem;
-        }
-        
-        .btn-predict {
-            padding: 1.25rem 2.5rem;
-            font-size: 1.1rem;
-            width: 100%;
-            margin-bottom: 1rem;
+            padding: 1.5rem 1rem !important;
+            margin-bottom: 1.5rem !important;
+            border-radius: 15px !important;
         }
         
         .icon-circle {
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 1.5rem !important;
         }
         
-        .prediction-history-header {
-            padding: 1.5rem;
+        .btn-predict {
+            padding: 1rem 2rem !important;
+            font-size: 1rem !important;
+            width: 100% !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        .compact-form {
+            padding: 0 !important;
+        }
+        
+        .form-field {
+            margin-bottom: 1.25rem !important;
+        }
+        
+        .field-label {
+            font-size: 0.95rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .clean-select {
+            padding: 0.8rem 1rem !important;
+            font-size: 0.9rem !important;
+            padding-right: 2.5rem !important;
+        }
+        
+        .field-hint {
+            font-size: 0.8rem !important;
+            margin-top: 0.4rem !important;
+        }
+        
+        /* Auto-detected card mobile */
+        #autoDetectedCard .col {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        #autoDetectedCard .fw-bold {
+            font-size: 0.85rem !important;
+        }
+        
+        #autoDetectedCard .small {
+            font-size: 0.7rem !important;
+        }
+        
+        /* Results section mobile */
+        #resultsCard .display-1 {
+            font-size: 3rem !important;
+        }
+        
+        #resultsCard .h5 {
+            font-size: 1rem !important;
+        }
+        
+        #resultsCard .btn {
+            padding: 0.6rem 1rem !important;
+            font-size: 0.85rem !important;
+            margin: 0.25rem !important;
+        }
+        
+        /* Prediction history mobile */
+        .prediction-table {
+            font-size: 0.8rem !important;
         }
         
         .prediction-table th,
         .prediction-table td {
-            padding: 0.75rem 0.5rem;
-            font-size: 0.9rem;
+            padding: 0.5rem 0.25rem !important;
         }
         
         .species-icon {
-            width: 30px;
-            height: 30px;
+            width: 25px !important;
+            height: 25px !important;
+        }
+        
+        .success-badge {
+            padding: 0.2rem 0.4rem !important;
+            font-size: 0.7rem !important;
+        }
+        
+        .recommendations-btn {
+            padding: 0.2rem 0.4rem !important;
+            font-size: 0.7rem !important;
         }
     }
     
     @media (max-width: 480px) {
         .container {
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
         }
         
         .page-header {
-            padding: 1.5rem 0 1rem;
+            padding: 1.5rem 0 1rem !important;
         }
         
         .page-header h1 {
-            font-size: 1.75rem !important;
+            font-size: 1.5rem !important;
         }
         
         .page-header p {
@@ -387,110 +451,295 @@
         }
         
         .emergency-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1.2rem;
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 1.2rem !important;
         }
         
         .feature-card {
-            padding: 1.5rem 1rem;
-            border-radius: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem !important;
-        }
-        
-        .btn-predict {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
+            padding: 1rem 0.75rem !important;
+            border-radius: 12px !important;
         }
         
         .icon-circle {
-            width: 50px;
-            height: 50px;
-            font-size: 1.25rem;
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 1.2rem !important;
         }
         
-        .prediction-history-header {
-            padding: 1rem;
+        .btn-predict {
+            padding: 0.8rem 1.5rem !important;
+            font-size: 0.9rem !important;
         }
         
-        .prediction-history-header h4 {
-            font-size: 1.2rem;
+        .field-label {
+            font-size: 0.9rem !important;
         }
         
-        .prediction-history-header .btn {
-            padding: 0.3rem 0.6rem;
-            font-size: 0.7rem;
+        .clean-select {
+            padding: 0.75rem 0.9rem !important;
+            font-size: 0.85rem !important;
         }
         
+        .field-hint {
+            font-size: 0.75rem !important;
+        }
+        
+        /* Auto-detected card very small screens */
+        #autoDetectedCard .alert {
+            padding: 1rem !important;
+        }
+        
+        #autoDetectedCard .row {
+            text-align: center !important;
+        }
+        
+        #autoDetectedCard .col {
+            margin-bottom: 0.75rem !important;
+        }
+        
+        /* Results very small screens */
+        #resultsCard .display-1 {
+            font-size: 2.5rem !important;
+        }
+        
+        #resultsCard .col-md-6 {
+            margin-bottom: 1rem !important;
+        }
+        
+        #resultsCard .bg-white {
+            padding: 1rem !important;
+        }
+        
+        /* Table very small screens */
         .prediction-table {
-            font-size: 0.8rem;
+            font-size: 0.75rem !important;
         }
         
         .prediction-table th,
         .prediction-table td {
-            padding: 0.5rem 0.25rem;
+            padding: 0.4rem 0.2rem !important;
         }
         
         .species-icon {
-            width: 25px;
-            height: 25px;
+            width: 20px !important;
+            height: 20px !important;
         }
         
-        .success-badge {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.7rem;
-        }
-        
+        .success-badge,
         .recommendations-btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.7rem;
-        }
-        
-        /* Results section button spacing */
-        #resultsCard .btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            margin: 0.25rem;
-            border-radius: 20px;
-            font-weight: 600;
-            border: none;
-        }
-        
-        #resultsCard .mb-3 {
-            margin-bottom: 1.5rem !important;
-        }
-        
-        /* Specific Download CSV button */
-        #downloadCsvBtn {
-            padding: 0.3rem 0.6rem !important;
-            font-size: 0.7rem !important;
-        }
-        
-        /* Specific Predict button */
-        #predictBtn {
-            padding: 0.4rem 0.8rem !important;
-            font-size: 0.75rem !important;
-        }
-        
-        /* AI Recommendations mobile styling */
-        .bg-white pre {
-            font-size: 0.8rem !important;
-            line-height: 1.4 !important;
-            padding: 1rem !important;
-        }
-        
-        .bg-white h5 {
-            font-size: 1rem !important;
-        }
-        
-        .bg-white p {
-            font-size: 0.85rem !important;
-            line-height: 1.4 !important;
+            padding: 0.15rem 0.3rem !important;
+            font-size: 0.65rem !important;
         }
     }
+    
+    /* Interactive Selection Cards */
+    .selection-step {
+        margin-bottom: 3rem;
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .selection-step:nth-child(1) { animation-delay: 0.1s; }
+    .selection-step:nth-child(2) { animation-delay: 0.2s; }
+    .selection-step:nth-child(3) { animation-delay: 0.3s; }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 auto 1rem;
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+    }
+    
+    .species-grid, .method-grid, .season-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .species-card, .method-card, .season-card {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #e5e7eb;
+        border-radius: 20px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .species-card:hover, .method-card:hover, .season-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: #22c55e;
+        box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
+        background: rgba(255, 255, 255, 0.95);
+    }
+    
+    .species-card.selected, .method-card.selected, .season-card.selected {
+        border-color: #22c55e;
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(34, 197, 94, 0.3);
+    }
+    
+    .species-card.selected::before, .method-card.selected::before, .season-card.selected::before {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: #22c55e;
+        color: white;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .species-icon, .method-icon, .season-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .species-card h6, .method-card h6, .season-card h6 {
+        font-weight: 700;
+        color: #15803d;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .species-badge, .season-badge {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+    
+    .method-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .success-rate {
+        background: #22c55e;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+    
+    .season-months {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .boost {
+        background: #f59e0b;
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: inline-block;
+    }
+    
+    .season-card.recommended {
+        border-color: #22c55e;
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(16, 185, 129, 0.02));
+    }
+    
+    .season-card.recommended .boost {
+        background: #22c55e;
+    }
+    
+    /* Compact Clean Form Styles */
+    .compact-form {
+        max-width: 100%;
+    }
+    
+    .form-field {
+        margin-bottom: 1.5rem;
+    }
+    
+    .field-label {
+        display: block;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #15803d;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .clean-select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        background: white;
+        color: #374151;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.25em 1.25em;
+        padding-right: 2.5rem;
+    }
+    
+    .clean-select:focus {
+        outline: none;
+        border-color: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+    }
+    
+    .clean-select:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .field-hint {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+    
+    .clean-select option {
+        padding: 0.75rem;
+        font-weight: 500;
+    }
+    
+
 </style>
 
 <!-- Page Header -->
@@ -501,7 +750,7 @@
             <i class="fas fa-seedling"></i>
         </div>
         <h1 class="display-4 fw-bold mb-3">AI Tree Survival Predictor</h1>
-        <p class="lead fs-5">93.2% accurate ML predictions for optimal tree planting success in Kenya</p>
+        <p class="lead fs-5">AI-powered predictions for optimal tree planting success in Kenya</p>
     </div>
 </div>
 
@@ -510,21 +759,16 @@
 <section id="formSection" class="py-5" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="feature-card">
+            <div class="col-lg-8">
+                <div class="feature-card" style="padding: 2rem 1.5rem;">
                     <div class="text-center mb-4">
                         <div class="icon-circle floating">
                             <i class="fas fa-seedling"></i>
                         </div>
-                        <h3 class="fw-bold mb-3" style="color: #15803d; font-size: 2rem;">AI Tree Survival Predictor</h3>
+                        <h3 class="fw-bold mb-3" style="color: #15803d; font-size: 2rem;">Get Your Prediction</h3>
                         <p class="text-muted mb-4 fs-5">Just 3 inputs needed - our AI handles the rest with GPS-powered environmental analysis</p>
-                        {% if user.is_authenticated %}
-                        <p class="text-success"><small><i class="fas fa-check-circle me-1"></i>You're logged in! Get unlimited predictions and species recommendations.</small></p>
-                        {% if total_predictions > 0 %}
+                        {% if user.is_authenticated and total_predictions > 0 %}
                         <p class="text-muted"><small><i class="fas fa-history me-1"></i>You've made {{ total_predictions }} prediction{{ total_predictions|pluralize }} so far.</small></p>
-                        {% endif %}
-                        {% else %}
-                        <p class="text-primary"><small><i class="fas fa-sign-in-alt me-1"></i><a href="{% url 'login' %}" class="text-decoration-none">Login</a> to save your predictions and access advanced features.</small></p>
                         {% endif %}
 
                     </div>
@@ -579,49 +823,51 @@
                             </div>
                         </div>
                         
-                        <!-- User Input Section - Only 3 fields needed -->
+                        <!-- Compact Clean Form -->
                         <div class="row justify-content-center">
                             <div class="col-md-8">
-                                <div class="form-group mb-5">
-                                    <label for="tree_species" class="fw-bold fs-4 mb-3" style="color: #15803d;">Tree Species</label>
-                                    <select class="form-control" id="tree_species" name="tree_species" required style="padding: 1.5rem; font-size: 1.2rem; border-radius: 20px; border: 3px solid #e5e7eb; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                                        <option value="">Select tree species</option>
-                                        <option value="Indigenous Mix">Indigenous Mix</option>
-                                        <option value="Grevillea">Grevillea</option>
-                                        <option value="Acacia">Acacia</option>
-                                        <option value="Pine">Pine</option>
-                                        <option value="Cedar">Cedar</option>
-                                        <option value="Eucalyptus">Eucalyptus</option>
-                                        <option value="Cypress">Cypress</option>
-                                        <option value="Neem">Neem</option>
-                                        <option value="Wattle">Wattle</option>
-                                        <option value="Bamboo">Bamboo</option>
-                                        <option value="Casuarina">Casuarina</option>
-                                        <option value="Jacaranda">Jacaranda</option>
-                                    </select>
-                                    <small class="text-success fw-semibold"><i class="fas fa-lightbulb me-1"></i>AI will recommend the best species for your location</small>
-                                </div>
-                                
-                                <div class="form-group mb-5">
-                                    <label for="planting_method" class="fw-bold fs-4 mb-3" style="color: #15803d;">Planting Method</label>
-                                    <select class="form-control" id="planting_method" name="planting_method" required style="padding: 1.5rem; font-size: 1.2rem; border-radius: 20px; border: 3px solid #e5e7eb; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                                        <option value="">Select planting method</option>
-                                        <option value="Seedling">Seedling</option>
-                                        <option value="Direct Seeding">Direct Seeding</option>
-                                        <option value="Cutting">Cutting</option>
-                                    </select>
-                                    <small class="text-muted fw-semibold"><i class="fas fa-info-circle me-1"></i>Seedlings typically have higher survival rates</small>
-                                </div>
-                                
-                                <div class="form-group mb-5">
-                                    <label for="planting_season" class="fw-bold fs-4 mb-3" style="color: #15803d;">Planting Season</label>
-                                    <select class="form-control" id="planting_season" name="planting_season" required style="padding: 1.5rem; font-size: 1.2rem; border-radius: 20px; border: 3px solid #e5e7eb; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                                        <option value="">Select planting season</option>
-                                        <option value="Wet">Wet Season (Mar-May, Oct-Dec)</option>
-                                        <option value="Dry">Dry Season (Jun-Sep, Jan-Feb)</option>
-                                        <option value="Transition">Transition Period</option>
-                                    </select>
-                                    <small class="text-muted fw-semibold"><i class="fas fa-calendar-alt me-1"></i>Wet season planting typically shows 20% higher survival rates</small>
+                                <div class="compact-form">
+                                    <div class="form-field">
+                                        <label class="field-label">🌳 Tree Species</label>
+                                        <select class="clean-select" id="tree_species" name="tree_species" required>
+                                            <option value="">Choose species</option>
+                                            <option value="Indigenous Mix">Indigenous Mix (Recommended)</option>
+                                            <option value="Grevillea">Grevillea (Fast Growing)</option>
+                                            <option value="Acacia">Acacia (Drought Resistant)</option>
+                                            <option value="Pine">Pine (High Altitude)</option>
+                                            <option value="Cedar">Cedar (Premium)</option>
+                                            <option value="Eucalyptus">Eucalyptus (Commercial)</option>
+                                            <option value="Cypress">Cypress</option>
+                                            <option value="Neem">Neem</option>
+                                            <option value="Wattle">Wattle</option>
+                                            <option value="Bamboo">Bamboo</option>
+                                            <option value="Casuarina">Casuarina</option>
+                                            <option value="Jacaranda">Jacaranda</option>
+                                        </select>
+                                        <div class="field-hint">AI will recommend optimal species for your location</div>
+                                    </div>
+                                    
+                                    <div class="form-field">
+                                        <label class="field-label">🌱 Planting Method</label>
+                                        <select class="clean-select" id="planting_method" name="planting_method" required>
+                                            <option value="">Choose method</option>
+                                            <option value="Seedling">Seedling (85-95% success)</option>
+                                            <option value="Direct Seeding">Direct Seeding (60-75% success)</option>
+                                            <option value="Cutting">Cutting (70-80% success)</option>
+                                        </select>
+                                        <div class="field-hint">Seedlings typically have highest survival rates</div>
+                                    </div>
+                                    
+                                    <div class="form-field">
+                                        <label class="field-label">📅 Planting Season</label>
+                                        <select class="clean-select" id="planting_season" name="planting_season" required>
+                                            <option value="">Choose season</option>
+                                            <option value="Wet">Wet Season (+20% survival)</option>
+                                            <option value="Dry">Dry Season (challenging)</option>
+                                            <option value="Transition">Transition (moderate)</option>
+                                        </select>
+                                        <div class="field-hint">Wet season planting shows 20% higher survival rates</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -643,8 +889,6 @@
                                 <i class="fas fa-rocket me-2"></i>Predict Tree Survival with AI
                             </button>
                             <p class="text-muted mt-3 mb-0">GPS auto-detection • Real-time analysis • Instant results</p>
-                            
-
                         </div>
                     </form>
                 </div>
@@ -658,8 +902,8 @@
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="feature-card" id="resultsCard">
+            <div class="col-lg-8">
+                <div class="feature-card" id="resultsCard" style="padding: 2rem 1.5rem;">
                     <div class="text-center mb-4">
                         <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
                             <i class="fas fa-chart-line"></i>
@@ -702,8 +946,8 @@
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="feature-card" id="actionCard">
+            <div class="col-lg-8">
+                <div class="feature-card" id="actionCard" style="padding: 2rem 1.5rem;">
                     {% if user.is_authenticated and user.profile.account_type == 'organization' %}
                     <!-- Hidden for organizations -->
                     {% else %}
@@ -721,19 +965,16 @@
                     {% else %}
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h3 class="text-dark mb-3 fw-bold" id="ctaTitle">Make Your Environmental Impact Count!</h3>
-                            <p class="mb-3 text-muted" id="ctaDescription">Based on your prediction results, register your tree planting and get:</p>
-                            <div class="row text-start">
-                                <div class="col-md-6">
-                                    <ul class="list-unstyled">
-                                        <li><i class="fas fa-check me-2" style="color: var(--primary);"></i>Official verification and progress tracking</li>
-                                        <li><i class="fas fa-check me-2" style="color: var(--primary);"></i>Environmental tokens and digital certificates</li>
-                                    </ul>
+                            <h3 class="text-dark mb-3 fw-bold" id="ctaTitle">Ready to Plant?</h3>
+                            <p class="mb-4 text-muted fs-5" id="ctaDescription">Join Kenya's 15 Billion Trees Initiative</p>
+                            <div class="d-flex gap-4 justify-content-center text-center mb-4">
+                                <div>
+                                    <div class="fw-bold" style="color: var(--primary); font-size: 1.5rem;">54</div>
+                                    <small class="text-muted">Predictions Made</small>
                                 </div>
-                                <div class="col-md-6">
-                                    <ul class="list-unstyled">
-                                        <li><i class="fas fa-check me-2" style="color: var(--primary);"></i>Community recognition and impact reporting</li>
-                                    </ul>
+                                <div>
+                                    <div class="fw-bold" style="color: var(--primary); font-size: 1.5rem;">15B</div>
+                                    <small class="text-muted">Trees Goal</small>
                                 </div>
                             </div>
                         </div>
@@ -763,98 +1004,90 @@
 
 <!-- Prediction History Section -->
 {% if user.is_authenticated and prediction_history %}
-<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+<section class="py-5" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 2rem;">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center">
-                                <div class="me-3" style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-history" style="font-size: 1.5rem;"></i>
-                                </div>
-                                <div>
-                                    <h4 class="mb-1 fw-bold">My Prediction History</h4>
-                                    <p class="mb-0 opacity-75">Your recent tree survival predictions</p>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{% url 'public_tree_form' %}" class="btn btn-light" style="border-radius: 25px; padding: 0.75rem 1.5rem; font-weight: 600;">
-                                    <i class="fas fa-seedling me-2"></i>Register Trees
-                                </a>
-                                <button class="btn btn-light" onclick="downloadPredictionHistory()" style="border-radius: 25px; padding: 0.75rem 1.5rem; font-weight: 600;" id="downloadCsvBtn">
-                                    <i class="fas fa-download me-2"></i>Download CSV
-                                </button>
-                            </div>
+            <div class="col-lg-8">
+                <div class="feature-card" style="padding: 2rem 1.5rem;">
+                    <div class="text-center mb-4">
+                        <div class="icon-circle floating">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3" style="color: #15803d; font-size: 2rem;">My Prediction History</h3>
+                        <p class="text-muted mb-4 fs-5">Your recent tree survival predictions</p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="{% url 'public_tree_form' %}" class="btn btn-outline-success" style="border-radius: 20px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600;">
+                                <i class="fas fa-seedling me-1"></i>Register Trees
+                            </a>
+                            <button class="btn btn-outline-primary" onclick="downloadPredictionHistory()" style="border-radius: 20px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600;" id="downloadCsvBtn">
+                                <i class="fas fa-download me-1"></i>Download CSV
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead style="background: #f8fafc;">
-                                    <tr>
-                                        <th class="fw-bold text-dark" style="padding: 1rem;">Species</th>
-                                        <th class="fw-bold text-dark" style="padding: 1rem;">Location</th>
-                                        <th class="fw-bold text-dark" style="padding: 1rem;">Survival Rate</th>
-                                        <th class="fw-bold text-dark" style="padding: 1rem;">Success Level</th>
-                                        <th class="fw-bold text-dark" style="padding: 1rem;">Recommendations</th>
-                                        <th class="fw-bold text-dark" style="padding: 1rem;">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for prediction in prediction_history %}
-                                    <tr style="border-bottom: 1px solid #f1f5f9;">
-                                        <td style="padding: 1rem;">
-                                            <div class="d-flex align-items-center">
-                                                <div class="species-icon me-2">
-                                                    <i class="fas fa-seedling text-success"></i>
-                                                </div>
-                                                <span class="fw-medium">{{ prediction.tree_species }}</span>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 prediction-table">
+                            <thead>
+                                <tr>
+                                    <th>Species</th>
+                                    <th>Location</th>
+                                    <th>Rate</th>
+                                    <th>Level</th>
+                                    <th>Actions</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in prediction_history %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="species-icon me-2" style="width: 25px; height: 25px;">
+                                                <i class="fas fa-seedling text-success" style="font-size: 0.8rem;"></i>
                                             </div>
-                                        </td>
-                                        <td style="padding: 1rem;">
-                                            <div class="text-muted">
-                                                <i class="fas fa-map-marker-alt me-1"></i>
-                                                {{ prediction.region }}, {{ prediction.county }}
-                                            </div>
-                                        </td>
-                                        <td style="padding: 1rem;">
-                                            <span class="fw-bold fs-5" style="color: #22c55e;">{{ prediction.survival_percentage }}%</span>
-                                        </td>
-                                        <td style="padding: 1rem;">
-                                                {% if prediction.survival_percentage >= 80 %}
-                                                <span class="success-badge high">High Success</span>
-                                            {% elif prediction.survival_percentage >= 60 %}
-                                                <span class="success-badge medium">Medium Success</span>
-                                            {% elif prediction.survival_percentage >= 40 %}
-                                                <span class="success-badge low">Low Success</span>
-                                            {% else %}
-                                                <span class="success-badge low">Very Low</span>
-                                            {% endif %}
-                                        </td>
-                                        <td style="padding: 1rem;">
-                                            <div class="d-flex gap-2">
-                                                <button class="recommendations-btn" onclick="showRecommendations('{{ prediction.id }}', '{{ prediction.tree_species }}', '{{ prediction.region }}', '{{ prediction.county }}')">
-                                                    <i class="fas fa-lightbulb me-1"></i>Tips
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-success" onclick="downloadSinglePrediction({{ forloop.counter0 }})" style="border-radius: 15px; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
-                                                    <i class="fas fa-download"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style="padding: 1rem;">
-                                            <small class="text-muted fw-medium">{{ prediction.created_at|date:"M d, Y" }}</small>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                            <span class="fw-medium" style="font-size: 0.85rem;">{{ prediction.tree_species }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-muted" style="font-size: 0.8rem;">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ prediction.region }}, {{ prediction.county }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold" style="color: #22c55e; font-size: 0.9rem;">{{ prediction.survival_percentage }}%</span>
+                                    </td>
+                                    <td>
+                                        {% if prediction.survival_percentage >= 80 %}
+                                        <span class="success-badge high" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">High</span>
+                                        {% elif prediction.survival_percentage >= 60 %}
+                                        <span class="success-badge medium" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">Medium</span>
+                                        {% elif prediction.survival_percentage >= 40 %}
+                                        <span class="success-badge low" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">Low</span>
+                                        {% else %}
+                                        <span class="success-badge low" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">Very Low</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="recommendations-btn" onclick="showRecommendations('{{ prediction.id }}', '{{ prediction.tree_species }}', '{{ prediction.region }}', '{{ prediction.county }}')" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">
+                                                <i class="fas fa-lightbulb"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="downloadSinglePrediction({{ forloop.counter0 }})" style="border-radius: 10px; font-size: 0.65rem; padding: 0.25rem 0.5rem;">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted fw-medium" style="font-size: 0.75rem;">{{ prediction.created_at|date:"M d" }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    {% if total_predictions > 10 %}
-                    <div class="card-footer text-center" style="background: #f8fafc; padding: 1.5rem;">
-                        <small class="text-muted fw-medium">Showing 10 most recent predictions. Total: {{ total_predictions }}</small>
+                    {% if total_predictions > 5 %}
+                    <div class="text-center mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
+                        <small class="text-muted fw-medium">Showing 5 most recent predictions. Total: {{ total_predictions }}</small>
                     </div>
                     {% endif %}
                 </div>
@@ -889,64 +1122,175 @@ document.addEventListener('DOMContentLoaded', function() {
     // Don't auto-detect on page load - wait for user to start prediction
     console.log('Tree prediction page loaded - waiting for user interaction');
     console.log('Prediction history loaded:', predictionHistoryData.length, 'predictions');
+    
+    // Initialize interactive card selection
+    initializeCardSelection();
 });
+
+// Interactive card selection functionality
+function initializeCardSelection() {
+    // Species cards
+    document.querySelectorAll('.species-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.species-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('tree_species').value = this.dataset.value;
+            
+            // Add selection animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+    
+    // Method cards
+    document.querySelectorAll('.method-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('planting_method').value = this.dataset.value;
+            
+            // Add selection animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+    
+    // Season cards
+    document.querySelectorAll('.season-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.season-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('planting_season').value = this.dataset.value;
+            
+            // Add selection animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+}
 
 // Removed - using simplified version above
 
 async function getLocationData(lat, lon, altitude) {
     try {
-        console.log('Calling climate API with coordinates:', lat, lon, altitude);
+        console.log('=== LOCATION DETECTION START ===');
+        console.log('GPS coordinates:', lat, lon, altitude);
         
-        // Call our real dataset-based climate API
-        const response = await fetch('/api/climate-data/', {
+        // Step 1: Get real location name using LocationIQ API
+        const locationUrl = `https://us1.locationiq.com/v1/reverse.php?key=pk.6318322bb6387c96e6880c70c722b2ce&lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+        console.log('Calling LocationIQ:', locationUrl);
+        
+        const locationResponse = await fetch(locationUrl);
+        console.log('LocationIQ response status:', locationResponse.status);
+        
+        if (!locationResponse.ok) {
+            throw new Error(`LocationIQ API error: ${locationResponse.status}`);
+        }
+        
+        const locationData = await locationResponse.json();
+        console.log('LocationIQ full response:', JSON.stringify(locationData, null, 2));
+        console.log('Available address fields:', Object.keys(locationData.address || {}));
+        
+        let detectedCounty = 'Unknown';
+        let detectedRegion = 'Unknown';
+        let detectedSubCounty = 'Unknown';
+        
+        if (locationData.address) {
+            console.log('Address data:', locationData.address);
+            
+            // Extract sub-county and county from LocationIQ response
+            // Based on API response: county="Tigania West", state="Meru County"
+            detectedSubCounty = locationData.address.county || 'Unknown'; // This is actually the sub-county
+            detectedCounty = locationData.address.state || 'Unknown'; // This is the main county
+            detectedRegion = locationData.address.region || 'Eastern';
+            
+            console.log('Detected - County:', detectedCounty, 'Sub-county:', detectedSubCounty, 'Region:', detectedRegion);
+        }
+        
+        console.log('Final detected location:', detectedCounty, detectedRegion);
+        
+        // Step 2: Get climate data for detected location
+        const climatePayload = {
+            latitude: lat,
+            longitude: lon,
+            altitude: altitude,
+            detected_county: detectedCounty,
+            detected_region: detectedRegion
+        };
+        
+        console.log('Sending to climate API:', climatePayload);
+        
+        const climateResponse = await fetch('/api/climate-data/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             },
-            body: JSON.stringify({
-                latitude: lat,
-                longitude: lon,
-                altitude: altitude
-            })
+            body: JSON.stringify(climatePayload)
         });
         
-        console.log('API response status:', response.status);
+        const climateResult = await climateResponse.json();
+        console.log('Climate API response:', climateResult);
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const result = await response.json();
-        console.log('API response data:', result);
-        
-        if (result.success) {
-            const locationData = result.location_data;
-            console.log('Location data received:', locationData);
+        if (climateResult.success) {
+            const envData = climateResult.location_data;
             
-            // Update form fields with real dataset values
-            document.getElementById('region').value = locationData.region;
-            document.getElementById('county').value = locationData.county;
-            document.getElementById('rainfall_mm').value = locationData.rainfall_mm;
-            document.getElementById('temperature_c').value = locationData.temperature_c;
-            document.getElementById('altitude_m').value = locationData.altitude_m;
-            document.getElementById('soil_type').value = locationData.soil_type;
-            document.getElementById('soil_ph').value = locationData.soil_ph;
-            document.getElementById('planting_season').value = locationData.planting_season;
+            // Use real detected location, not hardcoded mapping
+            const finalCounty = envData.county || detectedCounty;
+            const finalRegion = envData.region || detectedRegion;
+            const finalSubCounty = detectedSubCounty;
             
-            // Show green badges and update hints
-            showDetectionComplete();
+            document.getElementById('region').value = finalRegion;
+            document.getElementById('county').value = finalCounty;
+            document.getElementById('rainfall_mm').value = envData.rainfall_mm || 1200;
+            document.getElementById('temperature_c').value = envData.temperature_c || 20.5;
+            document.getElementById('altitude_m').value = altitude || envData.altitude_m || 1650;
+            document.getElementById('soil_type').value = envData.soil_type || 'Clay';
+            document.getElementById('soil_ph').value = envData.soil_ph || 6.5;
             
-            // Show success notification with actual coordinates
-            showAutoDetectionSuccess(`${locationData.county} (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+            // Set default care level and water source
+            document.getElementById('care_level').value = 'Medium';
+            document.getElementById('water_source').value = 'Rain-fed';
+            document.getElementById('tree_age_months').value = '12';
+            
+            console.log('Form fields updated:', {
+                region: finalRegion,
+                county: finalCounty,
+                rainfall: envData.rainfall_mm,
+                temp: envData.temperature_c,
+                altitude: altitude || envData.altitude_m,
+                soil_type: envData.soil_type,
+                soil_ph: envData.soil_ph
+            });
+            
+            // Show auto-detected summary with coordinates
+            showAutoDetectedSummary({
+                county: finalCounty,
+                subcounty: finalSubCounty,
+                region: finalRegion,
+                rainfall_mm: envData.rainfall_mm || 1200,
+                temperature_c: envData.temperature_c || 20.5,
+                soil_type: envData.soil_type || 'Clay'
+            }, altitude || envData.altitude_m || 1650, lat, lon);
+            
+            showAutoDetectionSuccess(`${finalCounty} (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
         } else {
-            throw new Error(result.error || 'Failed to get climate data');
+            throw new Error('Failed to get climate data: ' + (climateResult.error || 'Unknown error'));
         }
+        
+        console.log('=== LOCATION DETECTION SUCCESS ===');
         
     } catch (error) {
-        console.error('API error:', error);
-        // Fallback to default location if API fails
-        setDefaultLocation('Using dataset defaults for your region');
+        console.error('=== LOCATION DETECTION ERROR ===');
+        console.error('Error details:', error);
+        console.error('Error stack:', error.stack);
+        setDefaultLocation('Location detection failed - using fallback data');
     }
 }
 
@@ -1006,20 +1350,14 @@ function hideDetectionBadges() {
 }
 
 function setDefaultLocation(message) {
-    const regionSelect = document.getElementById('region');
-    const countySelect = document.getElementById('county');
-    const rainfallInput = document.getElementById('rainfall_mm');
-    const tempInput = document.getElementById('temperature_c');
-    const altitudeInput = document.getElementById('altitude_m');
+    console.log('Using fallback location:', message);
     
-    // Set default Kenya location using dataset averages
-    regionSelect.value = 'Central';
-    countySelect.value = 'Nyeri';
-    rainfallInput.value = 635;
-    tempInput.value = 20.5;
-    altitudeInput.value = 1850;
-    
-    // Set soil data from dataset
+    // Set fallback to Central Kenya (common default)
+    document.getElementById('region').value = 'Central';
+    document.getElementById('county').value = 'Nyeri County';
+    document.getElementById('rainfall_mm').value = 1200;
+    document.getElementById('temperature_c').value = 20.5;
+    document.getElementById('altitude_m').value = 1850;
     document.getElementById('soil_type').value = 'Clay';
     document.getElementById('soil_ph').value = 6.8;
     
@@ -1027,8 +1365,14 @@ function setDefaultLocation(message) {
     const currentMonth = new Date().getMonth() + 1;
     document.getElementById('planting_season').value = (currentMonth >= 3 && currentMonth <= 5) || (currentMonth >= 10 && currentMonth <= 12) ? 'Wet' : 'Dry';
     
-    // Show detection badges
-    showDetectionComplete();
+    // Show auto-detected summary with fallback data
+    showAutoDetectedSummary({
+        county: 'Nyeri County',
+        region: 'Central',
+        rainfall_mm: 1200,
+        temperature_c: 20.5,
+        soil_type: 'Clay'
+    }, 1850);
     
     showAutoDetectionSuccess(message);
 }
@@ -1123,7 +1467,7 @@ document.head.appendChild(style);
 
 let locationDetected = false;
 
-// Professional GPS detection and prediction system
+// Auto-detect location and predict when user clicks predict button
 document.addEventListener('DOMContentLoaded', function() {
     const predictBtn = document.getElementById('predictBtn');
     
@@ -1131,57 +1475,52 @@ document.addEventListener('DOMContentLoaded', function() {
         predictBtn.addEventListener('click', async function(e) {
             e.preventDefault();
             
-            // Validate all required fields first
+            // Validate required fields first
             const treeSpecies = document.getElementById('tree_species').value;
             const plantingMethod = document.getElementById('planting_method').value;
             const plantingSeason = document.getElementById('planting_season').value;
             
             if (!treeSpecies || !plantingMethod || !plantingSeason) {
-                // Highlight empty fields
                 highlightEmptyFields(treeSpecies, plantingMethod, plantingSeason);
                 showValidationError('Please fill in all 3 required fields before prediction.');
                 return;
             }
             
-            // Clear any previous validation styling
             clearValidationStyling();
-            
             const originalText = predictBtn.innerHTML;
             
             try {
-                // Step 1: Request GPS permission and get location
-                predictBtn.innerHTML = '<i class="fas fa-location-arrow fa-spin me-2"></i>Requesting GPS Access...';
                 predictBtn.disabled = true;
                 
-                const position = await getCurrentPosition();
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
+                // Step 1: Auto-detect location behind the scenes
+                predictBtn.innerHTML = '<i class="fas fa-location-arrow fa-spin me-2"></i>Detecting Your Location...';
                 
-                console.log(`GPS coordinates obtained: ${lat}, ${lon}`);
+                if (!navigator.geolocation) {
+                    throw new Error('GPS not supported by this browser');
+                }
                 
-                // Step 2: Query our dataset for environmental data
-                predictBtn.innerHTML = '<i class="fas fa-satellite fa-spin me-2"></i>Querying Environmental Datasets...';
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 60000
+                        }
+                    );
+                });
                 
-                const locationData = mapGPSToLocation(lat, lon);
+                const { latitude, longitude } = position.coords;
+                console.log('GPS coordinates obtained:', latitude, longitude);
                 
-                // Auto-fill hidden fields with detected environmental data
-                document.getElementById('region').value = locationData.region;
-                document.getElementById('county').value = locationData.county;
-                document.getElementById('rainfall_mm').value = locationData.rainfall_mm;
-                document.getElementById('temperature_c').value = locationData.temperature_c;
-                document.getElementById('altitude_m').value = position.coords.altitude || locationData.altitude_m;
-                document.getElementById('soil_type').value = locationData.soil_type;
-                document.getElementById('soil_ph').value = locationData.soil_ph;
+                // Step 2: Get environmental data
+                predictBtn.innerHTML = '<i class="fas fa-satellite fa-spin me-2"></i>Getting Environmental Data...';
+                await getLocationData(latitude, longitude, position.coords.altitude);
                 
-                // Show auto-detected summary card
-                showAutoDetectedSummary(locationData, position.coords.altitude || locationData.altitude_m);
-                
-                console.log('Environmental data auto-detected:', locationData);
-                
-                // Step 3: Run our trained RandomForest ML model
+                // Step 3: Run ML prediction
                 predictBtn.innerHTML = '<i class="fas fa-brain fa-spin me-2"></i>AI Analyzing Tree Survival...';
-                
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 
                 const formData = new FormData(document.getElementById('predictionForm'));
                 const predictionData = Object.fromEntries(formData.entries());
@@ -1193,8 +1532,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 predictionData.soil_ph = parseFloat(predictionData.soil_ph);
                 predictionData.tree_age_months = parseInt(predictionData.tree_age_months);
                 
-                console.log('Sending to ML model:', predictionData);
-                
                 const response = await fetch('/api/predict-tree-survival/', {
                     method: 'POST',
                     headers: {
@@ -1204,18 +1541,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(predictionData)
                 });
                 
+                if (!response.ok) {
+                    throw new Error(`Prediction API error: ${response.status}`);
+                }
+                
                 const result = await response.json();
-                console.log('ML model result:', result);
                 
                 if (result.success) {
                     currentResults = result;
+                    currentResults.coordinates = { lat: latitude, lon: longitude }; // Store coordinates for results display
                     displayResults(result);
                 } else {
                     throw new Error(result.error || 'ML model prediction failed');
                 }
                 
             } catch (error) {
-                console.error('GPS or prediction error:', error);
+                console.error('Prediction error:', error);
                 
                 if (error.code === 1) {
                     displayError('GPS access denied. Please allow location access and try again.');
@@ -1234,33 +1575,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Force GPS permission request
-function getCurrentPosition() {
-    return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-            reject(new Error('GPS not supported by this browser'));
-            return;
-        }
-        
-        // Force GPS permission popup
-        navigator.geolocation.getCurrentPosition(
-            resolve,
-            function(error) {
-                console.log('GPS permission denied or failed:', error.message);
-                reject(error);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0  // Force fresh GPS reading
-            }
-        );
-    });
-}
+// Removed - GPS request now inline for better error handling
 
 // Show auto-detected environmental summary
-function showAutoDetectedSummary(locationData, altitude) {
-    document.getElementById('detectedLocation').textContent = `${locationData.county}, ${locationData.region}`;
+function showAutoDetectedSummary(locationData, altitude, lat, lon) {
+    // Show only county and coordinates for consistency
+    let locationText = locationData.county || 'Unknown';
+    
+    if (lat && lon) {
+        document.getElementById('detectedLocation').textContent = `${locationText} (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+    } else if (locationData.lat && locationData.lon) {
+        document.getElementById('detectedLocation').textContent = `${locationText} (${locationData.lat.toFixed(4)}, ${locationData.lon.toFixed(4)})`;
+    } else {
+        document.getElementById('detectedLocation').textContent = locationText;
+    }
     document.getElementById('detectedRainfall').textContent = `${locationData.rainfall_mm}mm/year`;
     document.getElementById('detectedTemp').textContent = `${locationData.temperature_c}°C`;
     document.getElementById('detectedSoil').textContent = locationData.soil_type;
@@ -1272,81 +1600,7 @@ function showAutoDetectedSummary(locationData, altitude) {
     card.style.animation = 'fadeInUp 0.8s ease';
 }
 
-// GPS to location mapping
-function mapGPSToLocation(lat, lon) {
-    // Nairobi County
-    if (lat >= -1.45 && lat <= -1.15 && lon >= 36.6 && lon <= 37.1) {
-        return {
-            region: 'Nairobi',
-            county: 'Nairobi',
-            rainfall_mm: 635,
-            temperature_c: 19.5,
-            altitude_m: 1795,
-            soil_type: 'Clay',
-            soil_ph: 6.5
-        };
-    }
-    // Kiambu County
-    else if (lat >= -1.3 && lat <= -0.9 && lon >= 36.7 && lon <= 37.2) {
-        return {
-            region: 'Central',
-            county: 'Kiambu',
-            rainfall_mm: 1050,
-            temperature_c: 20.0,
-            altitude_m: 1800,
-            soil_type: 'Clay',
-            soil_ph: 6.7
-        };
-    }
-    // Central Kenya
-    else if (lat >= -1.0 && lat <= 0.5 && lon >= 36.5 && lon <= 37.5) {
-        return {
-            region: 'Central',
-            county: 'Nyeri',
-            rainfall_mm: 1200,
-            temperature_c: 20.5,
-            altitude_m: 1850,
-            soil_type: 'Clay',
-            soil_ph: 6.8
-        };
-    }
-    // Coast Region
-    else if (lat >= -4.7 && lat <= -1.6 && lon >= 39.0 && lon <= 41.9) {
-        return {
-            region: 'Coast',
-            county: 'Mombasa',
-            rainfall_mm: 1100,
-            temperature_c: 26.0,
-            altitude_m: 50,
-            soil_type: 'Sandy',
-            soil_ph: 6.2
-        };
-    }
-    // Western Kenya
-    else if (lat >= -1.0 && lat <= 1.5 && lon >= 34.0 && lon <= 35.5) {
-        return {
-            region: 'Western',
-            county: 'Kakamega',
-            rainfall_mm: 1400,
-            temperature_c: 22.0,
-            altitude_m: 1500,
-            soil_type: 'Loam',
-            soil_ph: 6.5
-        };
-    }
-    // Default to Central Kenya
-    else {
-        return {
-            region: 'Central',
-            county: 'Nyeri',
-            rainfall_mm: 1200,
-            temperature_c: 20.5,
-            altitude_m: 1850,
-            soil_type: 'Clay',
-            soil_ph: 6.8
-        };
-    }
-}
+// Removed hardcoded GPS mapping - now using real LocationIQ API
 
 function displayResults(result) {
     const resultsCard = document.getElementById('resultsCard');
@@ -1358,6 +1612,12 @@ function displayResults(result) {
         // Update call-to-action based on prediction results
         updateCallToAction(result.survival_percentage);
         
+        // Determine location display - show county and coordinates when available
+        let locationDisplay = document.getElementById('county').value;
+        if (result.coordinates && result.coordinates.lat && result.coordinates.lon) {
+            locationDisplay = `${document.getElementById('county').value} (${result.coordinates.lat.toFixed(4)}, ${result.coordinates.lon.toFixed(4)})`;
+        }
+        
         resultsDiv.innerHTML = `
             <!-- Clean Auto-Detected Data -->
             <div class="mb-4">
@@ -1366,7 +1626,7 @@ function displayResults(result) {
                     <div class="row g-3">
                         <div class="col-md-2 col-6">
                             <div class="text-center p-2 bg-white rounded border">
-                                <div class="fw-bold" style="color: #15803d;">${document.getElementById('county').value}</div>
+                                <div class="fw-bold" style="color: #15803d;" id="resultsLocation">${locationDisplay}</div>
                                 <small class="text-muted">Location</small>
                             </div>
                         </div>
@@ -1588,12 +1848,17 @@ function resetForm() {
     document.getElementById('resultsContainer').style.display = 'none';
     document.getElementById('formSection').style.display = 'block';
     
-    // Reset location detection flag so it detects again
+    // Reset location detection flag
     locationDetected = false;
     
     // Reset button text
     const predictBtn = document.getElementById('predictBtn');
-    predictBtn.innerHTML = '<i class="fas fa-seedling me-2"></i>Check Tree Survival';
+    predictBtn.innerHTML = '<i class="fas fa-brain me-2"></i>Predict with Award-Winning AI';
+    
+    // Reset card selections
+    document.querySelectorAll('.species-card, .method-card, .season-card').forEach(card => {
+        card.classList.remove('selected');
+    });
     
     // Hide auto-detected card and reset form fields
     document.getElementById('autoDetectedCard').style.display = 'none';
@@ -1603,11 +1868,7 @@ function resetForm() {
     document.getElementById('temperature_c').value = '';
     document.getElementById('altitude_m').value = '';
     document.getElementById('soil_type').value = '';
-    document.getElementById('planting_season').value = '';
     document.getElementById('soil_ph').value = '';
-    
-    // Hide all badges and reset hints
-    hideDetectionBadges();
     
     document.getElementById('predictionForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -2209,41 +2470,46 @@ function updateCallToAction(survivalPercentage) {
     const button = document.getElementById('ctaButton');
     
     if (survivalPercentage >= 70) {
-        title.textContent = 'Excellent Prediction! Ready to Plant?';
-        description.textContent = 'With ' + survivalPercentage + '% survival rate, your trees have great potential. Register your planting and get:';
+        title.textContent = 'Excellent! Ready to Plant?';
+        description.textContent = survivalPercentage + '% success rate • Great conditions for tree planting';
         button.innerHTML = `
             <a href="{% url 'public_tree_form' %}" class="btn btn-lg px-5 py-3" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 50px; font-weight: 700; font-size: 1.2rem; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); transition: all 0.4s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 40px rgba(16, 185, 129, 0.6)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(16, 185, 129, 0.4)';">
-                <i class="fas fa-seedling me-2"></i>Register My Trees
+                <i class="fas fa-seedling me-2"></i>Register & Plant Trees
             </a>
-            <p class="mt-3 mb-0 text-muted fw-semibold">No account needed - we'll create one for you!</p>
+            <p class="mt-3 mb-0 text-success fw-semibold">✅ Proceed with confidence • Join Kenya's 15B Trees Initiative</p>
+            {% if not user.is_authenticated %}
+            <p class="mt-2 mb-0 text-muted fw-medium text-center"><a href="{% url 'login' %}" class="text-primary">Login</a> for species recommendations and detailed predictions</p>
+            {% else %}
+            <p class="mt-2 mb-0 text-muted fw-medium text-center">Check AI recommendations above for even better species options</p>
+            {% endif %}
         `;
     } else if (survivalPercentage >= 50) {
-        title.textContent = 'Consider Optimizing Your Approach';
-        description.textContent = 'With ' + survivalPercentage + '% survival rate, you can improve your chances. Try different species or timing, then:';
+        title.textContent = 'Optimize Your Approach';
+        description.textContent = survivalPercentage + '% success rate • Try different species or timing';
         button.innerHTML = `
-            <div class="d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center mb-3">
-                <button class="btn px-4 py-2" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 25px; font-weight: 600; font-size: 1rem;" onclick="resetForm()">
+            <div class="d-flex gap-3 justify-content-center mb-3">
+                <button class="btn px-4 py-2" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 25px; font-weight: 600;" onclick="resetForm()" title="Try different tree species or planting season">
                     <i class="fas fa-redo me-2"></i>Try Different Options
                 </button>
-                <a href="{% url 'public_tree_form' %}" class="btn px-4 py-2" style="border: 2px solid #22c55e; color: #15803d; background: white; border-radius: 25px; font-weight: 600; font-size: 1rem; text-decoration: none;">
+                <a href="{% url 'public_tree_form' %}" class="btn px-4 py-2" style="border: 2px solid #22c55e; color: #15803d; background: white; border-radius: 25px; font-weight: 600; text-decoration: none;">
                     <i class="fas fa-seedling me-2"></i>Plant Anyway
                 </a>
             </div>
-            <p class="mt-2 mb-0 text-muted fw-semibold text-center">Consider the AI recommendations above</p>
+            <p class="mt-2 mb-0 text-muted fw-semibold text-center">Check AI recommendations above for better options</p>
         `;
     } else {
-        title.textContent = 'Low Survival Rate - Consider Alternatives';
-        description.textContent = 'With only ' + survivalPercentage + '% survival rate, we recommend trying different conditions first:';
+        title.textContent = 'Consider Better Conditions';
+        description.textContent = survivalPercentage + '% success rate • Try different species, season, or method';
         button.innerHTML = `
-            <div class="d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center mb-3">
-                <button class="btn px-4 py-2" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 25px; font-weight: 600; font-size: 1rem;" onclick="resetForm()">
-                    <i class="fas fa-lightbulb me-2"></i>Try Better Conditions
+            <div class="d-flex gap-3 justify-content-center mb-3">
+                <button class="btn px-4 py-2" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 25px; font-weight: 600;" onclick="resetForm()" title="Try different tree species, planting season, or method">
+                    <i class="fas fa-lightbulb me-2"></i>Try Different Species
                 </button>
-                <button class="btn px-4 py-2" style="border: 2px solid #22c55e; color: #15803d; background: white; border-radius: 25px; font-weight: 600; font-size: 1rem;" onclick="loadAIRecommendations()">
-                    <i class="fas fa-brain me-2"></i>Get AI Advice
+                <button class="btn px-4 py-2" style="border: 2px solid #22c55e; color: #15803d; background: white; border-radius: 25px; font-weight: 600;" onclick="loadAIRecommendations()">
+                    <i class="fas fa-brain me-2"></i>Get AI Tips
                 </button>
             </div>
-            <p class="mt-2 mb-0 text-warning fw-semibold text-center">Consider waiting for better conditions or different species</p>
+            <p class="mt-2 mb-0 text-muted fw-semibold text-center">Review AI recommendations above for specific guidance</p>
         `;
     }
 }

@@ -25,9 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('App.urls')),
     path('captcha/', include('captcha.urls')),
-
-    # path('accounts/', include('django.contrib.auth.urls')),
- 
+    path('accounts/', include('allauth.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
