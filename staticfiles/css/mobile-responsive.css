@@ -1,0 +1,328 @@
+/* Mobile-First Responsive Design for Community Crisis Platform */
+
+/* Base Mobile Styles (320px and up) */
+@media screen and (min-width: 320px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .profile-card {
+        margin: 1rem;
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .profile-field {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 0;
+    }
+    
+    .profile-icon {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+    
+    .btn-action {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+        text-align: center;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    
+    /* Form Improvements */
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    
+    .form-section {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+    }
+    
+    /* Navigation */
+    .navbar-nav {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .dropdown-content {
+        position: static;
+        display: block;
+        box-shadow: none;
+        background: transparent;
+    }
+    
+    /* Alert Cards */
+    .alert-card {
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    
+    /* Resource Cards */
+    .resource-card {
+        margin: 0.5rem;
+        padding: 1rem;
+    }
+}
+
+/* Small Mobile (375px and up) */
+@media screen and (min-width: 375px) {
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+    
+    .profile-card {
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Large Mobile (425px and up) */
+@media screen and (min-width: 425px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+    
+    .profile-field {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .profile-icon {
+        margin-bottom: 0;
+        margin-right: 1rem;
+    }
+    
+    .btn-action {
+        display: inline-block;
+        width: auto;
+        margin: 0.5rem;
+    }
+}
+
+/* Tablet (768px and up) */
+@media screen and (min-width: 768px) {
+    .profile-card {
+        margin: 2rem auto;
+        max-width: 800px;
+        padding: 3rem;
+        border-radius: 25px;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        font-size: 3rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .navbar-nav {
+        flex-direction: row;
+        gap: 2rem;
+    }
+    
+    .dropdown-content {
+        position: absolute;
+        display: none;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        background-color: #f9f9f9;
+    }
+    
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+}
+
+/* Desktop (1024px and up) */
+@media screen and (min-width: 1024px) {
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .action-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .profile-card {
+        max-width: 900px;
+    }
+}
+
+/* Large Desktop (1440px and up) */
+@media screen and (min-width: 1440px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .action-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Touch-Friendly Improvements */
+@media (hover: none) and (pointer: coarse) {
+    .btn-action,
+    .action-btn,
+    button {
+        min-height: 44px; /* Apple's recommended touch target size */
+        min-width: 44px;
+    }
+    
+    .profile-field {
+        padding: 1.5rem 0; /* More space for touch */
+    }
+    
+    .form-control {
+        min-height: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .stat-card:hover,
+    .action-card:hover,
+    .btn-action:hover {
+        transform: none;
+        box-shadow: initial;
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .profile-avatar img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .profile-card {
+        background: linear-gradient(145deg, #1f2937 0%, #111827 100%);
+        color: #f9fafb;
+        border-color: rgba(75, 85, 99, 0.3);
+    }
+    
+    .profile-label {
+        color: #d1d5db;
+    }
+    
+    .profile-value {
+        color: #9ca3af;
+    }
+    
+    .form-control {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+    
+    .form-control:focus {
+        border-color: #6b7280;
+        background: #4b5563;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .btn-action,
+    .action-btn,
+    button,
+    .navbar,
+    .footer {
+        display: none !important;
+    }
+    
+    .profile-card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .page-header {
+        background: none !important;
+        color: #000 !important;
+    }
+}
+
+/* Accessibility Improvements */
+@media (prefers-contrast: high) {
+    .profile-card {
+        border: 2px solid #000;
+    }
+    
+    .btn-action {
+        border: 2px solid #000;
+    }
+    
+    .profile-icon {
+        border: 1px solid #000;
+    }
+}
+
+/* Focus Improvements for Keyboard Navigation */
+.btn-action:focus,
+.form-control:focus,
+button:focus {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Skip Link for Screen Readers */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 10000;
+}
+
+.skip-link:focus {
+    top: 6px;
+}

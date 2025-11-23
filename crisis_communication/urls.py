@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('App.urls')),
     path('captcha/', include('captcha.urls')),
     path('accounts/', include('allauth.urls')),
+    path('tree-registration/', include('treeregistration.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

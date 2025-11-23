@@ -1,69 +1,45 @@
 # Environment variables
 .env
-*.env
 
-# Database files
-db.sqlite3
-*.db
-*.sqlite3
-
-# Media files (user uploads)
-media/
-*/media/
-
-# Temporary files
-temp_*.txt
-*.tmp
-
-# Python cache
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+*.py[cod]
+*$py.class
 *.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Virtual environment
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+
+# Virtual Environment
 venv/
 env/
 ENV/
 
-# IDE files
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
-
-# Build files
-build/
-dist/
-*.egg-info/
-
-# Logs
-*.log
-logs/
-
-# Testing images (if they contain sensitive data)
-testing images/
-
-# Duplicate image folders
-images/
-
-# Nested project (appears to be duplicate)
-msituguard_fire_risk/
-
-# Build scripts (platform specific)
-build.bat
-build.sh
-build_render.sh
-vercel_build.py
-
-# Migration scripts
-migrate_production.py
-reset_org_user.py
-setup_google_oauth.py
-test_location.py

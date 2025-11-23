@@ -1,7 +1,35 @@
 {% extends 'App/base.html' %}
 
 {% block content %}
+<!-- Leaflet.js for Interactive Maps -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
+    /* Map Styles */
+    #environmentalMap {
+        height: 400px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .map-legend {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        font-size: 12px;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
     .dashboard-header {
         background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         color: white;
@@ -171,7 +199,7 @@
         margin-bottom: 0;
     }
     
-    /* Enhanced Mobile Responsiveness */
+    /* Mobile Responsiveness */
     @media (max-width: 768px) {
         .container-fluid {
             padding: 1rem !important;
@@ -550,6 +578,45 @@
         </div>
     </div>
     
+    <!-- Environmental Activity Map -->
+    <div class="section-divider mb-5">
+        <div class="text-center mb-4">
+            <div class="section-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <h2 class="section-title">Environmental Activity Overview</h2>
+            <p class="section-subtitle">Real-time spatial visualization of environmental monitoring across Kenya</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-9">
+                <div id="environmentalMap"></div>
+            </div>
+            <div class="col-md-3">
+                <div class="map-legend">
+                    <h6 class="mb-3"><i class="fas fa-info-circle me-2"></i>Activity Legend</h6>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #22c55e;"></div>
+                        <span>Tree Plantings</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc2626;"></div>
+                        <span>Environmental Reports</span>
+                    </div>
+
+                    <hr class="my-3">
+                    <div class="text-center">
+                        <small class="text-muted">Click markers for details</small>
+                        <br>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="centerMapOnKenya()">
+                            <i class="fas fa-crosshairs me-1"></i>Center Map
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Environmental Reports Overview -->
     <div class="section-divider mb-5">
         <div class="text-center mb-4">
@@ -857,349 +924,14 @@
         </div>
     </div>
     
-    <!-- Fire Safety Overview -->
-    <div class="section-divider mb-5 mt-5">
-        <div class="text-center mb-4">
-            <div class="section-icon">
-                <i class="fas fa-fire"></i>
-            </div>
-            <h2 class="section-title">Fire Safety Management</h2>
-            <p class="section-subtitle">Monitor fire risks and citizen fire observations</p>
-        </div>
-        
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-number text-warning">{{ total_fire_predictions }}</div>
-                    <div class="stat-label">Risk Assessments</div>
-                    <small class="text-muted">Total Predictions</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-number text-danger">{{ high_risk_predictions }}</div>
-                    <div class="stat-label">High Risk Areas</div>
-                    <small class="text-muted">HIGH/EXTREME</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-number text-info">{{ total_fire_reports }}</div>
-                    <div class="stat-label">Citizen Reports</div>
-                    <small class="text-muted">Fire Observations</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-number text-success">{{ recent_fire_reports }}</div>
-                    <div class="stat-label">Recent Reports</div>
-                    <small class="text-muted">Last 7 Days</small>
-                </div>
-            </div>
-        </div>
-        
 
-    </div>
     
-    <!-- Fire Risk Predictions -->
-    <div class="reports-section mt-5">
-        <div class="reports-header">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h4 class="mb-0"><i class="fas fa-chart-line me-2 text-warning"></i>Fire Risk Predictions</h4>
-                    <small class="text-muted">AI-powered fire risk assessments based on environmental data</small>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{% url 'field_assessment' %}" class="action-btn" style="background: #f97316; color: white; text-decoration: none;">
-                            <i class="fas fa-mobile-alt me-1"></i>Field Assessment
-                        </a>
-                        <button class="action-btn btn-details" onclick="exportFireData()">
-                            <i class="fas fa-download me-1"></i>Export
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="reports-body p-3">
-            <div class="row g-3">
-                {% for prediction in fire_predictions %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="report-card">
-                        <div class="card-header">
-                            <h6 class="mb-1">{{ prediction.location_name }}</h6>
-                            <div class="d-flex gap-2 mb-2">
-                                {% if prediction.risk_level == 'LOW' %}
-                                    <span class="badge" style="background-color: #16a34a;">{{ prediction.risk_level }}</span>
-                                {% elif prediction.risk_level == 'MODERATE' %}
-                                    <span class="badge" style="background-color: #eab308;">{{ prediction.risk_level }}</span>
-                                {% elif prediction.risk_level == 'HIGH' %}
-                                    <span class="badge" style="background-color: #f97316;">{{ prediction.risk_level }}</span>
-                                {% else %}
-                                    <span class="badge" style="background-color: #dc2626;">{{ prediction.risk_level }}</span>
-                                {% endif %}
-                                <span class="report-type">Score: {{ prediction.risk_score|floatformat:2 }}</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center mb-3">
-                                <div class="d-flex align-items-center justify-content-center text-muted small mb-2">
-                                    <i class="fas fa-thermometer-half me-2 text-danger"></i>
-                                    <span>{{ prediction.temperature_c|default:"--" }}°C</span>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-center text-muted small mb-2">
-                                    <i class="fas fa-tint me-2 text-primary"></i>
-                                    <span>{{ prediction.humidity|default:"--" }}% humidity</span>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-center text-muted small">
-                                    <i class="fas fa-clock me-2"></i>
-                                    <span>{{ prediction.created_at|date:"M d, H:i" }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <div class="mb-4">
-                            <i class="fas fa-chart-line fa-4x text-warning opacity-25"></i>
-                        </div>
-                        <h5 class="text-muted mb-2">No Fire Risk Predictions</h5>
-                        <p class="text-muted mb-0">Fire risk assessments will appear here.</p>
-                        <a href="{% url 'fire_risk' %}" class="btn btn-warning mt-3">
-                            <i class="fas fa-plus me-2"></i>Create First Assessment
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+
     
-    <!-- Citizen Fire Reports -->
-    <div class="reports-section mt-5">
-        <div class="reports-header">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Citizen Fire Reports</h4>
-                    <small class="text-muted">Fire observations submitted by community members</small>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-end gap-2">
-                        <button class="action-btn btn-details" onclick="exportFireReports()">
-                            <i class="fas fa-download me-1"></i>Export
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="reports-body p-3">
-            <div class="row g-3">
-                {% for report in fire_reports %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="report-card">
-                        <div class="card-header">
-                            <h6 class="mb-1">{{ report.location_name }}</h6>
-                            <div class="d-flex gap-2 mb-2">
-                                <span class="report-type">{{ report.get_observation_display }}</span>
-                                <span class="badge bg-danger">URGENT</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            {% if report.image %}
-                            <div class="text-center mb-3">
-                                <img src="{{ report.image.url }}" class="img-fluid rounded" style="max-height: 120px; cursor: pointer; object-fit: cover;" onclick="viewImage('{{ report.image.url }}', '{{ report.location_name }}')">
-                            </div>
-                            {% endif %}
-                            <div class="text-center mb-3">
-                                <div class="d-flex align-items-center justify-content-center text-muted small mb-2">
-                                    <i class="fas fa-user me-2"></i>
-                                    <span>{{ report.reporter.username }}</span>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-center text-muted small">
-                                    <i class="fas fa-clock me-2"></i>
-                                    <span>{{ report.created_at|date:"M d, H:i" }}</span>
-                                </div>
-                            </div>
-                            {% if report.notes %}
-                            <p class="small text-muted mb-0">{{ report.notes|truncatewords:15 }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="card-footer">
-                            <div class="d-grid gap-2">
-                                <button class="action-btn btn-details" onclick="viewFireReport('{{ report.id }}', '{{ report.location_name }}', '{{ report.get_observation_display }}', '{{ report.notes }}', '{{ report.reporter.username }}', '{{ report.created_at|date:"M d, H:i" }}')">
-                                    <i class="fas fa-eye me-1"></i>View Details
-                                </button>
-                                <button class="action-btn" style="background: #dc2626; color: white;" onclick="dispatchTeam('{{ report.id }}')">
-                                    <i class="fas fa-truck me-1"></i>Dispatch Team
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <div class="mb-4">
-                            <i class="fas fa-fire fa-4x text-danger opacity-25"></i>
-                        </div>
-                        <h5 class="text-muted mb-2">No Fire Reports</h5>
-                        <p class="text-muted mb-0">Citizen fire observations will appear here.</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+
 </div>
 
-<!-- Fire Risk Assessment Modal -->
-<div class="modal fade" id="fireAssessmentModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #f97316, #ea580c); color: white;">
-                <h5 class="modal-title"><i class="fas fa-fire me-2"></i>Fire Risk Assessment</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-4">
-                            <h6 class="text-warning mb-3"><i class="fas fa-map-marker-alt me-2"></i>Location</h6>
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label class="form-label">Location Name</label>
-                                    <input type="text" id="assessLocationName" class="form-control" placeholder="e.g., Karura Forest, Sector 5">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Latitude</label>
-                                    <input type="number" id="assessLatitude" class="form-control" step="0.000001" placeholder="-1.2345">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Longitude</label>
-                                    <input type="number" id="assessLongitude" class="form-control" step="0.000001" placeholder="36.7890">
-                                </div>
-                                <div class="col-12">
-                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="getCurrentLocation()">
-                                        <i class="fas fa-crosshairs me-1"></i>Use Current Location
-                                    </button>
-                                    <small class="text-muted ms-2">Perfect for field assessments</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="assessmentResults" class="d-none">
-                            <h6 class="text-success mb-3"><i class="fas fa-chart-line me-2"></i>Assessment Results</h6>
-                            <div class="alert" id="riskAlert">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <strong>Risk Level:</strong> <span id="riskLevel"></span><br>
-                                        <strong>Risk Score:</strong> <span id="riskScore"></span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Temperature:</strong> <span id="temperature"></span>°C<br>
-                                        <strong>Humidity:</strong> <span id="humidity"></span>%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <h6 class="text-warning mb-3"><i class="fas fa-tools me-2"></i>Assessment Tools</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-warning" onclick="conductAssessment()" id="assessBtn">
-                                <i class="fas fa-search me-2"></i>Conduct Assessment
-                            </button>
-                            <button class="btn btn-success d-none" onclick="saveAssessment()" id="saveBtn">
-                                <i class="fas fa-save me-2"></i>Save Assessment
-                            </button>
-                            <button class="btn btn-info" onclick="viewWeatherData()">
-                                <i class="fas fa-cloud me-2"></i>Weather Details
-                            </button>
-                            <button class="btn btn-secondary" onclick="exportAssessment()">
-                                <i class="fas fa-download me-2"></i>Export Report
-                            </button>
-                        </div>
-                        
-                        <div class="mt-4 p-3 bg-light rounded">
-                            <h6 class="text-muted mb-2"><i class="fas fa-info-circle me-1"></i>Field Tips</h6>
-                            <small class="text-muted">
-                                • Use GPS for accurate coordinates<br>
-                                • Check wind direction<br>
-                                • Note vegetation dryness<br>
-                                • Document water sources
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Fire Report Details Modal -->
-<div class="modal fade" id="fireReportModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="fireReportModalTitle">Fire Report Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-4">
-                            <h6 class="text-danger mb-3"><i class="fas fa-fire me-2"></i>Fire Observation</h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <strong class="text-muted">Location:</strong>
-                                    <p class="mb-0" id="fireReportLocation">Location</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <strong class="text-muted">Observation:</strong>
-                                    <p class="mb-0" id="fireReportObservation">Observation</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <strong class="text-muted">Reporter:</strong>
-                                    <p class="mb-0" id="fireReportReporter">Reporter</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <strong class="text-muted">Time:</strong>
-                                    <p class="mb-0" id="fireReportTime">Time</p>
-                                </div>
-                                <div class="col-12">
-                                    <strong class="text-muted">Notes:</strong>
-                                    <p class="mb-0" id="fireReportNotes">Notes</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <h6 class="text-danger mb-3"><i class="fas fa-tools me-2"></i>Emergency Actions</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-danger" onclick="dispatchEmergencyTeam()">
-                                <i class="fas fa-truck me-2"></i>Dispatch Team
-                            </button>
-                            <button class="btn btn-warning" onclick="contactReporter()">
-                                <i class="fas fa-phone me-2"></i>Contact Reporter
-                            </button>
-                            <button class="btn btn-info" onclick="alertNearbyTeams()">
-                                <i class="fas fa-broadcast-tower me-2"></i>Alert Nearby Teams
-                            </button>
-                            <button class="btn btn-secondary" onclick="addFireNotes()">
-                                <i class="fas fa-sticky-note me-2"></i>Add Notes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Image Modal will be created dynamically -->
 
 <!-- Tree Details Modal -->
 <div class="modal fade" id="treeModal" tabindex="-1">
@@ -1653,131 +1385,95 @@ function exportTreeData() {
     window.location.href = '/export/tree-data/';
 }
 
-// Fire safety functions
-function viewFireReport(reportId, location, observation, notes, reporter, time) {
-    document.getElementById('fireReportModalTitle').textContent = `Fire Report - ${location}`;
-    document.getElementById('fireReportLocation').textContent = location;
-    document.getElementById('fireReportObservation').textContent = observation;
-    document.getElementById('fireReportReporter').textContent = reporter;
-    document.getElementById('fireReportTime').textContent = time;
-    document.getElementById('fireReportNotes').textContent = notes || 'No additional notes';
+
+
+// Initialize Environmental Activity Map
+let environmentalMap;
+
+function initializeMap() {
+    // Initialize map centered on Kenya with bounds restriction
+    environmentalMap = L.map('environmentalMap', {
+        center: [-1.2921, 36.8219],
+        zoom: 6,
+        minZoom: 5,
+        maxZoom: 12,
+        maxBounds: [[-5.5, 33.5], [5.5, 42.0]] // Kenya boundaries
+    });
     
-    window.currentFireReportId = reportId;
+    // Add clean map tiles (same as modal)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap | Kenya Environmental Monitoring'
+    }).addTo(environmentalMap);
     
-    const modal = new bootstrap.Modal(document.getElementById('fireReportModal'));
-    modal.show();
+    // Add markers for all environmental data
+    addEnvironmentalMarkers();
 }
 
-function dispatchTeam(reportId) {
-    if (confirm('Dispatch emergency response team to this location?')) {
-        alert(`Emergency team dispatched for fire report ${reportId}. Team will be notified via SMS and radio.`);
+function addEnvironmentalMarkers() {
+    // Environmental Reports
+    {% for report in reports %}
+    {% if report.latitude and report.longitude %}
+    const reportMarker{{ report.id }} = L.marker([{{ report.latitude }}, {{ report.longitude }}], {
+        icon: L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="background: #dc2626; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+            iconSize: [16, 16]
+        })
+    }).addTo(environmentalMap);
+    reportMarker{{ report.id }}.bindPopup(`
+        <div style="min-width: 200px;">
+            <h6><i class="fas fa-exclamation-triangle text-danger me-1"></i>{{ report.title }}</h6>
+            <p class="mb-1"><strong>Location:</strong> {{ report.location_name }}</p>
+            <p class="mb-1"><strong>Type:</strong> {{ report.get_report_type_display }}</p>
+            <p class="mb-1"><strong>Status:</strong> <span class="badge bg-{{ report.status|yesno:'success,warning,secondary' }}">{{ report.status }}</span></p>
+            <p class="mb-2"><strong>Date:</strong> {{ report.timestamp|date:"M d, H:i" }}</p>
+            <button class="btn btn-sm btn-primary" onclick="viewLocation('{{ report.id }}', '{{ report.title }}', '{{ report.location_name }}', '{{ report.description }}', {{ report.latitude }}, {{ report.longitude }})">
+                <i class="fas fa-eye me-1"></i>View Details
+            </button>
+        </div>
+    `);
+    {% endif %}
+    {% endfor %}
+    
+    // Tree Plantings
+    {% for planting in tree_plantings %}
+    {% if planting.latitude and planting.longitude %}
+    const treeMarker{{ planting.id }} = L.marker([{{ planting.latitude }}, {{ planting.longitude }}], {
+        icon: L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="background: #22c55e; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+            iconSize: [16, 16]
+        })
+    }).addTo(environmentalMap);
+    treeMarker{{ planting.id }}.bindPopup(`
+        <div style="min-width: 200px;">
+            <h6><i class="fas fa-seedling text-success me-1"></i>{{ planting.title }}</h6>
+            <p class="mb-1"><strong>Location:</strong> {{ planting.location_name }}</p>
+            <p class="mb-1"><strong>Trees:</strong> {{ planting.number_of_trees }}</p>
+            <p class="mb-1"><strong>Type:</strong> {{ planting.get_tree_type_display }}</p>
+            <p class="mb-1"><strong>Status:</strong> <span class="badge bg-{{ planting.status|yesno:'success,warning,secondary' }}">{{ planting.status }}</span></p>
+            <p class="mb-2"><strong>Planter:</strong> {{ planting.planter_display_name }}</p>
+            <button class="btn btn-sm btn-success" onclick="viewTreeDetails('{{ planting.id }}', '{{ planting.title }}', '{{ planting.location_name }}', '{{ planting.description }}', '{{ planting.number_of_trees }}', '{{ planting.planter_display_name }}', {{ planting.planter|yesno:'true,false' }}, {{ planting.latitude }}, {{ planting.longitude }}, '{{ planting.get_tree_type_display }}')">
+                <i class="fas fa-eye me-1"></i>View Details
+            </button>
+        </div>
+    `);
+    {% endif %}
+    {% endfor %}
+    
+
+}
+
+function centerMapOnKenya() {
+    if (environmentalMap) {
+        environmentalMap.setView([-1.2921, 36.8219], 6);
     }
 }
 
-function dispatchEmergencyTeam() {
-    if (window.currentFireReportId) {
-        dispatchTeam(window.currentFireReportId);
-        bootstrap.Modal.getInstance(document.getElementById('fireReportModal')).hide();
-    }
-}
-
-function alertNearbyTeams() {
-    alert('Nearby emergency teams have been alerted via radio and SMS.');
-}
-
-function addFireNotes() {
-    const notes = prompt('Add emergency response notes:');
-    if (notes) {
-        alert('Emergency notes saved: ' + notes);
-    }
-}
-
-function exportFireData() {
-    window.location.href = '/export/fire-data/';
-}
-
-function exportFireReports() {
-    window.location.href = '/export/fire-reports/';
-}
-
-// Fire Risk Assessment Modal Functions
-function openFireAssessmentModal() {
-    const modal = new bootstrap.Modal(document.getElementById('fireAssessmentModal'));
-    modal.show();
-}
-
-function getCurrentLocation() {
-    if (navigator.geolocation) {
-        document.getElementById('assessBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Getting Location...';
-        document.getElementById('assessBtn').disabled = true;
-        
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                document.getElementById('assessLatitude').value = position.coords.latitude.toFixed(6);
-                document.getElementById('assessLongitude').value = position.coords.longitude.toFixed(6);
-                document.getElementById('assessBtn').innerHTML = '<i class="fas fa-search me-2"></i>Conduct Assessment';
-                document.getElementById('assessBtn').disabled = false;
-                
-                // Auto-fill location name based on coordinates
-                document.getElementById('assessLocationName').value = `Field Location (${position.coords.latitude.toFixed(3)}, ${position.coords.longitude.toFixed(3)})`;
-            },
-            function(error) {
-                alert('Error getting location: ' + error.message + '. Please enter coordinates manually.');
-                document.getElementById('assessBtn').innerHTML = '<i class="fas fa-search me-2"></i>Conduct Assessment';
-                document.getElementById('assessBtn').disabled = false;
-            },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-        );
-    } else {
-        alert('Geolocation is not supported by this browser. Please enter coordinates manually.');
-    }
-}
-
-function conductAssessment() {
-    const locationName = document.getElementById('assessLocationName').value;
-    const lat = document.getElementById('assessLatitude').value;
-    const lon = document.getElementById('assessLongitude').value;
-    
-    if (!locationName || !lat || !lon) {
-        alert('Please fill in all location fields');
-        return;
-    }
-    
-    // Show loading
-    document.getElementById('assessBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Assessing...';
-    document.getElementById('assessBtn').disabled = true;
-    
-    // Make actual API call to fire risk assessment
-    const url = `/fire-risk/?lat=${lat}&lon=${lon}`;
-    window.open(url, '_blank');
-    
-    // Reset button
-    setTimeout(() => {
-        document.getElementById('assessBtn').innerHTML = '<i class="fas fa-search me-2"></i>Conduct Assessment';
-        document.getElementById('assessBtn').disabled = false;
-        bootstrap.Modal.getInstance(document.getElementById('fireAssessmentModal')).hide();
-    }, 1000);
-}
-
-function saveAssessment() {
-    alert('Assessment will be saved automatically when conducted.');
-}
-
-function viewWeatherData() {
-    alert('Weather Details:\n• Temperature: Real-time data\n• Humidity: Live readings\n• Wind Speed: Current conditions\n• Rainfall: 24h data\n• NDVI: Vegetation index');
-}
-
-function exportAssessment() {
-    const locationName = document.getElementById('assessLocationName').value || 'Assessment';
-    const data = `Fire Risk Assessment Report\n\nLocation: ${locationName}\nDate: ${new Date().toLocaleDateString()}\nTime: ${new Date().toLocaleTimeString()}\n\nField Assessment Guidelines:\n- Check vegetation dryness\n- Note wind direction and speed\n- Document water sources\n- Assess terrain accessibility\n- Record weather conditions`;
-    
-    const blob = new Blob([data], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `field_assessment_template_${new Date().toISOString().split('T')[0]}.txt`;
-    a.click();
-}
+// Initialize map when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMap();
+});
 </script>
 
 {% csrf_token %}

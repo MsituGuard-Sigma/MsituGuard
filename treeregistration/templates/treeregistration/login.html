@@ -1,0 +1,310 @@
+{% extends 'App/base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 4rem 0 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    }
+    
+    .login-form {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 25px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .login-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #059669, #10b981);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #ffffff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .password-input-group {
+        position: relative;
+        display: block;
+        width: 100%;
+    }
+    
+    .password-toggle-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #6b7280;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+    }
+    
+    .password-toggle-btn:hover {
+        color: #10b981;
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        width: 100%;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+    
+    .error-message {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        color: #dc2626;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #ef4444;
+        font-weight: 500;
+    }
+    
+    .auth-links {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .auth-links a {
+        color: #10b981;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-links a:hover {
+        color: #059669;
+        text-decoration: underline;
+    }
+    
+    .login-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+    
+    .divider {
+        text-align: center;
+        margin: 2rem 0;
+        position: relative;
+    }
+    
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e2e8f0;
+    }
+    
+    .divider span {
+        background: #ffffff;
+        padding: 0 1rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    .social-login {
+        margin-bottom: 2rem;
+    }
+    
+    .btn-social {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-google:hover {
+        border-color: #10b981;
+        background: #10b981;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-social i {
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="login-icon">
+            <i class="fas fa-sign-in-alt"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3">Welcome Back</h1>
+        <p class="lead fs-5">Sign in to continue your tree registration journey</p>
+    </div>
+</div>
+
+<!-- Login Form Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="login-form">
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle me-2"></i>Wrong username or password. Please try again.
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+                    <input type="text" name="username" class="form-control" id="{{ form.username.id_for_label }}" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                    <div class="password-input-group">
+                        <input type="password" name="password" class="form-control" id="{{ form.password.id_for_label }}" placeholder="Enter your password" required>
+                        <button type="button" onclick="togglePassword()" class="password-toggle-btn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </button>
+            </form>
+            
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <div class="social-login">
+            <a href="{% provider_login_url 'google' %}" class="btn btn-social btn-google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </a>
+        </div>
+            
+            <div class="auth-links">
+                <p>Don't have an account? <a href="{% url 'tree_register' %}"><i class="fas fa-user-plus me-1"></i>Create Account</a></p>
+                <p><a href="{% url 'tree_landing' %}"><i class="fas fa-arrow-left me-1"></i>Back to Landing</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function togglePassword() {
+    var passwordInput = document.querySelector("input[name='password']");
+    var toggleIcon = document.querySelector(".password-toggle-btn i");
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+</script>
+
+{% endblock %}

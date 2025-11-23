@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'App.apps.AppConfig',
+    'treeregistration.apps.TreeregistrationConfig',
     'captcha',
 ]
 
@@ -72,7 +73,9 @@ ROOT_URLCONF = 'crisis_communication.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'App/templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'App/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

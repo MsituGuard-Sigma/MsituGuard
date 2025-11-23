@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TreePlant</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .admin-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .section-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4caf50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-type-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .type-stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .type-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4caf50;
+        }
+        
+        .type-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .btn {
+            background: #4caf50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .recent-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .recent-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-badge {
+            background: #4caf50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .nav-buttons {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">🛠️ Admin Dashboard</h1>
+            <p>Manage users and track tree planting progress</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="{% url 'admin_users' %}" class="btn">👥 Manage Users</a>
+            <a href="{% url 'tree_landing' %}" class="btn">🏠 Back to Site</a>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🌳</div>
+                <div class="stat-number">{{ total_trees }}</div>
+                <div class="stat-label">Total Trees</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🌍</div>
+                <div class="stat-number">{{ total_trees }}kg</div>
+                <div class="stat-label">CO₂ Absorbed</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-number">{% widthratio total_trees total_users 1 %}</div>
+                <div class="stat-label">Avg Trees/User</div>
+            </div>
+        </div>
+        
+        <div class="section-grid">
+            <div class="section-card">
+                <h2 class="section-title">👤 Individual Users</h2>
+                <div class="user-type-stats">
+                    <div class="type-stat">
+                        <div class="type-number">{{ individual_count }}</div>
+                        <div class="type-label">Users</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-number">{{ individual_trees }}</div>
+                        <div class="type-label">Trees</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-number">{% if individual_count > 0 %}{% widthratio individual_trees individual_count 1 %}{% else %}0{% endif %}</div>
+                        <div class="type-label">Avg/User</div>
+                    </div>
+                </div>
+                <a href="{% url 'admin_users' %}?type=individual" class="btn">View Individual Users</a>
+            </div>
+            
+            <div class="section-card">
+                <h2 class="section-title">🏢 Organizations</h2>
+                <div class="user-type-stats">
+                    <div class="type-stat">
+                        <div class="type-number">{{ org_count }}</div>
+                        <div class="type-label">Organizations</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-number">{{ org_trees }}</div>
+                        <div class="type-label">Trees</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-number">{% if org_count > 0 %}{% widthratio org_trees org_count 1 %}{% else %}0{% endif %}</div>
+                        <div class="type-label">Avg/Org</div>
+                    </div>
+                </div>
+                <a href="{% url 'admin_users' %}?type=organisation" class="btn">View Organizations</a>
+            </div>
+        </div>
+        
+        <div class="section-grid">
+            <div class="section-card">
+                <h2 class="section-title">🕒 Recent Tree Uploads</h2>
+                <div class="recent-list">
+                    {% for tree in recent_trees %}
+                        <div class="recent-item">
+                            <div class="user-info">
+                                <strong>{{ tree.user.username }}</strong>
+                                <span class="user-badge">{{ tree.user.user_type|title }}</span>
+                            </div>
+                            <div>{{ tree.uploaded_at|date:"M d, H:i" }}</div>
+                        </div>
+                    {% empty %}
+                        <p>No trees uploaded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="section-card">
+                <h2 class="section-title">🏆 Top Users</h2>
+                <div class="recent-list">
+                    {% for user in top_users %}
+                        <div class="recent-item">
+                            <div class="user-info">
+                                <strong>{{ user.username }}</strong>
+                                <span class="user-badge">{{ user.badge }}</span>
+                            </div>
+                            <div>{{ user.tree_count }} trees</div>
+                        </div>
+                    {% empty %}
+                        <p>No users yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -28,13 +28,13 @@ class TreeSurvivalPredictor:
             return
             
         try:
-            model_dir = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'models')
+            model_dir = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'models')
             
             # Load with error handling for version compatibility
-            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model_corrected.pkl'))
-            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler_corrected.pkl'))
-            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders_corrected.pkl'))
-            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns_corrected.pkl'))
+            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model.pkl'))
+            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler.pkl'))
+            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders.pkl'))
+            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns.pkl'))
             
             print("Model loaded successfully!")
             
@@ -58,32 +58,73 @@ class TreeSurvivalPredictor:
         }
     
     def _calculate_demo_probability(self, tree_data):
-        """Calculate realistic demo probability based on input factors"""
-        import random
-        random.seed(42)  # Consistent results
+        """Calculate realistic demo probability using ACTUAL county environmental data"""
         
-        base_prob = 0.7  # Base 70% survival
+        base_prob = 0.65  # Base survival rate
         
-        # Adjust based on species (some are hardier)
-        hardy_species = ['Acacia', 'Neem', 'Eucalyptus', 'Indigenous Mix']
-        if tree_data.get('tree_species') in hardy_species:
+        # COUNTY-SPECIFIC ENVIRONMENTAL ADJUSTMENTS
+        rainfall = float(tree_data.get('rainfall_mm', 600))
+        temperature = float(tree_data.get('temperature_c', 20))
+        altitude = float(tree_data.get('altitude_m', 1500))
+        soil_ph = float(tree_data.get('soil_ph', 6.5))
+        county = tree_data.get('county', '')
+        
+        # Rainfall impact (most important factor)
+        if rainfall < 300:  # Very dry (Turkana, Garissa)
+            base_prob -= 0.25
+        elif rainfall < 500:  # Dry (Machakos)
+            base_prob -= 0.15
+        elif 600 <= rainfall <= 1200:  # Optimal (Meru, Nakuru)
             base_prob += 0.15
-        
-        # Adjust based on care level
-        care_bonus = {'High': 0.1, 'Medium': 0.05, 'Low': -0.1}
+        elif rainfall > 1500:  # Too wet
+            base_prob -= 0.08
+            
+        # Temperature impact
+        if temperature > 32:  # Very hot (Turkana, Garissa)
+            base_prob -= 0.20
+        elif temperature > 28:  # Hot
+            base_prob -= 0.10
+        elif 18 <= temperature <= 25:  # Optimal (Nyeri, Kiambu)
+            base_prob += 0.10
+        elif temperature < 15:  # Too cold
+            base_prob -= 0.08
+            
+        # Altitude impact
+        if altitude > 2000:  # Very high altitude
+            base_prob -= 0.10
+        elif 1200 <= altitude <= 1800:  # Optimal highland
+            base_prob += 0.08
+        elif altitude < 500:  # Too low (coastal)
+            base_prob -= 0.05
+            
+        # Soil pH impact
+        if soil_ph < 5.5 or soil_ph > 8.0:  # Extreme pH
+            base_prob -= 0.12
+        elif 6.0 <= soil_ph <= 7.0:  # Optimal pH
+            base_prob += 0.05
+            
+        # Species-specific adjustments
+        species = tree_data.get('tree_species', '')
+        if species in ['Neem', 'Eucalyptus']:  # Drought tolerant
+            if rainfall < 500:
+                base_prob += 0.15  # Better in dry conditions
+        elif species in ['Pine', 'Cypress']:  # Highland species
+            if altitude > 1500:
+                base_prob += 0.12  # Better at altitude
+        elif species == 'Indigenous Mix':  # Adapted to local conditions
+            base_prob += 0.08  # Always gets bonus
+            
+        # Care level impact
+        care_bonus = {'High': 0.12, 'Medium': 0.05, 'Low': -0.08}
         base_prob += care_bonus.get(tree_data.get('care_level', 'Medium'), 0)
         
-        # Adjust based on rainfall
-        rainfall = float(tree_data.get('rainfall_mm', 600))
-        if 400 <= rainfall <= 800:
-            base_prob += 0.1
-        elif rainfall < 300 or rainfall > 1200:
-            base_prob -= 0.15
+        # County-specific hash for consistency (same inputs = same output)
+        import hashlib
+        county_hash = int(hashlib.md5(f"{county}{species}".encode()).hexdigest()[:8], 16)
+        variation = (county_hash % 100 - 50) / 1000  # ±0.05 variation
+        base_prob += variation
         
-        # Add some randomness but keep it realistic
-        base_prob += random.uniform(-0.05, 0.05)
-        
-        return max(0.3, min(0.95, base_prob))  # Keep between 30-95%
+        return max(0.25, min(0.92, base_prob))
     
     def predict_survival(self, tree_data):
         """
@@ -100,6 +141,14 @@ class TreeSurvivalPredictor:
             # Use fallback demo prediction
             survival_prob = self._calculate_demo_probability(tree_data)
             recommendation = self.get_recommendation(survival_prob, tree_data)
+            
+            print(f"[COUNTY DATA] Environmental factors used:")
+            print(f"   County: {tree_data.get('county')}")
+            print(f"   Rainfall: {tree_data.get('rainfall_mm')}mm")
+            print(f"   Temperature: {tree_data.get('temperature_c')}C")
+            print(f"   Altitude: {tree_data.get('altitude_m')}m")
+            print(f"   Soil pH: {tree_data.get('soil_ph')}")
+            print(f"   -> Survival Probability: {survival_prob:.3f}")
             
             return {
                 'success': True,
@@ -158,7 +207,19 @@ class TreeSurvivalPredictor:
             except ValueError:
                 input_data['water_source_encoded'] = 0
             
-            # Select features
+            # Add engineered features that the model expects
+            input_data['water_balance'] = tree_data.get('rainfall_mm', 600) - (tree_data.get('temperature_c', 20) * 20)
+            input_data['is_high_altitude'] = 1 if tree_data.get('altitude_m', 1500) > 1800 else 0
+            input_data['soil_acidity'] = 1 if tree_data.get('soil_ph', 6.5) < 6.0 else 0
+            
+            # Select features (handle missing columns gracefully)
+            available_features = [col for col in self.feature_columns if col in input_data.columns]
+            if len(available_features) != len(self.feature_columns):
+                # Add missing features with default values
+                for col in self.feature_columns:
+                    if col not in input_data.columns:
+                        input_data[col] = 0
+            
             X = input_data[self.feature_columns]
             
             # Scale features
@@ -214,9 +275,9 @@ class TreeSurvivalPredictor:
         """Get risk level based on survival probability"""
         if survival_prob >= 0.8:
             return "Low"
-        elif survival_prob >= 0.6:
+        elif survival_prob >= 0.65:
             return "Medium"
-        elif survival_prob >= 0.4:
+        elif survival_prob >= 0.45:
             return "High"
         else:
             return "Very High"

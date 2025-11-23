@@ -1,8 +1,0 @@
-<!-- App/templates/App/resource_confirm_delete.html -->
-<h2>Confirm Deletion</h2>
-
-<form method="post">
-    {% csrf_token %}
-    <p>Are you sure you want to delete "{{ object.name }}"?</p>
-    <input type="submit" value="Confirm">
-</form>

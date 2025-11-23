@@ -1,0 +1,364 @@
+{% extends 'App/base.html' %}
+{% load static %}
+{% load socialaccount %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 4rem 0 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    }
+    
+    .register-form {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 25px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .register-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8, #3b82f6);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #ffffff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .password-input-group {
+        position: relative;
+        display: block;
+        width: 100%;
+    }
+    
+    .password-input-group .form-control {
+        padding-right: 50px;
+    }
+    
+    .password-toggle-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #6b7280;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        z-index: 10;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .password-toggle-btn:hover {
+        color: #3b82f6;
+    }
+    
+    .btn-register {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        width: 100%;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+    
+    .auth-links {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .auth-links a {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-links a:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+    }
+    
+    .register-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+    
+    .info-card {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        
+        .register-form {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="register-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3">Join Tree Registration</h1>
+        <p class="lead fs-5">Start your tree planting journey and make a real impact</p>
+    </div>
+</div>
+
+<!-- Registration Form Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="register-form">
+            {% if user_type == 'organization' %}
+                <div class="info-card">
+                    <h5 class="fw-bold mb-2" style="color: #059669;"><i class="fas fa-building me-2"></i>Organization Account</h5>
+                    <p class="mb-0" style="color: #15803d;">Perfect for companies and groups planning large-scale tree planting projects</p>
+                </div>
+            {% else %}
+                <div class="info-card">
+                    <h5 class="fw-bold mb-2" style="color: #059669;"><i class="fas fa-tree me-2"></i>Individual Account</h5>
+                    <p class="mb-0" style="color: #15803d;">Great for personal tree planting goals and environmental impact tracking</p>
+                </div>
+            {% endif %}
+            
+            {% if form.errors %}
+                <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); color: #dc2626; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #ef4444;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    {% for field, errors in form.errors.items %}
+                        <strong>{{ field|title }}:</strong>
+                        {% for error in errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="user_type" value="{{ user_type }}">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" name="first_name" class="form-control" placeholder="Your first name" required>
+                        {% if form.first_name.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" name="last_name" class="form-control" placeholder="Your last name" required>
+                        {% if form.last_name.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone_number" class="form-control" placeholder="Your phone number" required>
+                        {% if form.phone_number.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.phone_number.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="Your area/city" required>
+                        {% if form.location.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.location.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" placeholder="Choose a username" required>
+                        {% if form.username.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+                        {% if form.email.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="password-input-group">
+                            <input type="password" name="password1" class="form-control" id="password1" placeholder="Create a password" required>
+                            <button type="button" onclick="togglePassword1()" class="password-toggle-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <div class="password-input-group">
+                            <input type="password" name="password2" class="form-control" id="password2" placeholder="Confirm your password" required>
+                            <button type="button" onclick="togglePassword2()" class="password-toggle-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                            <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-register">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Already have an account? <a href="{% url 'tree_login' %}"><i class="fas fa-sign-in-alt me-1"></i>Sign In</a></p>
+                <p><a href="{% url 'tree_landing' %}"><i class="fas fa-arrow-left me-1"></i>Back to Landing</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function togglePassword1() {
+    var passwordInput = document.getElementById('password1');
+    var toggleIcon = document.querySelector(".password-input-group:first-of-type .password-toggle-btn i");
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+
+function togglePassword2() {
+    var passwordInput = document.getElementById('password2');
+    var toggleIcon = document.querySelector(".password-input-group:last-of-type .password-toggle-btn i");
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+</script>
+
+{% endblock %}

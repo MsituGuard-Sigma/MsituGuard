@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm, Password
 from django.core.validators import RegexValidator
 # from .models import CustomUser
 from captcha.fields import CaptchaField
+from django.utils import timezone
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -17,15 +18,14 @@ class UserRegistrationForm(UserCreationForm):
         validators=[RegexValidator(regex=r'^\d*$', message='Only numeric values are allowed')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your phone number'})
     )        
-    first_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your first name'}))
-    last_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your last name'}))
-    location = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your neighborhood/area'}))
+    first_name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your first name'}))
+    last_name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your last name'}))
+    location = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your neighborhood/area'}))
     bio = forms.CharField(
         required=False, 
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         label="Bio (optional)"
     )
-    
     # New fields for account type
     account_type = forms.ChoiceField(
         choices=Profile.ACCOUNT_TYPES,
@@ -42,13 +42,10 @@ class UserRegistrationForm(UserCreationForm):
     )
     
     captcha = CaptchaField()
-    # captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
-
-
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'bio']
+        fields = ['username', 'email', 'first_name', 'last_name', 'phoneNumber', 'location', 'bio']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Choose a username'}),
         }
@@ -57,16 +54,22 @@ class UserRegistrationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Create a strong password'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm your password'})
+        # Remove password validators to allow similar passwords
+        self.fields['password1'].help_text = None
+        if hasattr(self.fields['password1'], 'validators'):
+            self.fields['password1'].validators = []
 
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        confirm_password = cleaned_data.get("confirm_password")
-
-        if password != confirm_password:
-            raise forms.ValidationError("passwords do not match")
-        return cleaned_data
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return password2
+    
+    def _post_clean(self):
+        super()._post_clean()
+        # Skip Django's built-in password validation
+        pass
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -85,7 +88,6 @@ class UserRegistrationForm(UserCreationForm):
             user.save()
 
             # Always update or create profile data
-            from django.utils import timezone
             profile_data = {
                 'phoneNumber': self.cleaned_data['phoneNumber'],
                 'location': self.cleaned_data['location'],
@@ -131,16 +133,14 @@ class LoginForm(AuthenticationForm):
 class ResourceForm(forms.ModelForm):
     class Meta:
         model = Resource
-        fields = ['resource_type', 'quantity', 'description', 'available', 'phoneNumber', 'location']
-
-        
+        fields = ['resource_type', 'quantity', 'description', 'available', 'phoneNumber', 'location']    
 class ReportForm(forms.ModelForm):
     phoneNumber = forms.CharField(
         max_length=50,
-        required=True,
+        required=False,  # Made optional for anonymous reporting
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter your phone number'
+            'placeholder': 'Optional: Enter your phone number'
         })
     )
     
@@ -157,28 +157,21 @@ class ReportForm(forms.ModelForm):
     
     class Meta:
         model = Report
-        fields = ['report_type', 'description', 'location_name', 'latitude', 'longitude', 'phoneNumber', 'image']
+        fields = ['report_type', 'location_name', 'latitude', 'longitude', 'phoneNumber', 'image']
         labels = {
             'report_type': 'Environmental Issue Type',
-            'description': 'Detailed Description',
             'location_name': 'Location/Area Name',
-            'phoneNumber': 'Contact Number',
+            'phoneNumber': 'Contact Number (Optional)',
             'image': 'Photo Evidence'
         }
         widgets = {
             'report_type': forms.Select(attrs={
                 'class': 'form-control'
             }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 5,
-                'placeholder': 'Describe what you observed: What is happening? When did you notice it? How severe is it?'
-            }),
             'location_name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Area name, landmark, or address'
             }),
-
         }
 
     def __init__(self, *args, **kwargs):
@@ -210,8 +203,6 @@ class ReportForm(forms.ModelForm):
 
 # Keep AlertForm as alias for backward compatibility
 AlertForm = ReportForm
-
-
 class ProfileForm(forms.ModelForm):
     phoneNumber = forms.CharField(
         max_length=17,
@@ -276,10 +267,8 @@ class UserForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'your@email.com'}),
         }
 
-
 class SuperuserProfileForm(ProfileForm):
     pass
-
 
 class ResourceRequestForm(forms.ModelForm):
     help_type = forms.ChoiceField(choices=ResourceRequest.HELP_TYPES, label="Help Type")
@@ -296,17 +285,10 @@ class ResourceRequestForm(forms.ModelForm):
             'location': forms.TextInput(attrs={'placeholder': 'Enter your location'}),
         }
 
-
 class ForumPostForm(forms.ModelForm):
     class Meta:
         model = ForumPost
         fields = ['title', 'content']
-
-   
-# class CommentForm(forms.ModelForm):
-#     class Meta:
-#         model = Comment
-#         fields = ['content']
 
 class FormComment(forms.ModelForm):
     class  Meta:

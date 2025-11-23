@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Tree Photo - TreePlant</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("{% static 'treeregistration/forest-bg.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 1);
+            transform: scale(1.05);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 30px;
+        }
+        
+        .instruction {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .photo-option {
+            position: relative;
+            border: 3px solid transparent;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .photo-option.selected {
+            border-color: #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+        
+        .photo-option img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .photo-info {
+            padding: 15px;
+            background: white;
+            text-align: center;
+        }
+        
+        .photo-info h3 {
+            margin: 0 0 5px 0;
+            color: #2e7d32;
+        }
+        
+        .photo-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'home' %}" class="back-btn">← Dashboard</a>
+    
+    <div class="container">
+        <h1>🌳 Select Your Tree Photo</h1>
+        
+        <div class="instruction">
+            <strong>Choose from our verified tree photos below.</strong><br>
+            Select the photo that best represents your tree planting contribution.
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="photo-grid">
+                <div class="photo-option" onclick="selectPhoto('oak')">
+                    <input type="radio" name="selected_photo" value="oak" id="oak">
+                    <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop" alt="Oak Tree">
+                    <div class="photo-info">
+                        <h3>Oak Tree</h3>
+                        <p>Strong and majestic</p>
+                    </div>
+                </div>
+                
+                <div class="photo-option" onclick="selectPhoto('pine')">
+                    <input type="radio" name="selected_photo" value="pine" id="pine">
+                    <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=300&fit=crop" alt="Pine Tree">
+                    <div class="photo-info">
+                        <h3>Pine Tree</h3>
+                        <p>Evergreen beauty</p>
+                    </div>
+                </div>
+                
+                <div class="photo-option" onclick="selectPhoto('maple')">
+                    <input type="radio" name="selected_photo" value="maple" id="maple">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop" alt="Maple Tree">
+                    <div class="photo-info">
+                        <h3>Maple Tree</h3>
+                        <p>Colorful and vibrant</p>
+                    </div>
+                </div>
+                
+                <div class="photo-option" onclick="selectPhoto('birch')">
+                    <input type="radio" name="selected_photo" value="birch" id="birch">
+                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Birch Tree">
+                    <div class="photo-info">
+                        <h3>Birch Tree</h3>
+                        <p>Elegant white bark</p>
+                    </div>
+                </div>
+                
+                <div class="photo-option" onclick="selectPhoto('willow')">
+                    <input type="radio" name="selected_photo" value="willow" id="willow">
+                    <img src="https://images.unsplash.com/photo-1574263867128-a3d5c1b1deaa?w=400&h=300&fit=crop" alt="Willow Tree">
+                    <div class="photo-info">
+                        <h3>Willow Tree</h3>
+                        <p>Graceful and flowing</p>
+                    </div>
+                </div>
+                
+                <div class="photo-option" onclick="selectPhoto('cherry')">
+                    <input type="radio" name="selected_photo" value="cherry" id="cherry">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop" alt="Cherry Blossom Tree">
+                    <div class="photo-info">
+                        <h3>Cherry Blossom</h3>
+                        <p>Beautiful spring blooms</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>Register Selected Tree</button>
+        </form>
+    </div>
+    
+    <script>
+        function selectPhoto(photoType) {
+            // Remove previous selections
+            document.querySelectorAll('.photo-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select current photo
+            document.getElementById(photoType).checked = true;
+            document.querySelector(`#${photoType}`).closest('.photo-option').classList.add('selected');
+            
+            // Enable submit button
+            document.getElementById('submitBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>
