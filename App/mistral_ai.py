@@ -18,14 +18,12 @@ except ImportError:
         ChatMessage = None
 
 # Initialize Mistral client
-# Load environment variables
+# Load environment variables using python-decouple (same as settings.py)
 try:
-    from dotenv import load_dotenv
-    load_dotenv()
+    from decouple import config
+    api_key = config('MISTRAL_API_KEY', default=None)
 except ImportError:
-    pass
-
-api_key = os.environ.get("MISTRAL_API_KEY")
+    api_key = os.environ.get("MISTRAL_API_KEY")
 client = MistralClient(api_key=api_key) if api_key else None
 
 print(f"[MISTRAL] API Key configured: {'Yes' if api_key else 'No'}")
