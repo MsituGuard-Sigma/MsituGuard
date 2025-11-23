@@ -222,18 +222,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## 🌍 Try MsituGuard Today
-
-**Live Platform**: https://msituguard.onrender.com
-
-**Get Started**:
-1. Visit the platform
-2. Try tree predictions for any Kenyan county
-3. Report environmental issues in your area
-4. Join the community of environmental champions
-
----
-
 **Predict. Plant. Protect. 🌳**
 
 *MsituGuard - AI-Powered Environmental Action for Kenya*
