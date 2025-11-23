@@ -1,27 +1,28 @@
-# 🌿 MsituGuard - Smart Tree Planting Platform
+# 🌿 MsituGuard - Tree Survival Prediction & Environmental Reporting
 
-**Plant Trees Smarter with AI**
+**AI-Powered Tree Survival Prediction and Environmental Monitoring for Kenya**
 
-MsituGuard helps you plant trees that actually survive. Our AI tells you which trees will grow best in your location, you can report environmental problems in your area, and track your impact as you help restore Kenya's forests.
+MsituGuard combines advanced AI technology with community-driven environmental reporting to help restore Kenya's forests. Get accurate tree survival predictions for any location and report environmental issues to create real impact.
 
-## ✨ What You Can Do
+## 🎯 Core Features
 
-### 🌳 Smart Tree Planting
-- **Find the Right Trees** - AI tells you which tree species will survive in your exact location
-- **Get Survival Predictions** - Know your chances of success before you plant
-- **Track Your Trees** - Register and monitor your tree planting progress
-- **Earn Rewards** - Get points and badges for your environmental actions
+### 🤖 AI Tree Survival Prediction
+- **Species Recommendations** - Get AI-powered suggestions for trees that will thrive in your specific county
+- **Survival Rate Analysis** - Receive accurate predictions based on location, season, and planting method
+- **Expert Care Instructions** - Get detailed guidance powered by MISTRAL AI for optimal tree care
+- **Risk Assessment** - Understand potential challenges and mitigation strategies
 
-### 📱 Report Environmental Problems
-- **Take Photos** - Document environmental issues with your phone
-- **Add Location** - Tag where problems are happening
-- **Get Community Support** - Connect with others who care about the environment
-- **Make Real Impact** - Help organizations respond to environmental threats
+### 📱 Environmental Reporting System
+- **Photo Documentation** - Capture and report environmental issues with GPS location
+- **Community Verification** - Connect with local organizations for issue validation
+- **Impact Tracking** - Monitor how your reports lead to real environmental action
+- **Data Export** - Download reports for research and grant applications
 
-### 📈 See Your Impact
-- **Personal Dashboard** - View all your tree planting and reporting activities
-- **Community Forum** - Share experiences and learn from other tree planters
-- **Progress Tracking** - Watch your environmental contribution grow over time
+### 📊 Monitoring & Analytics
+- **Tree Registration** - Log and track your tree planting activities
+- **Progress Dashboard** - Visualize your environmental impact over time
+- **Community Forums** - Share experiences with other environmental champions
+- **Rewards System** - Earn points and badges for verified contributions
 
 ## 🚀 Technology Stack
 
@@ -44,39 +45,42 @@ MsituGuard helps you plant trees that actually survive. Our AI tells you which t
 - **Deployment**: Render.com with automatic deployments
 - **Version Control**: Git with comprehensive commit history
 
-## 🧠 AI Model Performance
+## 🧠 AI Prediction Technology
 
-### Tree Survival Prediction System
-- **Hybrid Approach**: ML Model (40%) + Expert Knowledge Database (60%) + MISTRAL AI LLM
-- **ML Algorithm**: GradientBoosting Classifier
-- **Training Data**: 10,000+ Kenyan tree planting records
-- **County Coverage**: All 47 Kenyan counties with species compatibility data
-- **MISTRAL AI Integration**: Uses API key to enhance explanations and provide intelligent care instructions
+### Hybrid Intelligence System
+- **Machine Learning**: GradientBoosting Classifier trained on 10,000+ Kenyan tree records
+- **Expert Knowledge**: Comprehensive database covering all 47 Kenyan counties
+- **MISTRAL AI**: Advanced language model for intelligent explanations and care guidance
+- **Accuracy**: Combines ML predictions (40%) with expert knowledge (60%) for optimal results
 
-### Key Prediction Factors
-1. **Tree Species** - Native vs non-native adaptation
-2. **County Environment** - Climate and soil compatibility
-3. **Seasonal Timing** - Optimal planting seasons
-4. **Planting Method** - Technique optimization
-5. **Care Level** - Maintenance and monitoring intensity
+### Prediction Factors
+| Factor | Impact | Description |
+|--------|--------|-------------|
+| **Species Type** | High | Native vs non-native adaptation rates |
+| **Location** | High | County-specific climate and soil conditions |
+| **Season** | Medium | Optimal planting timing for survival |
+| **Method** | Medium | Planting technique and preparation |
+| **Care Level** | Medium | Maintenance and monitoring intensity |
 
-## 🎯 How It Works
+## 🚀 How It Works
 
-### For Everyone
-- **Try Tree Prediction** - Get AI-powered species recommendations for any Kenyan county
-- **See What Grows** - Get survival predictions and care instructions
-- **Report Environmental Issues** - Submit reports with photos
+### 1. Tree Survival Prediction
+1. **Select Location** - Choose any of Kenya's 47 counties
+2. **Get AI Analysis** - Receive species recommendations with survival rates
+3. **View Care Instructions** - Access MISTRAL AI-powered planting guidance
+4. **Make Informed Decisions** - Plant trees with confidence
 
-### Create Free Account
-- **Save Prediction History** - Track all your tree predictions
-- **Register Tree Plantings** - Record and verify your tree planting activities
-- **Join the Community** - Connect with other tree planters in forums
-- **Earn Rewards** - Get points and badges for verified environmental actions
+### 2. Environmental Reporting
+1. **Document Issues** - Take photos of environmental problems
+2. **Add Details** - Include location, description, and severity
+3. **Submit Report** - Share with community and organizations
+4. **Track Impact** - Monitor how reports lead to action
 
-### For Organizations
-- **Organization Dashboard** - Review and verify environmental reports and tree plantings
-- **Track Community Impact** - See total trees planted and environmental reports
-- **Export Data** - Download CSV reports for grants and documentation
+### 3. Community Engagement
+- **Free Access** - Try predictions and submit reports without registration
+- **User Accounts** - Save history, register plantings, earn rewards
+- **Organization Dashboard** - Verify reports and track community impact
+- **Data Export** - Download CSV files for research and grants
 
 ## 🛠️ Installation & Setup
 
@@ -173,27 +177,25 @@ MsituGuard/
 └── README.md                  # This file
 ```
 
-## 🆕 Key Features
+## ✨ Platform Highlights
 
-### AI-Powered Tree Prediction
-- **County-Species Database**: Complete compatibility matrix for 47 Kenyan counties
-- **Hybrid Prediction System**: Combines ML model with expert knowledge
-- **MISTRAL AI Integration**: Generates intelligent explanations and care instructions
-- **Seasonal Optimization**: Accounts for planting season performance
-- **Risk Assessment**: Provides clear risk levels and alternative recommendations
+### 🌳 Tree Survival Prediction
+- Complete species database for all 47 Kenyan counties
+- Hybrid AI system combining machine learning with expert knowledge
+- MISTRAL AI-powered care instructions and risk assessments
+- Seasonal optimization and alternative species recommendations
 
-### Environmental Impact Tracking
-- **Tree Registration**: Public and authenticated user tree planting tracking
-- **Environmental Reporting**: Photo-based issue reporting with verification workflow
-- **Organization Verification**: Dashboard for organizations to verify community actions
-- **Rewards System**: Points and badges for verified environmental contributions
-- **MISTRAL AI Enhancement**: Intelligent analysis and recommendations throughout the platform
+### 🌍 Environmental Reporting
+- GPS-enabled photo documentation of environmental issues
+- Community-driven verification and organization dashboards
+- Impact tracking from report submission to resolution
+- CSV data export for research and grant applications
 
-### Data Management
-- **CSV Export**: Download reports and tree data for analysis
-- **Prediction History**: Track all tree predictions for logged-in users
-- **Community Forums**: Discussion platform for environmental topics
-- **Mobile Responsive**: Works seamlessly on all device sizes
+### 📊 Data & Community
+- User accounts with prediction history and tree registration
+- Points and badges reward system for verified contributions
+- Community forums for knowledge sharing
+- Mobile-responsive design for field use
 
 ## 🔗 API Endpoints
 
@@ -220,6 +222,18 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Plant Trees That Actually Grow** 🌳✨
+## 🌍 Try MsituGuard Today
 
-*MsituGuard - Smart Tree Planting for Everyone*
+**Live Platform**: https://msituguard.onrender.com
+
+**Get Started**:
+1. Visit the platform
+2. Try tree predictions for any Kenyan county
+3. Report environmental issues in your area
+4. Join the community of environmental champions
+
+---
+
+**Predict. Plant. Protect. 🌳**
+
+*MsituGuard - AI-Powered Environmental Action for Kenya*
