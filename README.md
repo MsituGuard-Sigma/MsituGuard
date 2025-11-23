@@ -13,11 +13,12 @@ Get accurate tree survival predictions for any Kenyan county and report environm
 
 ### 📱 Environmental Reporting
 - Report environmental issues with photos
-- Track your reports and see community impact
-- Organizations can verify and respond to reports
+- Report the Environmental issues anonymously 
+- Organizations will see the report on their dashboard and take an action. The organization wont know who reported the issue coz of anonymity and security
 
 ### 📊 Track Your Impact
-- Register your tree planting activities
+- Get species recommendations, Plant your trees
+- Register the tree species you decided to plant 
 - View your environmental contributions
 - Earn points and badges for verified actions
 
@@ -25,7 +26,7 @@ Get accurate tree survival predictions for any Kenyan county and report environm
 
 - **AI Model**: GradientBoosting Classifier + MISTRAL AI
 - **Framework**: Django 5.0.3
-- **Database**: All 47 Kenyan counties with species data
+- **Database**: 14 Kenyan counties with species data, Environmental data
 - **Frontend**: HTML5, CSS3, JavaScript, Bootstrap
 
 ## 🛠️ Installation
