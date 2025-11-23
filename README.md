@@ -41,16 +41,6 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-## ✅ What's Working
-
-- AI tree predictions for all 47 Kenyan counties
-- Environmental issue reporting with photos
-- Tree planting registration and tracking
-- Organization dashboard for verification
-- User accounts and rewards system
-- Data export (CSV)
-- Mobile-friendly design
-
 ---
 
 **Predict. Plant. Protect. 🌳**
