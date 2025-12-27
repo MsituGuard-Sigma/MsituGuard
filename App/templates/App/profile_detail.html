@@ -30,7 +30,7 @@
         background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
         border-radius: 25px;
         padding: 3rem;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         border: 1px solid rgba(34, 197, 94, 0.1);
         position: relative;
         overflow: hidden;
@@ -140,6 +140,7 @@
         padding: 2rem;
         margin: 2rem 0;
         border-left: 4px solid #3b82f6;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
     }
     
     .activity-stats {
@@ -472,7 +473,7 @@
         padding: 0;
         max-width: 550px;
         width: 90%;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         overflow: hidden;
         animation: modalSlideIn 0.3s ease-out;
     }
@@ -621,7 +622,12 @@
         <div class="profile-card">
             <div class="row">
                 <div class="col-md-6">
-                    <h4 class="fw-bold mb-4" style="color: #1f2937;">Personal Information</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: #1f2937;">Personal Information</h4>
+                        <a href="{% url 'edit_profile' %}" class="btn-action" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                            <i class="fas fa-edit me-1"></i>Edit Profile
+                        </a>
+                    </div>
                     
                     <div class="profile-field">
                         <div class="profile-icon">
@@ -669,7 +675,12 @@
                 </div>
                 
                 <div class="col-md-6">
-                    <h4 class="fw-bold mb-4" style="color: #1f2937;">Account Details</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: #1f2937;">Account Details</h4>
+                        <a href="{% url 'password_change' %}" class="btn-action btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                            <i class="fas fa-key me-1"></i>Change Password
+                        </a>
+                    </div>
                     
                     <div class="profile-field">
                         <div class="profile-icon">
@@ -765,30 +776,48 @@
                         {{ object.conservation_rank }}
                     </span>
                 </div>
-                <a href="{% url 'my_reports' %}" class="btn-action" style="background: linear-gradient(135deg, #10b981, #059669);">
-                    <i class="fas fa-chart-line me-2"></i>View Detailed Activity
-                </a>
-                <a href="{% url 'rewards' %}" class="btn-action" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    <i class="fas fa-trophy me-2"></i>Rewards Center
-                </a>
             </div>
         </div>
         
-
-        
-
-        
-        <!-- Action Buttons -->
-        <div class="text-center">
-            <a href="{% url 'edit_profile' %}" class="btn-action">
-                <i class="fas fa-edit me-2"></i>Edit Profile
-            </a>
-            <a href="{% url 'password_change' %}" class="btn-action btn-secondary">
-                <i class="fas fa-key me-2"></i>Change Password
-            </a>
-
+        <!-- Tree Gallery Section -->
+        <div class="activity-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: rgba(34, 197, 94, 0.2); border-left-color: #22c55e;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="fw-bold mb-0" style="color: #1f2937;">🌳 Your Tree Gallery</h4>
+                <a href="{% url 'tree_home' %}" class="btn-action btn-secondary" style="font-size: 0.85rem; padding: 0.3rem 0.6rem;">
+                    <i class="fas fa-home me-1"></i>Tree Dashboard
+                </a>
+            </div>
+            <div class="activity-stats">
+                <div class="stat-item" style="background: rgba(34, 197, 94, 0.15);">
+                    <span class="stat-number" style="color: #16a34a;">{{ tree_count|default:0 }}</span>
+                    <div class="stat-label">Trees Planted</div>
+                </div>
+                <div class="stat-item" style="background: rgba(34, 197, 94, 0.15);">
+                    <span class="stat-number" style="color: #16a34a;">{{ badge|default:"None" }}</span>
+                    <div class="stat-label">Current Badge</div>
+                </div>
+            </div>
+            
+            {% if trees %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                    {% for tree in trees %}
+                        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                            <img src="{{ tree.photo.url }}" alt="Tree Photo" style="width: 100%; height: 150px; object-fit: cover;">
+                            <div style="padding: 1rem; text-align: center;">
+                                <p style="color: #6b7280; font-size: 0.85rem; margin: 0;">{{ tree.uploaded_at|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 3rem 1rem; background: rgba(255,255,255,0.5); border-radius: 15px; margin: 2rem 0;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                    <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 1.5rem;">No trees uploaded yet. Start your journey!</p>
+                </div>
+            {% endif %}
         </div>
         
+                
         <!-- Profile Picture Upload Modal -->
         <div id="profile-picture-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;">
             <div style="background: white; border-radius: 20px; padding: 2rem; max-width: 400px; width: 90%; text-align: center;">
@@ -854,18 +883,12 @@ function previewImage(input) {
     }
 }
 
-
-
 // Close modals when clicking outside
 document.getElementById('profile-picture-modal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeProfilePictureModal();
     }
 });
-
-
-
-
 
 // Add CSS animations for notifications
 const style = document.createElement('style');

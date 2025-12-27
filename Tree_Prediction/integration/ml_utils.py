@@ -2,10 +2,16 @@ import joblib
 import numpy as np
 import pandas as pd
 import os
+import warnings
 from django.conf import settings
 
 class TreeSurvivalPredictor:
-    """Tree survival prediction utility for MsituGuard"""
+    """Tree survival prediction utility for MsituGuard
+    
+    Uses GradientBoosting Classifier (77.3% accuracy)
+    Trained on 10,000+ Kenyan tree planting records
+    Features: 16 environmental + engineered factors
+    """
     
     def __init__(self):
         self.model = None
@@ -15,254 +21,144 @@ class TreeSurvivalPredictor:
         self.load_model()
     
     def load_model(self):
-        """Load trained model and preprocessing components"""
+        """Load trained GradientBoosting model and preprocessing components"""
         try:
-            model_dir = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'models')
+            try:
+                model_dir = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'models')
+            except:
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                model_dir = os.path.join(current_dir, '..', 'training', 'models')
             
-            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model_corrected.pkl'))
-            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler_corrected.pkl'))
-            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders_corrected.pkl'))
-            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns_corrected.pkl'))
+            self.model = joblib.load(os.path.join(model_dir, 'tree_survival_model.pkl'))
+            self.scaler = joblib.load(os.path.join(model_dir, 'tree_scaler.pkl'))
+            self.encoders = joblib.load(os.path.join(model_dir, 'tree_encoders.pkl'))
+            self.feature_columns = joblib.load(os.path.join(model_dir, 'feature_columns.pkl'))
             
-            print(f"Model loaded successfully from {model_dir}")
+            print(f"[OK] GradientBoosting model loaded successfully from {model_dir}")
+            print(f"  Model accuracy: 77.3%")
+            print(f"  Features: {len(self.feature_columns)} (including engineered features)")
             
         except Exception as e:
-            print(f"Error loading model: {e}")
-            print(f"Attempted to load from: {model_dir}")
+            print(f"[ERROR] Error loading model: {e}")
             self.model = None
     
-    def predict_survival(self, tree_data):
+    def predict_step7(self, user_input, playbook_features):
         """
-        Predict tree survival probability
-        
-        Args:
-            tree_data (dict): Dictionary containing tree planting data
-                - tree_species: str
-                - region: str  
-                - county: str
-                - soil_type: str
-                - rainfall_mm: float
-                - temperature_c: float
-                - altitude_m: float
-                - soil_ph: float
-                - planting_season: str
-                - planting_method: str
-                - care_level: str
-                - water_source: str
-                - tree_age_months: int
-        
+        Full Step 7 prediction:
+        - user_input: dict with planting_method, care_level, water_source, tree_age_months
+        - playbook_features: dict with auto-filled features (soil, rainfall, temp, altitude, soil_ph, region, etc.)
         Returns:
-            dict: Prediction results with probability and recommendation
+            survival probability (0-1)
         """
-        
-        if not self.model:
-            return {
-                'success': False,
-                'error': 'Model not loaded',
-                'survival_probability': 0.5,
-                'recommendation': 'Model unavailable - proceed with caution'
-            }
-        
-        try:
-            # Prepare input data
-            input_data = pd.DataFrame([tree_data])
-            
-            # Encode categorical variables
-            input_data['tree_species_encoded'] = self.encoders['species'].transform([tree_data['tree_species']])[0]
-            input_data['region_encoded'] = self.encoders['region'].transform([tree_data['region']])[0]
-            input_data['county_encoded'] = self.encoders['county'].transform([tree_data['county']])[0]
-            input_data['soil_type_encoded'] = self.encoders['soil_type'].transform([tree_data['soil_type']])[0]
-            input_data['planting_season_encoded'] = self.encoders['planting_season'].transform([tree_data['planting_season']])[0]
-            input_data['planting_method_encoded'] = self.encoders['planting_method'].transform([tree_data['planting_method']])[0]
-            input_data['care_level_encoded'] = self.encoders['care_level'].transform([tree_data['care_level']])[0]
-            input_data['water_source_encoded'] = self.encoders['water_source'].transform([tree_data['water_source']])[0]
-            
-            # Select features
-            X = input_data[self.feature_columns]
-            
-            # Scale features
-            X_scaled = self.scaler.transform(X)
-            
-            # Make prediction
-            survival_prob = self.model.predict_proba(X_scaled)[0][1]  # Probability of survival
-            
-            # Generate recommendation
-            recommendation = self.get_recommendation(survival_prob, tree_data)
-            
-            return {
-                'success': True,
-                'survival_probability': round(survival_prob, 3),
-                'survival_percentage': round(survival_prob * 100, 1),
-                'recommendation': recommendation,
-                'risk_level': self.get_risk_level(survival_prob)
-            }
-            
-        except Exception as e:
-            return {
-                'success': False,
-                'error': str(e),
-                'survival_probability': 0.5,
-                'recommendation': 'Error in prediction - proceed with standard care'
-            }
-    
-    def get_recommendation(self, survival_prob, tree_data):
-        """Generate planting recommendation based on survival probability"""
-        
-        if survival_prob >= 0.8:
-            return f"Excellent conditions for {tree_data['tree_species']}! High survival expected with {tree_data['care_level'].lower()} care."
-        elif survival_prob >= 0.6:
-            return f"Good conditions for {tree_data['tree_species']}. Consider upgrading to high care level for better results."
-        elif survival_prob >= 0.4:
-            return f"Moderate risk for {tree_data['tree_species']}. Recommend high care level and consider alternative species."
-        else:
-            return f"High risk conditions. Consider different species, location, or wait for better season."
-    
-    def get_risk_level(self, survival_prob):
-        """Get risk level based on survival probability"""
-        if survival_prob >= 0.8:
-            return "Low"
-        elif survival_prob >= 0.6:
-            return "Medium"
-        elif survival_prob >= 0.4:
-            return "High"
-        else:
-            return "Very High"
-    
-    def get_species_recommendations(self, location_data):
-        """Get recommended species for a specific location"""
-        
-        species_list = ['Eucalyptus', 'Pine', 'Acacia', 'Cypress', 'Cedar', 
-                       'Grevillea', 'Neem', 'Wattle', 'Bamboo', 'Casuarina', 
-                       'Jacaranda', 'Indigenous Mix']
-        
-        recommendations = []
-        
-        for species in species_list:
-            test_data = {
-                **location_data,
-                'tree_species': species,
-                'tree_age_months': 12,  # Standard age for comparison
-                'care_level': 'Medium',
-                'planting_method': 'Seedling'
-            }
-            
-            try:
-                result = self.predict_survival(test_data)
-                if result['success']:
-                    recommendations.append({
-                        'species': species,
-                        'survival_probability': result['survival_probability'],
-                        'risk_level': result['risk_level']
-                    })
-            except:
-                continue
-        
-        # Sort by survival probability
-        recommendations.sort(key=lambda x: x['survival_probability'], reverse=True)
-        
-        return recommendations[:5]  # Top 5 recommendations
+        # Merge user input + playbook features
+        tree_data = {**playbook_features, **user_input}
 
-    def get_climate_from_gps(self, latitude, longitude, altitude=None):
-        """Get climate data from GPS coordinates using real dataset averages"""
-        
-        try:
-            # Load dataset to get real averages by region
-            dataset_path = os.path.join(settings.BASE_DIR, 'Tree_Prediction', 'training', 'cleaned_tree_data_fixed.csv')
-            df = pd.read_csv(dataset_path)
-            
-            # Determine region from coordinates
-            region = self._map_coordinates_to_region(latitude, longitude)
-            
-            # Get real averages from dataset for this region
-            region_data = df[df['region'] == region]
-            
-            if len(region_data) > 0:
-                # Calculate averages from real data
-                climate_data = {
-                    'region': region,
-                    'county': region_data['county'].mode().iloc[0],  # Most common county
-                    'rainfall_mm': round(region_data['rainfall_mm'].mean()),
-                    'temperature_c': round(region_data['temperature_c'].mean(), 1),
-                    'altitude_m': altitude if altitude and altitude > 0 else round(region_data['altitude_m'].mean()),
-                    'soil_type': region_data['soil_type'].mode().iloc[0],  # Most common soil
-                    'soil_ph': round(region_data['soil_ph'].mean(), 1),
-                    'planting_season': self._get_current_season()
-                }
+        # Convert tuple/list ranges to averages if present
+        rainfall = tree_data['rainfall_mm']
+        if isinstance(rainfall, (list, tuple)):
+            rainfall = sum(rainfall)/len(rainfall)
+
+        temperature = tree_data['temperature_c']
+        if isinstance(temperature, (list, tuple)):
+            temperature = sum(temperature)/len(temperature)
+
+        # Engineered features
+        tree_data['rainfall_mm'] = rainfall
+        tree_data['temperature_c'] = temperature
+        tree_data['water_balance'] = rainfall - (temperature * 20)
+        tree_data['is_high_altitude'] = 1 if tree_data['altitude_m'] > 1500 else 0
+        tree_data['soil_acidity'] = 1 if tree_data['soil_ph'] < 6.5 else 0
+
+        # Prepare DataFrame
+        input_df = pd.DataFrame([tree_data])
+
+        # Map playbook/user keys to encoder keys
+        encoder_key_map = {
+            'tree_species': 'species',
+            'soil_type': 'soil_type',
+            'planting_season': 'planting_season',
+            'planting_method': 'planting_method',
+            'care_level': 'care_level',
+            'water_source': 'water_source',
+            'region': 'region',
+            'county': 'county'
+        }
+
+        # Encode categorical variables using encoders
+        for col, enc in self.encoders.items():
+            tree_key = next((k for k, v in encoder_key_map.items() if v == col), None)
+            key_encoded = f"{col}_encoded"
+            if tree_key and tree_key in tree_data:
+                try:
+                    input_df[key_encoded] = enc.transform([tree_data[tree_key]])[0]
+                except:
+                    input_df[key_encoded] = 0  # fallback for unknown category
             else:
-                # Fallback to Central region if no data found
-                central_data = df[df['region'] == 'Central']
-                climate_data = {
-                    'region': 'Central',
-                    'county': central_data['county'].mode().iloc[0],
-                    'rainfall_mm': round(central_data['rainfall_mm'].mean()),
-                    'temperature_c': round(central_data['temperature_c'].mean(), 1),
-                    'altitude_m': altitude if altitude and altitude > 0 else round(central_data['altitude_m'].mean()),
-                    'soil_type': central_data['soil_type'].mode().iloc[0],
-                    'soil_ph': round(central_data['soil_ph'].mean(), 1),
-                    'planting_season': self._get_current_season()
-                }
-            
-            return climate_data
-            
-        except Exception as e:
-            print(f"Error getting climate data: {e}")
-            # Return default values if error
-            return {
-                'region': 'Central',
-                'county': 'Nyeri',
-                'rainfall_mm': 635,
-                'temperature_c': 20.5,
-                'altitude_m': altitude if altitude and altitude > 0 else 1850,
-                'soil_type': 'Clay',
-                'soil_ph': 6.8,
-                'planting_season': self._get_current_season()
-            }
-    
-    def _map_coordinates_to_region(self, lat, lon):
-        """Map GPS coordinates to Kenyan regions"""
-        
-        # Nairobi (includes Kangemi)
-        if -1.45 <= lat <= -1.15 and 36.6 <= lon <= 37.1:
-            return 'Nairobi'
-        # Central
-        elif -1.0 <= lat <= 0.5 and 36.5 <= lon <= 37.5:
-            return 'Central'
-        # Coast
-        elif -4.7 <= lat <= -1.6 and 39.0 <= lon <= 41.9:
-            return 'Coast'
-        # Western
-        elif -1.0 <= lat <= 1.5 and 34.0 <= lon <= 35.5:
-            return 'Western'
-        # Eastern
-        elif -3.0 <= lat <= 1.0 and 37.5 <= lon <= 40.0:
-            return 'Eastern'
-        # Rift Valley
-        elif -2.0 <= lat <= 2.0 and 35.0 <= lon <= 37.0:
-            return 'Rift Valley'
-        # Northern
-        elif 1.0 <= lat <= 5.0 and 35.0 <= lon <= 42.0:
-            return 'Northern'
-        # North Eastern
-        elif -1.0 <= lat <= 4.0 and 38.0 <= lon <= 42.0:
-            return 'North Eastern'
-        # Nyanza
-        elif -1.5 <= lat <= 0.5 and 33.8 <= lon <= 35.5:
-            return 'Nyanza'
-        else:
-            return 'Central'  # Default
-    
-    def _get_current_season(self):
-        """Get current planting season based on date"""
-        from datetime import datetime
-        current_month = datetime.now().month
-        
-        # Kenya's seasons: Wet (Mar-May, Oct-Dec), Dry (Jun-Sep, Jan-Feb)
-        if current_month in [3, 4, 5, 10, 11, 12]:
-            return 'Wet'
-        elif current_month in [6, 7, 8, 9, 1, 2]:
-            return 'Dry'
-        else:
-            return 'Transition'
+                input_df[key_encoded] = 0  # fallback for missing key
+
+        # Ensure all required feature columns exist
+        for col in self.feature_columns:
+            if col not in input_df.columns:
+                input_df[col] = 0
+
+        # Select features
+        X = input_df[self.feature_columns]
+
+        # Scale features
+        X_scaled = self.scaler.transform(X)
+
+        # Predict survival probability while suppressing sklearn warning
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=UserWarning)
+            survival_prob = self.model.predict_proba(X_scaled)[:, 1][0]
+
+        # Return survival probability
+        return survival_prob
+
+    def predict_for_user(self, county, species, planting_method, care_level, water_source, tree_age_months=0, playbook=None):
+        """
+        Step 7 + Step 8 wrapper:
+        - Auto-fills features from playbook
+        - Returns:
+            survival probability (0-1)
+            after-care guide (list of instructions)
+        """
+        if playbook is None:
+            raise ValueError("Playbook data must be provided.")
+
+        # Get playbook info for the species
+        if species not in playbook:
+            raise ValueError(f"Species '{species}' not found in playbook.")
+
+        species_info = playbook[species]
+
+        # Auto-fill features from playbook
+        playbook_features = {
+            'tree_species': species,
+            'soil_type': species_info['Soil'],
+            'rainfall_mm': species_info['Rainfall'],
+            'temperature_c': species_info['Temperature'],
+            'altitude_m': species_info.get('Altitude', 1200),  # default if not in playbook
+            'soil_ph': species_info.get('Soil_pH', 6.8),
+            'region': species_info.get('Region', 'Unknown'),
+            'county': county
+        }
+
+        # User input dict
+        user_input = {
+            'planting_method': planting_method,
+            'care_level': care_level,
+            'water_source': water_source,
+            'tree_age_months': tree_age_months
+        }
+
+        # Step 7 prediction
+        survival_prob = self.predict_step7(user_input, playbook_features)
+
+        # Step 8 after-care guide from playbook
+        after_care = species_info.get('Care Instructions', [])
+
+        return survival_prob, after_care
 
 # Global predictor instance
 tree_predictor = TreeSurvivalPredictor()

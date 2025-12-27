@@ -1,8 +1,0 @@
-Django==5.0.3
-dj-database-url==3.0.1
-psycopg2-binary==2.9.10
-python-decouple==3.8
-Pillow==10.3.0
-requests==2.31.0
-cloudinary==1.36.0
-django-cloudinary-storage==0.3.0

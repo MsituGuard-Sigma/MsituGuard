@@ -17,6 +17,10 @@ import dj_database_url
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -50,6 +54,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'App.apps.AppConfig',
+    'treeregistration.apps.TreeregistrationConfig',
     'captcha',
 ]
 
@@ -72,7 +77,9 @@ ROOT_URLCONF = 'crisis_communication.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'App/templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'App/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -254,6 +261,9 @@ GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET', default=None
 # Free geocoding APIs for location detection (no payment required)
 OPENSTREETMAP_API_URL = 'https://nominatim.openstreetmap.org/reverse'
 LOCATIONIQ_API_KEY = config('LOCATIONIQ_API_KEY', default=None)  # Free tier: 5000 requests/day
+
+# OpenWeather API Configuration
+OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY')
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

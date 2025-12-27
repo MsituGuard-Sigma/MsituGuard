@@ -1,0 +1,254 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - TreePlant</title>
+    <link href="{% static 'treeregistration/styles.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'treeregistration/forest-bg.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-container {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .user-type-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+        
+        button {
+            width: 100%;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-link a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 1);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'tree_landing' %}" class="back-btn">← Back</a>
+    <div class="form-container">
+        <h1>Create Account</h1>
+        
+        {% if user_type == 'organization' %}
+            <div class="user-type-info">
+                <strong>🏢 Organization Account</strong><br>
+                Perfect for companies and groups planning large-scale tree planting projects
+            </div>
+        {% else %}
+            <div class="user-type-info">
+                <strong>🌳 Individual Account</strong><br>
+                Great for personal tree planting goals and environmental impact tracking
+            </div>
+        {% endif %}
+        
+        {% if form.errors %}
+            <div class="error-messages" style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                {% for field, errors in form.errors.items %}
+                    <strong>{{ field|title }}:</strong>
+                    {% for error in errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="user_type" value="{{ user_type }}">
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username:</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div style="color: #c62828; font-size: 0.9rem;">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email:</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div style="color: #c62828; font-size: 0.9rem;">{{ form.email.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password:</label>
+                <div style="position: relative;">
+                    {{ form.password1 }}
+                    <button type="button" onclick="togglePassword('{{ form.password1.id_for_label }}')"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem;" id="toggleBtn1">
+                        👁️
+                    </button>
+                </div>
+                {% if form.password1.errors %}
+                    <div style="color: #c62828; font-size: 0.9rem;">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                <div style="position: relative;">
+                    {{ form.password2 }}
+                    <button type="button" onclick="togglePassword2('{{ form.password2.id_for_label }}')"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem;" id="toggleBtn2">
+                        👁️
+                    </button>
+                </div>
+                {% if form.password2.errors %}
+                    <div style="color: #c62828; font-size: 0.9rem;">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <button type="submit">Create Account</button>
+        </form>
+        
+        <div class="login-link">
+            Already have an account? <a href="{% url 'tree_login' %}">Sign In</a>
+        </div>
+    </div>
+    <script>
+        let password1Visible = false;
+        let password2Visible = false;
+        
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleBtn = document.getElementById('toggleBtn1');
+            
+            password1Visible = !password1Visible;
+            
+            if (password1Visible) {
+                passwordField.type = 'text';
+                toggleBtn.innerHTML = '🙈';
+                toggleBtn.title = 'Hide password';
+            } else {
+                passwordField.type = 'password';
+                toggleBtn.innerHTML = '👁️';
+                toggleBtn.title = 'Show password';
+            }
+            
+            passwordField.focus();
+        }
+        
+        function togglePassword2(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleBtn = document.getElementById('toggleBtn2');
+            
+            password2Visible = !password2Visible;
+            
+            if (password2Visible) {
+                passwordField.type = 'text';
+                toggleBtn.innerHTML = '🙈';
+                toggleBtn.title = 'Hide password';
+            } else {
+                passwordField.type = 'password';
+                toggleBtn.innerHTML = '👁️';
+                toggleBtn.title = 'Show password';
+            }
+            
+            passwordField.focus();
+        }
+        
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn1 = document.getElementById('toggleBtn1');
+            const toggleBtn2 = document.getElementById('toggleBtn2');
+            if (toggleBtn1) toggleBtn1.title = 'Show password';
+            if (toggleBtn2) toggleBtn2.title = 'Show password';
+        });
+    </script>
+</body>
+</html>

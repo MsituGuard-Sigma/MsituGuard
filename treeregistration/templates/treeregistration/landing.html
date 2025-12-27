@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreePlant - Plant Trees, Save Earth</title>
+    <link href="{% static 'treeregistration/styles.css' %}" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("{% static 'treeregistration/forest-bg.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .landing-container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px 20px;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.8rem;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            line-height: 1.6;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .catchphrase {
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .catchphrase:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(76, 175, 80, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+        
+        .catchphrase h2 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: #2e7d32;
+            text-shadow: none;
+        }
+        
+        .catchphrase p {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .cta-section {
+            margin-top: 60px;
+        }
+        
+        .cta-text {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .account-options {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .account-card {
+            background: rgba(46, 125, 50, 0.9);
+            padding: 30px 25px;
+            border-radius: 15px;
+            min-width: 250px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .account-card:hover {
+            transform: translateY(-5px);
+            background: rgba(46, 125, 50, 1);
+            border-color: #4caf50;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: white;
+            color: #2e7d32;
+            padding: 12px 25px;
+            border: 2px solid #2e7d32;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2e7d32;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        }
+        
+        .bottom-actions {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .login-link {
+            font-size: 1.1rem;
+            background: rgba(0,0,0,0.7);
+            padding: 15px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-link a {
+            color: #4caf50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <h1 class="hero-title">🌱 TreePlant</h1>
+        <p class="hero-subtitle">
+            Join the global movement to restore our planet.<br>
+            Plant trees, track your impact, and help create a greener future for all.
+        </p>
+        
+        <div class="catchphrase">
+            <h2>"Register Your Trees, Transform Our World"</h2>
+            <p>Every tree you plant is a step towards a healthier planet. Track your environmental impact and be part of the solution.</p>
+        </div>
+        
+        <div class="cta-section">
+            <p class="cta-text">Ready to make a difference? Choose your account type:</p>
+            
+            <div class="account-options">
+                <div class="account-card" onclick="window.location.href='{% url 'tree_register' %}?type=individual'">
+                    <div class="card-icon">🌳</div>
+                    <h3 class="card-title">Individual</h3>
+                    <p class="card-description">Perfect for personal tree planting goals and environmental impact tracking</p>
+                    <a href="{% url 'tree_register' %}?type=individual" class="btn">Join as Individual</a>
+                </div>
+                
+                <div class="account-card" onclick="window.location.href='{% url 'tree_register' %}?type=organization'">
+                    <div class="card-icon">🏢</div>
+                    <h3 class="card-title">Organization</h3>
+                    <p class="card-description">For companies, NGOs, and groups planning large-scale tree planting initiatives</p>
+                    <a href="{% url 'tree_register' %}?type=organization" class="btn">Join as Organization</a>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="bottom-actions">
+            <div class="login-link">
+                Already have an account? <a href="{% url 'tree_login' %}">Sign In</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

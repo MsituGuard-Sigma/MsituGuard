@@ -1,0 +1,357 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.username }}'s Profile</title>
+    <link href="{% static 'treeregistration/styles.css' %}" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("{% static 'treeregistration/forest-bg.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .profile-container {
+            max-width: 1000px;
+            margin: 80px auto 0;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .profile-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .edit-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .edit-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4caf50;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn {
+            background: #4caf50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .trees-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .tree-photo {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .tree-photo:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .tree-photo img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ffcdd2;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            color: #c8e6c9;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'tree_landing' %}" class="back-btn">← Home</a>
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1 class="profile-title">🌳 {{ request.user.username }}'s Profile</h1>
+        </div>
+        
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🌳</div>
+                <div style="font-size: 2rem; font-weight: 600; color: #4caf50;">{{ tree_count }}</div>
+                <div>Trees Planted</div>
+            </div>
+            
+            <div class="stat-card">
+                <div style="font-size: 2rem; margin-bottom: 10px;">
+                    {% if badge == 'Gold' %}🥇
+                    {% elif badge == 'Silver' %}🥈
+                    {% elif badge == 'Bronze' %}🥉
+                    {% elif badge == 'Diamond' %}💎
+                    {% else %}🌱{% endif %}
+                </div>
+                <div style="font-size: 1.5rem; font-weight: 600; color: #4caf50;">{{ badge }}</div>
+                <div>Current Badge</div>
+            </div>
+        </div>
+        
+        <!-- Edit Profile Section -->
+        <div class="edit-section">
+            <h2 class="edit-title">⚙️ Edit Profile</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="POST" action="{% url 'tree_profile' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_username">
+                
+                <div class="form-group">
+                    <label for="new_username">Username:</label>
+                    <input type="text" id="new_username" name="new_username" value="{{ request.user.username }}" required>
+                </div>
+                
+                <button type="submit" class="btn">Update Username</button>
+            </form>
+            
+            <hr style="margin: 30px 0; border: 1px solid rgba(255,255,255,0.2);">
+            
+            <form method="POST" action="{% url 'tree_profile' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+                
+                <div class="form-group">
+                    <label for="current_password">Current Password:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="current_password" name="current_password" required>
+                        <button type="button" onclick="togglePasswordField('current_password', 'toggleBtnCurrent')"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem; color: white;" id="toggleBtnCurrent">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_password1">New Password:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="new_password1" name="new_password1" required>
+                        <button type="button" onclick="togglePasswordField('new_password1', 'toggleBtnNew1')"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem; color: white;" id="toggleBtnNew1">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_password2">Confirm New Password:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="new_password2" name="new_password2" required>
+                        <button type="button" onclick="togglePasswordField('new_password2', 'toggleBtnNew2')"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem; color: white;" id="toggleBtnNew2">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">Change Password</button>
+            </form>
+        </div>
+        
+        <h2 style="text-align: center; margin-bottom: 20px;">📸 Your Tree Gallery</h2>
+        <div class="trees-gallery">
+            {% for tree in trees %}
+                <div class="tree-photo">
+                    <img src="{{ tree.photo.url }}" alt="Tree Photo">
+                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">{{ tree.uploaded_at|date:"M d, Y" }}</p>
+                </div>
+            {% empty %}
+                <div style="text-align: center; grid-column: 1 / -1; padding: 40px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">🌱</div>
+                    <p style="font-size: 1.2rem; opacity: 0.8;">No trees uploaded yet. Start your journey!</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{% url 'tree_upload' %}" class="btn">📤 Upload Tree Photo</a>
+            <a href="{% url 'tree_home' %}" class="btn btn-secondary">🏠 Dashboard</a>
+        </div>
+    </div>
+    <script>
+        const passwordStates = {
+            current_password: false,
+            new_password1: false,
+            new_password2: false
+        };
+        
+        function togglePasswordField(fieldId, btnId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleBtn = document.getElementById(btnId);
+            
+            passwordStates[fieldId] = !passwordStates[fieldId];
+            
+            if (passwordStates[fieldId]) {
+                passwordField.type = 'text';
+                toggleBtn.innerHTML = '🙈';
+                toggleBtn.title = 'Hide password';
+            } else {
+                passwordField.type = 'password';
+                toggleBtn.innerHTML = '👁️';
+                toggleBtn.title = 'Show password';
+            }
+            
+            passwordField.focus();
+        }
+        
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = ['toggleBtnCurrent', 'toggleBtnNew1', 'toggleBtnNew2'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.title = 'Show password';
+            });
+        });
+    </script>
+</body>
+</html>

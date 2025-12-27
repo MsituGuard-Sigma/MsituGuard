@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - TreePlant Admin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .admin-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .filter-buttons {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .btn:hover, .btn.active {
+            background: #4caf50;
+            border-color: #4caf50;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        
+        .users-table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: rgba(76, 175, 80, 0.2);
+            font-weight: 600;
+            color: #4caf50;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .user-badge {
+            background: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .user-badge.individual {
+            background: #2196f3;
+        }
+        
+        .user-badge.organisation {
+            background: #ff9800;
+        }
+        
+        .badge-gold { background: #ffd700; color: #333; }
+        .badge-silver { background: #c0c0c0; color: #333; }
+        .badge-bronze { background: #cd7f32; color: white; }
+        .badge-diamond { background: #b9f2ff; color: #333; }
+        .badge-none { background: #666; color: white; }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            color: #c8e6c9;
+        }
+        
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #ffcdd2;
+        }
+        
+        .delete-form {
+            display: inline;
+        }
+        
+        .confirm-delete {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">👥 User Management</h1>
+            <p>Manage individual users and organizations</p>
+        </div>
+        
+        <div class="filter-buttons">
+            <a href="{% url 'tree_admin_users' %}" class="btn {% if current_type == 'all' %}active{% endif %}">All Users</a>
+            <a href="{% url 'tree_admin_users' %}?type=individual" class="btn {% if current_type == 'individual' %}active{% endif %}">👤 Individuals</a>
+            <a href="{% url 'tree_admin_users' %}?type=organisation" class="btn {% if current_type == 'organisation' %}active{% endif %}">🏢 Organizations</a>
+            <a href="{% url 'tree_admin_dashboard' %}" class="btn">📊 Dashboard</a>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="users-table">
+            <h2>
+                {% if current_type == 'individual' %}Individual Users
+                {% elif current_type == 'organisation' %}Organizations
+                {% else %}All Users{% endif %}
+                ({{ users.count }})
+            </h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Type</th>
+                        <th>Trees Planted</th>
+                        <th>Badge</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td><strong>{{ user.username }}</strong></td>
+                            <td>{{ user.email|default:"No email" }}</td>
+                            <td>
+                                <span class="user-badge {{ user.user_type }}">
+                                    {% if user.user_type == 'individual' %}👤{% else %}🏢{% endif %}
+                                    {{ user.user_type|title }}
+                                </span>
+                            </td>
+                            <td>{{ user.tree_count }}</td>
+                            <td>
+                                <span class="user-badge badge-{{ user.badge|lower }}">
+                                    {% if user.badge == 'Gold' %}🥇
+                                    {% elif user.badge == 'Silver' %}🥈
+                                    {% elif user.badge == 'Bronze' %}🥉
+                                    {% elif user.badge == 'Diamond' %}💎
+                                    {% else %}🌱{% endif %}
+                                    {{ user.badge }}
+                                </span>
+                            </td>
+                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            <td>
+                                {% if not user.is_staff %}
+                                    <form method="POST" action="{% url 'tree_admin_delete_user' user.id %}" class="delete-form" onsubmit="return confirm('Are you sure you want to delete {{ user.username }}? This action cannot be undone.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                                    </form>
+                                {% else %}
+                                    <span style="opacity: 0.5;">Admin User</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <div style="font-size: 3rem; margin-bottom: 20px;">🌱</div>
+                                <p>No users found.</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

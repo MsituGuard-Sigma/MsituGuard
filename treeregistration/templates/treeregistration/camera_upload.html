@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Tree Photo - TreePlant</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'treeregistration/forest-bg.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 1);
+            transform: scale(1.05);
+        }
+        
+        .camera-container {
+            max-width: 600px;
+            margin: 80px auto;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+        
+        #video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        #canvas {
+            display: none;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #4caf50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #preview {
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .info-text {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'tree_home' %}" class="back-btn">← Dashboard</a>
+    
+    <div class="camera-container">
+        <h1>📸 Take Your Tree Photo</h1>
+        
+        <div class="info-text">
+            <strong>📋 Instructions:</strong><br>
+            • Use your camera to take a fresh photo of your tree<br>
+            • Gallery uploads are disabled to ensure authenticity<br>
+            • Make sure your tree is clearly visible in the frame
+        </div>
+        
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+        <img id="preview" alt="Photo preview">
+        
+        <div class="controls">
+            <button id="startCamera" class="btn">Start Camera</button>
+            <button id="capturePhoto" class="btn" disabled>Capture Photo</button>
+            <button id="retakePhoto" class="btn" style="display:none;">Retake Photo</button>
+            <button id="uploadPhoto" class="btn" style="display:none;">Upload Tree Photo</button>
+        </div>
+        
+        <form id="uploadForm" method="POST" enctype="multipart/form-data" style="display:none;">
+            {% csrf_token %}
+            <input type="file" id="photoInput" name="photo" accept="image/*" capture="camera" style="display:none;">
+        </form>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const preview = document.getElementById('preview');
+        const startCameraBtn = document.getElementById('startCamera');
+        const captureBtn = document.getElementById('capturePhoto');
+        const retakeBtn = document.getElementById('retakePhoto');
+        const uploadBtn = document.getElementById('uploadPhoto');
+        const uploadForm = document.getElementById('uploadForm');
+        const photoInput = document.getElementById('photoInput');
+        
+        let stream = null;
+        let capturedBlob = null;
+
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                startCameraBtn.style.display = 'none';
+                captureBtn.disabled = false;
+            } catch (err) {
+                alert('Camera access denied or not available. Please allow camera access and try again.');
+                console.error('Camera error:', err);
+            }
+        });
+
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            canvas.toBlob((blob) => {
+                capturedBlob = blob;
+                preview.src = URL.createObjectURL(blob);
+                preview.style.display = 'block';
+                video.style.display = 'none';
+                
+                captureBtn.style.display = 'none';
+                retakeBtn.style.display = 'inline-block';
+                uploadBtn.style.display = 'inline-block';
+                
+                // Stop camera stream
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+            }, 'image/jpeg', 0.8);
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            preview.style.display = 'none';
+            video.style.display = 'block';
+            retakeBtn.style.display = 'none';
+            uploadBtn.style.display = 'none';
+            captureBtn.style.display = 'inline-block';
+            startCameraBtn.click();
+        });
+
+        uploadBtn.addEventListener('click', () => {
+            if (capturedBlob) {
+                const file = new File([capturedBlob], 'tree_photo.jpg', { type: 'image/jpeg' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                photoInput.files = dataTransfer.files;
+                uploadForm.submit();
+            }
+        });
+    </script>
+</body>
+</html>

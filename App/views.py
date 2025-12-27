@@ -6,7 +6,7 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
-from .models import Profile, Resource, EmergencyContact, Report, ResourceRequest, ForumPost, Comment, TreePlanting, Token, Reward, UserReward, FireRiskPrediction, CitizenFireReport, TreePrediction, CarbonTransaction #Post
+from .models import Profile, Resource, EmergencyContact, Report, ResourceRequest, ForumPost, Comment, TreePlanting, TreePrediction
 # Keep Alert as alias for backward compatibility
 Alert = Report
 from .forms import UserRegistrationForm,  ResourceForm, ReportForm, ProfileForm,  ResourceRequestForm, ForumPostForm,  FormComment, EditProfileForm, PasswordChangingForm
@@ -26,16 +26,33 @@ from django.views.decorators.http import require_POST
 from .forms import UserForm, ProfileForm
 from django.utils import timezone
 import os
+from django.http import HttpResponse
+import csv
+from datetime import datetime
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import logging
+from django.contrib.auth.models import User
+from .models import Profile  # Assuming Profile model is in the same app
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from django.urls import reverse
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+# from django.core.mail import EmailMultiAlternatives
+# from django.conf import settings
+# from .models import Notification
+# from django.core.mail import EmailMultiAlternatives
+# from django.conf import settings
+# from django.utils.http import urlsafe_base64_decode
 
-
-# from .forms import CustomLoginForm
-
-
-# from App.models import CustomUser
-# from django.contrib.auth.forms import UserCreationForm
-# from .forms import CustomUserCreationForm
-
- 
 # Create your views here.
 
 class HomeView(TemplateView):
@@ -65,25 +82,14 @@ class HomeView(TemplateView):
                 context['profile'] = None
         
         return context
-
-
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('home')
-
-
-# class CustomLoginView(LoginView):
-#     authentication_form = AuthenticationForm
-#     template_name = 'registration/login.html'
-
-
 
 class ResourceListView(LoginRequiredMixin, ListView):
     model = Resource
     template_name = 'App/resource_list.html'
     context_object_name = 'resources'
     login_url = 'login'
-
-    
     def get_queryset(self):
         return Resource.objects.filter(is_approved=True).order_by('-contributor_id')[:10]
 
@@ -125,21 +131,11 @@ class ResourceCreateView(LoginRequiredMixin, CreateView):
         form.instance.is_approved = False  # Admin will approve manually
         self.object = form.save()
         
-        # Award token for resource sharing
-        Token.objects.create(
-            user=self.request.user,
-            action_type='resource_share',
-            tokens_earned=1,
-            description=f'Resource shared: {self.object.resource_type}'
-        )
-        self.request.user.profile.add_tokens(1, f'Resource shared: {self.object.resource_type}')
-        messages.success(self.request, f'🪙 You earned 1 token for sharing a resource! Total tokens: {self.request.user.profile.token_balance}')
+        messages.success(self.request, 'Resource shared successfully! Thank you for contributing to the community.')
         
         return render(self.request, self.template_name, {
             'submitted': True  # Pass a flag to the template
         })
-
-
 class ResourceUpdateView(LoginRequiredMixin, UpdateView):
     model = Resource
     form_class = ResourceForm
@@ -186,6 +182,25 @@ class ProfileDetailView(LoginRequiredMixin, FormMixin, DetailView):
         context = super().get_context_data(**kwargs)
         if 'form' not in context:
             context['form'] = self.get_form()
+        
+        # Add tree registration data
+        try:
+            from treeregistration.models import Tree, UserProfile
+            user_profile = UserProfile.objects.filter(user=self.request.user).first()
+            if user_profile:
+                context['tree_count'] = user_profile.tree_count
+                context['badge'] = user_profile.badge
+                context['trees'] = Tree.objects.filter(user=self.request.user).order_by('-uploaded_at')[:12]
+            else:
+                context['tree_count'] = 0
+                context['badge'] = 'None'
+                context['trees'] = []
+        except Exception as e:
+            # If tree registration app is not available, set defaults
+            context['tree_count'] = 0
+            context['badge'] = 'None'
+            context['trees'] = []
+        
         return context
 
     def get_form(self, form_class=None):
@@ -242,20 +257,20 @@ class ProfileDetailView(LoginRequiredMixin, FormMixin, DetailView):
         return super().form_valid(form)
         
 
-class AlertListView(LoginRequiredMixin, ListView):
+class ReportListView(LoginRequiredMixin, ListView):
     model = Report
-    template_name = 'App/alert_list.html'
-    context_object_name = 'alerts'
+    template_name = 'App/report_list.html'
+    context_object_name = 'reports'
     login_url = 'login'
 
     def get_queryset(self):
         return Report.objects.filter(reporter=self.request.user)
 
 
-class AlertCreateView(LoginRequiredMixin, CreateView):
+class ReportCreateView(CreateView):
     model = Report
     form_class = ReportForm
-    template_name = 'App/alert_form.html'
+    template_name = 'App/report_form.html'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -264,7 +279,7 @@ class AlertCreateView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        if hasattr(self.request.user, 'profile'):
+        if self.request.user.is_authenticated and hasattr(self.request.user, 'profile'):
             initial['phoneNumber'] = self.request.user.profile.phoneNumber
         return initial
 
@@ -272,7 +287,9 @@ class AlertCreateView(LoginRequiredMixin, CreateView):
         try:
             # Save the report with files
             report = form.save(commit=False)
-            report.reporter = self.request.user
+            # Handle anonymous users
+            if self.request.user.is_authenticated:
+                report.reporter = self.request.user
             report.status = 'new'
             report.save()
             print(f"Report saved successfully: {report.id}")
@@ -315,18 +332,14 @@ class AlertCreateView(LoginRequiredMixin, CreateView):
             # If it's a Cloudinary error, still save the report without image
             if "Empty file" in str(e) or "cloudinary" in str(e).lower():
                 messages.success(self.request, 'Environmental Report Successfully Created! Your report has been submitted and will be reviewed immediately.')
-                return redirect('alert_create')
+                return redirect('report_create')
             else:
                 messages.error(self.request, f'Error submitting report: {str(e)}')
                 return self.form_invalid(form)
     
     def send_submission_email(self, report):
-        from django.core.mail import EmailMultiAlternatives
-        from django.conf import settings
-        from django.urls import reverse
-        
         try:
-            dashboard_url = self.request.build_absolute_uri(reverse('my_reports'))
+            dashboard_url = self.request.build_absolute_uri(reverse('home'))
             
             # Use the styled HTML email template
             html_message = f"""
@@ -393,30 +406,29 @@ class AlertCreateView(LoginRequiredMixin, CreateView):
             print(f"Email sending failed: {e}")
             raise e
 
-
-class AlertUpdateView(UpdateView):
+class ReportUpdateView(UpdateView):
     model = Report
     form_class = ReportForm
-    template_name = 'App/alert_form.html'
-    success_url = reverse_lazy('alert_list')
+    template_name = 'App/report_form.html'
+    success_url = reverse_lazy('report_list')
 
     def get_queryset(self):
         return Report.objects.filter(reporter=self.request.user)  
 
         
-class LatestAlertsView(ListView):
+class LatestReportsView(ListView):
     model = Report
-    template_name = 'App/latest_alerts.html'  
-    context_object_name = 'alerts'
+    template_name = 'App/latest_reports.html'  
+    context_object_name = 'reports'
 
     def get_queryset(self):
         return Report.objects.filter(status__in=['verified', 'resolved']).order_by('-timestamp')[:10]
 
    
-class AlertDetailView(DetailView):
+class ReportDetailView(DetailView):
     model = Report
-    template_name = 'App/alert_detail.html'
-    context_object_name = 'alert'
+    template_name = 'App/report_detail.html'
+    context_object_name = 'report'
 
 @login_required
 def remove_profile_picture(request):
@@ -543,17 +555,7 @@ class ForumPostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         response = super().form_valid(form)
-        
-        # Award token for forum post
-        Token.objects.create(
-            user=self.request.user,
-            action_type='forum_post',
-            tokens_earned=1,
-            description=f'Forum post: {form.instance.title}'
-        )
-        self.request.user.profile.add_tokens(1, f'Forum post: {form.instance.title}')
-        messages.success(self.request, f'🪙 You earned 1 token for creating a forum post! Total tokens: {self.request.user.profile.token_balance}')
-        
+        messages.success(self.request, 'Forum post created successfully!')
         return response
 
 class ForumPostDetailView(LoginRequiredMixin, DetailView):
@@ -648,16 +650,13 @@ class profile(LoginRequiredMixin, generic.View):
         return render(request, self.template_name, context)
 
 
-class ApprovedAlertListView(ListView):
+class ApprovedReportListView(ListView):
     model = Report
     template_name = 'App/approved_alerts.html'  # The template where reports will be rendered
     context_object_name = 'approved_alerts'
 
     def get_queryset(self):
         return Report.objects.filter(status__in=['verified', 'resolved'])
-
-
-
 
 class ApprovedContributeListView(ListView):
     model = Resource
@@ -707,23 +706,76 @@ class OrganizationDashboardView(LoginRequiredMixin, TemplateView):
         context['total_tree_planters'] = tree_plantings.values('planter').distinct().count()
         context['verified_tree_plantings'] = tree_plantings.filter(status='verified').count()
         
-        # Fire safety data
-        fire_predictions = FireRiskPrediction.objects.all().order_by('-created_at')
-        fire_reports = CitizenFireReport.objects.all().order_by('-created_at')
-        
-        context['fire_predictions'] = fire_predictions[:10]
-        context['fire_reports'] = fire_reports[:10]
-        context['total_fire_predictions'] = fire_predictions.count()
-        context['total_fire_reports'] = fire_reports.count()
-        context['high_risk_predictions'] = fire_predictions.filter(risk_level__in=['HIGH', 'EXTREME']).count()
-        context['recent_fire_reports'] = fire_reports.filter(created_at__gte=timezone.now()-timezone.timedelta(days=7)).count()
+        # Tree Registration data from treeregistration app
+        try:
+            from treeregistration.models import Tree, UserProfile
+            
+            # All registered trees
+            registered_trees = Tree.objects.all().order_by('-uploaded_at')
+            context['registered_trees'] = registered_trees
+            context['total_registered_trees'] = registered_trees.count()
+            
+            # All user profiles with tree counts
+            user_profiles = UserProfile.objects.all().order_by('-tree_count')
+            context['user_profiles'] = user_profiles
+            context['total_tree_users'] = user_profiles.count()
+            
+            # Organization-specific data
+            org_profiles = user_profiles.filter(user_type='organisation')
+            individual_profiles = user_profiles.filter(user_type='individual')
+            
+            context['org_tree_users'] = org_profiles.count()
+            context['individual_tree_users'] = individual_profiles.count()
+            
+            # Organization-specific registered trees
+            org_registered_trees = registered_trees.filter(user__treeregistration_profile__user_type='organisation')
+            individual_registered_trees = registered_trees.filter(user__treeregistration_profile__user_type='individual')
+            
+            context['org_registered_trees'] = org_registered_trees
+            context['individual_registered_trees'] = individual_registered_trees
+            context['org_registered_trees_count'] = org_registered_trees.count()
+            context['individual_registered_trees_count'] = individual_registered_trees.count()
+            
+            # Badge statistics for all users
+            context['diamond_users'] = user_profiles.filter(badge='Diamond').count()
+            context['gold_users'] = user_profiles.filter(badge='Gold').count()
+            context['silver_users'] = user_profiles.filter(badge='Silver').count()
+            context['bronze_users'] = user_profiles.filter(badge='Bronze').count()
+            
+            # Organization badge statistics
+            context['org_diamond_users'] = org_profiles.filter(badge='Diamond').count()
+            context['org_gold_users'] = org_profiles.filter(badge='Gold').count()
+            context['org_silver_users'] = org_profiles.filter(badge='Silver').count()
+            context['org_bronze_users'] = org_profiles.filter(badge='Bronze').count()
+            
+            # Recent organization registrations
+            context['recent_org_trees'] = Tree.objects.filter(
+                user__treeregistration_profile__user_type='organisation'
+            ).order_by('-uploaded_at')[:6]
+            
+        except ImportError:
+            # If treeregistration app is not available
+            context['registered_trees'] = []
+            context['total_registered_trees'] = 0
+            context['user_profiles'] = []
+            context['total_tree_users'] = 0
+            context['org_tree_users'] = 0
+            context['individual_tree_users'] = 0
+            context['org_registered_trees'] = []
+            context['individual_registered_trees'] = []
+            context['org_registered_trees_count'] = 0
+            context['individual_registered_trees_count'] = 0
+            context['diamond_users'] = 0
+            context['gold_users'] = 0
+            context['silver_users'] = 0
+            context['bronze_users'] = 0
+            context['org_diamond_users'] = 0
+            context['org_gold_users'] = 0
+            context['org_silver_users'] = 0
+            context['org_bronze_users'] = 0
+            context['recent_org_trees'] = []
         
         return context
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from .soil_detector import detect_soil_with_mistral, detect_region_county
 
 @csrf_exempt
 def update_report_status(request, report_id):
@@ -735,38 +787,7 @@ def update_report_status(request, report_id):
             report.status = data['status']
             report.save()
             
-            # Award tokens and send notification if verified
-            if data['status'] == 'verified' and old_status != 'verified':
-                tokens_awarded = report.award_tokens()
-                
-                # Award small carbon credits for environmental monitoring
-                if not hasattr(report, 'carbon_credits_awarded') or not report.carbon_credits_awarded:
-                    # Award 0.001 tonnes CO2 credits for environmental monitoring
-                    report.reporter.profile.add_carbon_credits(
-                        0.001,
-                        f'Environmental monitoring: {report.title}'
-                    )
-                    
-                    # Create transaction record for carbon credits
-                    CarbonTransaction.objects.create(
-                        user=report.reporter,
-                        transaction_type='earn',
-                        amount=0.001,
-                        value_kes=0.3,
-                        description=f'Environmental monitoring: {report.title}'
-                    )
-                    
-                    print(f"Awarded 0.001 carbon credits to {report.reporter.username} for environmental report")
-                
-                # Award verification payment to organization (KES 5 per report verification)
-                if request.user.profile.account_type == 'organization':
-                    verification_payment = 5  # KES 5 per report verification
-                    # Add to organization's token balance as verification earnings
-                    request.user.profile.add_tokens(verification_payment, f'Report verification payment: {report.title}')
-                    print(f"Awarded KES {verification_payment} to organization {request.user.username} for report verification")
-                
-                if tokens_awarded:
-                    send_report_verification_notification(report)
+            # No notification needed for anonymous reporting
             
             return JsonResponse({'success': True})
         except Exception as e:
@@ -820,49 +841,9 @@ def update_tree_status(request, tree_id):
                 print(f"Tree planting verified: {tree_planting.title}")
                 
                 if tree_planting.planter:
-                    # Registered user - award tokens and send reward notification
-                    tokens_awarded = tree_planting.award_tokens()
-                    
-                    # Skip the complex carbon calculation method
-                    carbon_awarded = True
-                    
-                    # Award immediate carbon credits for verified trees
-                    if not tree_planting.carbon_credits_calculated:
-                        # Simple carbon calculation: 0.025 tonnes CO2 per tree (25kg)
-                        credits_earned = tree_planting.number_of_trees * 0.025
-                        
-                        tree_planting.planter.profile.add_carbon_credits(
-                            credits_earned,
-                            f'Carbon credits from {tree_planting.number_of_trees} verified trees'
-                        )
-                        
-                        # Create transaction record for carbon credits
-                        CarbonTransaction.objects.create(
-                            user=tree_planting.planter,
-                            transaction_type='earn',
-                            amount=credits_earned,
-                            value_kes=credits_earned * 300,
-                            description=f'Carbon credits from {tree_planting.number_of_trees} verified trees'
-                        )
-                        
-                        tree_planting.carbon_credits_calculated = True
-                        tree_planting.save(update_fields=['carbon_credits_calculated'])
-                        print(f"Awarded {credits_earned:.3f} carbon credits to {tree_planting.planter.username}")
-                    
-                    # Award verification payment to organization (KES 5 per tree verification)
-                    if request.user.profile.account_type == 'organization':
-                        verification_payment = 5  # KES 5 per tree verification
-                        # Add to organization's token balance as verification earnings
-                        request.user.profile.add_tokens(verification_payment, f'Tree verification payment: {tree_planting.title}')
-                        print(f"Awarded KES {verification_payment} to organization {request.user.username} for tree verification")
-                    
-                    if tokens_awarded or carbon_awarded:
-                        print(f"Tokens and carbon credits awarded to registered user, sending reward email")
-                        send_tree_verification_notification(tree_planting)
-                    else:
-                        print(f"Tokens and carbon credits already awarded to registered user")
-                        # Still send notification even if rewards were already awarded
-                        send_tree_verification_notification(tree_planting)
+                    # Registered user - award tree points
+                    points_awarded = tree_planting.award_tree_points()
+                    send_tree_verification_notification(tree_planting)
                 else:
                     # Unregistered user - send registration encouragement email
                     print(f"Unregistered user - sending registration encouragement email")
@@ -875,15 +856,11 @@ def update_tree_status(request, tree_id):
     return JsonResponse({'success': False})
 
 def send_tree_verification_notification(tree_planting):
-    from django.core.mail import EmailMultiAlternatives
-    from django.conf import settings
-    from .models import Notification
-    
     try:
         print(f"Starting tree verification notification for: {tree_planting.title}")
         
-        # Calculate token rewards (already handled by award_tokens method)
-        tokens_earned = tree_planting.number_of_trees * 2  # 2 tokens per tree
+        # Calculate tree points
+        points_earned = tree_planting.number_of_trees
         
         # Determine badge based on tree count
         if tree_planting.number_of_trees >= 50:
@@ -905,25 +882,14 @@ def send_tree_verification_notification(tree_planting):
         if user_tree_count == 1:  # First verified tree planting
             tree_planting.planter.profile.add_badge("🌍 15 Billion Trees Initiative Participant")
         
-        print(f"Awarded {tokens_earned} tokens and badge to user")
+        print(f"Awarded {points_earned} tree points and badge to user")
         
         # Get profile (should already exist)
         profile = tree_planting.planter.profile
-        print(f"Updated profile with total tokens: {profile.total_tokens_earned}")
+        print(f"Updated profile with tree points: {profile.tree_points}")
         
-        # Get carbon credits information
-        carbon_summary = tree_planting.carbon_summary
-        carbon_portfolio = profile.carbon_portfolio_summary
-        
-        # Create notification with rewards
-        Notification.objects.create(
-            user=tree_planting.planter,
-            notification_type='tree_verified',
-            title='Tree Planting Verified - Tokens Earned!',
-            message=f'Your tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens and the "{badge}" badge.',
-            tree_planting=tree_planting
-        )
-        print("Created notification")
+        # No notification creation for anonymous reporting
+        print("Tree planting verified, no notification created")
         
         # Send HTML email with rewards
         html_message = f"""
@@ -966,42 +932,15 @@ def send_tree_verification_notification(tree_planting):
                         <h3 style="color: #92400e; margin-top: 0;">🎉 Congratulations! You've Earned Rewards!</h3>
                         <div style="text-align: center;">
                             <div class="reward-item">
-                                <div style="font-size: 24px; font-weight: bold; color: #22c55e;">{tokens_earned}</div>
-                                <div style="color: #6b7280; font-size: 14px;">Tokens Earned</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #22c55e;">{points_earned}</div>
+                                <div style="color: #6b7280; font-size: 14px;">Tree Points Earned</div>
                             </div>
                             <div class="reward-item">
                                 <div style="font-size: 18px; font-weight: bold; color: #f59e0b;">{badge}</div>
                                 <div style="color: #6b7280; font-size: 14px;">New Badge</div>
                             </div>
-                            <div class="reward-item">
-                                <div style="font-size: 20px; font-weight: bold; color: #0ea5e9;">{carbon_summary['carbon_credits']:.3f}t</div>
-                                <div style="color: #6b7280; font-size: 14px;">Carbon Credits</div>
-                            </div>
-                            <div class="reward-item">
-                                <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">{profile.total_tokens_earned}</div>
-                                <div style="color: #6b7280; font-size: 14px;">Total Tokens</div>
-                            </div>
                         </div>
                         <p style="color: #92400e; margin: 10px 0; font-weight: 600;">Your Rank: {profile.conservation_rank}</p>
-                    </div>
-                    
-                    <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #0ea5e9;">
-                        <h4 style="color: #0c4a6e; margin-top: 0;">💰 Carbon Credits Portfolio</h4>
-                        <div style="display: flex; justify-content: space-around; margin: 15px 0;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 18px; font-weight: bold; color: #0ea5e9;">{carbon_portfolio['balance']:.3f}t</div>
-                                <small style="color: #6b7280;">Total Credits</small>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 18px; font-weight: bold; color: #22c55e;">KES {carbon_portfolio['estimated_value']:.0f}</div>
-                                <small style="color: #6b7280;">Portfolio Value</small>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 18px; font-weight: bold; color: #f59e0b;">{carbon_portfolio['co2_impact_kg']:.1f}kg/year</div>
-                                <small style="color: #6b7280;">CO2 Absorbed</small>
-                            </div>
-                        </div>
-                        <p style="color: #0c4a6e; margin: 10px 0; font-size: 14px;">Your trees are generating verified carbon credits worth real money!</p>
                     </div>
                     
                     <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #0ea5e9;">
@@ -1012,7 +951,7 @@ def send_tree_verification_notification(tree_planting):
                     <p>Your contribution to Kenya's 15 billion trees initiative is now officially recognized. Thank you for being an environmental guardian!</p>
                     
                     <div style="text-align: center;">
-                        <a href="http://127.0.0.1:8000/my-reports/" class="btn">View Your Dashboard</a>
+                        <a href="http://127.0.0.1:8000/" class="btn">Visit MsituGuard</a>
                     </div>
                     
                     <p style="margin-top: 30px;">Keep up the great work protecting our forests and environment. 🌿</p>
@@ -1032,8 +971,8 @@ def send_tree_verification_notification(tree_planting):
         print(f"Is first time planter: {user_tree_count == 1}")
         
         msg = EmailMultiAlternatives(
-            subject='Tree Planting Verified - Tokens & Carbon Credits Earned! - MsituGuard',
-            body=f'Hello {tree_planting.planter.first_name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens, {carbon_summary["carbon_credits"]:.3f}t carbon credits, and the "{badge}" badge.',
+            subject='Tree Planting Verified - Points & Badge Earned! - MsituGuard',
+            body=f'Hello {tree_planting.planter.first_name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {points_earned} tree points and the "{badge}" badge.',
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[tree_planting.planter.email]
         )
@@ -1046,90 +985,11 @@ def send_tree_verification_notification(tree_planting):
         import traceback
         traceback.print_exc()
 
-def send_report_verification_notification(report):
-    from django.core.mail import EmailMultiAlternatives
-    from django.conf import settings
-    from .models import Notification
-    
-    try:
-        # Create notification
-        Notification.objects.create(
-            user=report.reporter,
-            notification_type='report_verified',
-            title='Environmental Report Verified - Token Earned!',
-            message=f'Your report "{report.title}" has been verified! You earned 1 token.',
-            report=report
-        )
-        
-        # Send email
-        html_message = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f0fdf4; }}
-                .container {{ max-width: 600px; margin: 0 auto; background-color: white; }}
-                .header {{ background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; }}
-                .content {{ padding: 30px; }}
-                .btn {{ background-color: #22c55e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; }}
-                .reward-box {{ background: linear-gradient(135deg, #fef3c7, #fbbf24); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🌱 MsituGuard</h1>
-                    <h2>🎉 Report Verified!</h2>
-                </div>
-                <div class="content">
-                    <h3>Hello {report.reporter.first_name or report.reporter.username},</h3>
-                    <p>Great news! Your environmental report has been verified by our organization partners.</p>
-                    
-                    <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #22c55e;">
-                        <h4>📋 {report.title}</h4>
-                        <p><strong>Type:</strong> {report.get_report_type_display()}</p>
-                        <p><strong>Location:</strong> {report.location_name}</p>
-                        <p style="color: #22c55e; font-weight: bold;">✅ VERIFIED</p>
-                    </div>
-                    
-                    <div class="reward-box">
-                        <h3 style="color: #92400e; margin-top: 0;">🪙 Token Earned!</h3>
-                        <div style="font-size: 24px; font-weight: bold; color: #22c55e;">1 Token</div>
-                        <p style="color: #92400e; margin: 10px 0;">Thank you for protecting Kenya's environment!</p>
-                    </div>
-                    
-                    <p>Your token has been added to your account. Login to redeem rewards like data bundles, tree kits, and certificates!</p>
-                    
-                    <div style="text-align: center;">
-                        <a href="http://127.0.0.1:8000/rewards/" class="btn">Redeem Your Rewards</a>
-                    </div>
-                    
-                    <p>Best regards,<br><strong>MsituGuard Team</strong></p>
-                </div>
-            </div>
-        </body>
-        </html>
-        """
-        
-        msg = EmailMultiAlternatives(
-            subject='Environmental Report Verified - Token Earned! - MsituGuard',
-            body=f'Your report "{report.title}" has been verified! You earned 1 token. Login to redeem rewards.',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[report.reporter.email]
-        )
-        msg.attach_alternative(html_message, "text/html")
-        msg.send(fail_silently=False)
-        
-    except Exception as e:
-        print(f"Report verification notification failed: {e}")
 
 def send_unregistered_reward_notification(tree_planting):
-    from django.core.mail import EmailMultiAlternatives
-    from django.conf import settings
-    
     try:
         # Calculate rewards
-        tokens_earned = tree_planting.number_of_trees * 2
+        points_earned = tree_planting.number_of_trees
         
         if tree_planting.number_of_trees >= 50:
             badge = "🌳 Forest Hero"
@@ -1253,7 +1113,7 @@ def send_unregistered_reward_notification(tree_planting):
         
         msg = EmailMultiAlternatives(
             subject='Tree Planting Verified - Claim Your Rewards! - MsituGuard',
-            body=f'Hello {name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {tokens_earned} tokens and the "{badge}" badge. Create your free account to claim your complete rewards: {register_url}',
+            body=f'Hello {name},\n\nYour tree planting "{tree_planting.title}" has been verified! You earned {points_earned} tree points and the "{badge}" badge. Create your free account to claim your complete rewards: {register_url}',
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[email]
         )
@@ -1313,106 +1173,7 @@ class TreePlantingsListView(ListView):
     def get_queryset(self):
         return TreePlanting.objects.all().order_by('-planted_date')
 
-class MyReportsView(LoginRequiredMixin, ListView):
-    model = Report
-    template_name = 'App/my_reports.html'
-    context_object_name = 'reports'
-    login_url = 'login'
-    
-    def get_queryset(self):
-        return Report.objects.filter(reporter=self.request.user).order_by('-timestamp')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        reports = self.get_queryset()
-        
-        # Add status counts for user's reports
-        context['new_count'] = reports.filter(status='new').count()
-        context['verified_count'] = reports.filter(status='verified').count()
-        context['resolved_count'] = reports.filter(status='resolved').count()
-        context['total_count'] = reports.count()
-        
-        # Get user's tree plantings
-        tree_plantings = TreePlanting.objects.filter(planter=self.request.user).order_by('-planted_date')
-        context['tree_plantings'] = tree_plantings
-        context['tree_new_count'] = tree_plantings.filter(status='planned').count()
-        context['tree_planted_count'] = tree_plantings.filter(status='planted').count()
-        context['tree_verified_count'] = tree_plantings.filter(status='verified').count()
-        context['tree_total_count'] = tree_plantings.count()
-        
-        # Calculate total rewards from tokens
-        user_tokens = Token.objects.filter(user=self.request.user, action_type='tree_planting')
-        total_tree_tokens = sum(token.tokens_earned for token in user_tokens)
-        context['total_points'] = total_tree_tokens
-        context['total_trees_planted'] = sum(tp.number_of_trees for tp in tree_plantings)
-        
-        # Get user's environmental level and badges
-        try:
-            profile = self.request.user.profile
-            context['environmental_level'] = profile.environmental_level
-            context['badges'] = profile.badges_list
-            context['token_balance'] = profile.token_balance
-            context['total_tokens_earned'] = profile.total_tokens_earned
-            context['conservation_rank'] = profile.conservation_rank
-        except:
-            context['environmental_level'] = '🌾 Environmental Supporter'
-            context['badges'] = []
-            context['token_balance'] = 0
-            context['total_tokens_earned'] = 0
-            context['conservation_rank'] = '🌱 Environmental Supporter'
-        
-        # Get notifications for this user (if table exists)
-        try:
-            from .models import Notification
-            context['notifications'] = Notification.objects.filter(user=self.request.user).order_by('-created_at')[:5]
-        except:
-            context['notifications'] = []
-        
-        return context
 
-# class CustomLoginView(LoginView):
-#     form_class = CustomLoginForm
-#     template_name = 'registration/login.html'
-
-
-# # views.py
-# from django.contrib.auth.views import PasswordResetView
-# from django.shortcuts import redirect
-
-# class CustomPasswordResetView(PasswordResetView):
-#     def form_valid(self, form):
-#         # Perform any custom logic here (like logging or additional redirects)
-#         return redirect('login_url')  # Redirect to a custom login page
-
-
-
-
-
-
-# class ApprovedResourceListView(ListView):
-#     model = ResourceRequest
-#     template_name = 'resources/resources.html'  # Your template to display the list
-#     context_object_name = 'resources'  # This sets the context variable name in the template
-    
-#     # Only show approved resources
-#     def get_queryset(self):
-#         return ResourceRequest.objects.filter(is_approved=True)
-
-
-
-
-
-
-from django.views.decorators.csrf import csrf_exempt
-import logging
-from django.contrib.auth.models import User
-from .models import Profile  # Assuming Profile model is in the same app
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
 
 user_sessions = {}
 
@@ -1678,7 +1439,6 @@ def send_verification_email(user, request, temp_password=None):
 
 def verify_tree_planting_account(request, uidb64, token):
     try:
-        from django.utils.http import urlsafe_base64_decode
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
         
@@ -1699,390 +1459,11 @@ def verify_tree_planting_account(request, uidb64, token):
             'error_message': 'Verification failed. Please try again.'
         })
 
-
-
 class PublicTreeFormView(TemplateView):
     template_name = 'App/public_tree_form.html'
 
-class RewardsView(LoginRequiredMixin, TemplateView):
-    template_name = 'App/rewards.html'
-    login_url = 'login'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        
-        # User token info
-        context['token_balance'] = user.profile.token_balance
-        context['total_tokens_earned'] = user.profile.total_tokens_earned
-        context['conservation_rank'] = user.profile.conservation_rank
-        
-        # Available rewards
-        context['rewards'] = Reward.objects.filter(is_active=True).order_by('token_cost')
-        
-        # User's token history
-        context['token_history'] = Token.objects.filter(user=user).order_by('-earned_at')[:10]
-        
-        # User's redeemed rewards
-        context['redeemed_rewards'] = UserReward.objects.filter(user=user).order_by('-redeemed_at')[:5]
-        
-        # Carbon credits info
-        context['carbon_portfolio'] = user.profile.carbon_portfolio_summary
-        
-        # Carbon transaction history
-        context['carbon_transactions'] = CarbonTransaction.objects.filter(user=user).order_by('-created_at')[:10]
-        
-        return context
-
-@login_required
-def redeem_reward(request, reward_id):
-    if request.method == 'POST':
-        reward = get_object_or_404(Reward, id=reward_id, is_active=True)
-        user = request.user
-        
-        if user.profile.spend_tokens(reward.token_cost):
-            UserReward.objects.create(user=user, reward=reward)
-            messages.success(request, f'Successfully redeemed {reward.name}! Check your email for details.')
-        else:
-            messages.error(request, f'Insufficient tokens. You need {reward.token_cost} tokens but only have {user.profile.token_balance}.')
-    
-    return redirect('rewards')
-
-@login_required
-def carbon_transaction(request):
-    if request.method == 'POST':
-        import json
-        try:
-            data = json.loads(request.body)
-            transaction_type = data.get('type')
-            amount = float(data.get('amount', 0))
-            
-            user = request.user
-            profile = user.profile
-            
-            if transaction_type == 'sell' and profile.carbon_credits_balance >= amount:
-                # Smart pricing: Users get KES 300/tonne (they don't see the margin)
-                user_payment = amount * 300
-                
-                # Deduct credits from user
-                profile.carbon_credits_balance -= amount
-                profile.estimated_carbon_value_kes = profile.carbon_credits_balance * 300
-                profile.save()
-                
-                # Create transaction record
-                CarbonTransaction.objects.create(
-                    user=user,
-                    transaction_type='sell',
-                    amount=amount,
-                    value_kes=user_payment,
-                    description=f'Sold {amount}t CO2 credits to verified buyers',
-                    buyer_name='EcoCarbon Kenya Ltd'
-                )
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': f'Successfully sold {amount}t CO2 credits for KES {user_payment:.0f}',
-                    'new_balance': profile.carbon_credits_balance
-                })
-            
-            elif transaction_type == 'fund' and profile.carbon_credits_balance >= amount:
-                # Project funding at KES 300/tonne value
-                project_value = amount * 300
-                
-                # Deduct credits from user
-                profile.carbon_credits_balance -= amount
-                profile.estimated_carbon_value_kes = profile.carbon_credits_balance * 300
-                profile.save()
-                
-                # Create transaction record
-                project_names = ['Mau Forest Restoration', 'Lake Victoria Cleanup', 'Maasai Mara Conservation']
-                project_name = project_names[hash(str(user.id)) % len(project_names)]
-                
-                CarbonTransaction.objects.create(
-                    user=user,
-                    transaction_type='fund',
-                    amount=amount,
-                    value_kes=project_value,
-                    description=f'Funded {project_name} project with {amount}t CO2 credits',
-                    project_name=project_name
-                )
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': f'Successfully funded project with {amount}t CO2 credits',
-                    'new_balance': profile.carbon_credits_balance
-                })
-            
-            else:
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Insufficient carbon credits balance'
-                })
-                
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'message': f'Transaction failed: {str(e)}'
-            })
-    
-    return JsonResponse({'success': False, 'message': 'Invalid request method'})
-
-# Fire Risk Prediction Views
-class FieldAssessmentView(LoginRequiredMixin, TemplateView):
-    template_name = 'App/field_assessment.html'
-    login_url = 'login'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Check if location parameters are provided
-        lat = self.request.GET.get('lat')
-        lon = self.request.GET.get('lon')
-        
-        context['has_location'] = False
-        context['prediction'] = None
-        
-        if lat and lon:
-            try:
-                lat = float(lat)
-                lon = float(lon)
-                context['has_location'] = True
-                
-                # Get environmental data using fire_utils
-                from .fire_utils import get_openweather, get_ndvi, get_recent_fires_count, compute_fire_risk, categorize_risk
-                
-                weather = get_openweather(lat, lon)
-                ndvi = get_ndvi(lat, lon)
-                recent_fires = get_recent_fires_count(lat, lon)
-                
-                # Calculate fire risk
-                score = compute_fire_risk(
-                    temp_c=weather['temp_c'],
-                    humidity=weather['humidity'],
-                    wind_speed_ms=weather['wind_speed_ms'],
-                    rainfall_mm_24h=weather['rainfall_mm_24h'],
-                    ndvi=ndvi,
-                    recent_fires=recent_fires
-                )
-                
-                level, color = categorize_risk(score)
-                
-                # Save prediction to database
-                prediction_obj = FireRiskPrediction.objects.create(
-                    location_name=f"Field Assessment {lat:.3f}, {lon:.3f}",
-                    latitude=lat,
-                    longitude=lon,
-                    temperature_c=weather['temp_c'],
-                    humidity=weather['humidity'],
-                    wind_speed_ms=weather['wind_speed_ms'],
-                    rainfall_mm_24h=weather['rainfall_mm_24h'],
-                    ndvi=ndvi,
-                    recent_fires=recent_fires,
-                    risk_score=score,
-                    risk_level=level,
-                    created_by=self.request.user
-                )
-                
-                # Get MISTRAL AI analysis for field assessment
-                from .fire_risk_analyzer import get_fire_risk_analysis
-                
-                weather_data = {
-                    'temp_c': weather['temp_c'],
-                    'humidity': weather['humidity'],
-                    'wind_speed_ms': weather['wind_speed_ms'],
-                    'rainfall_mm_24h': weather['rainfall_mm_24h'],
-                    'risk_level': level,
-                    'risk_score': score,
-                    'recent_fires': recent_fires,
-                    'ndvi': ndvi
-                }
-                
-                location_data = {
-                    'lat': lat,
-                    'lon': lon,
-                    'region': 'Kenya',
-                    'county': 'Field Assessment Area'
-                }
-                
-                ai_analysis = get_fire_risk_analysis(weather_data, location_data)
-                
-                # Prepare prediction data for template
-                context['prediction'] = {
-                    'lat': lat,
-                    'lon': lon,
-                    'weather': weather,
-                    'ndvi': ndvi,
-                    'recent_fires': recent_fires,
-                    'score': round(score, 3),
-                    'level': level,
-                    'color': color,
-                    'timestamp': prediction_obj.created_at,
-                    'ai_analysis': ai_analysis,
-                    'field_assessment': True
-                }
-                
-            except (ValueError, Exception) as e:
-                print(f"Error processing field assessment: {e}")
-                context['error'] = "Error calculating fire risk. Please try again."
-        
-        return context
-
-class FireRiskView(TemplateView):
-    template_name = 'App/fire_risk.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Check if location parameters are provided
-        lat = self.request.GET.get('lat')
-        lon = self.request.GET.get('lon')
-        
-        context['has_location'] = False
-        context['prediction'] = None
-        
-        if lat and lon:
-            try:
-                lat = float(lat)
-                lon = float(lon)
-                context['has_location'] = True
-                
-                # Get environmental data using improved fire_utils
-                from .fire_utils import get_openweather, get_ndvi, get_recent_fires_count, compute_fire_risk, categorize_risk, get_risk_explanation
-                
-                weather = get_openweather(lat, lon)
-                ndvi = get_ndvi(lat, lon)
-                recent_fires = get_recent_fires_count(lat, lon)
-                
-                # Calculate fire risk with Kenya-specific configuration
-                score = compute_fire_risk(
-                    temp_c=weather['temp_c'],
-                    humidity=weather['humidity'],
-                    wind_speed_ms=weather['wind_speed_ms'],
-                    rainfall_mm_24h=weather['rainfall_mm_24h'],
-                    ndvi=ndvi,
-                    recent_fires=recent_fires
-                )
-                
-                level, color = categorize_risk(score)
-                risk_explanation = get_risk_explanation(score, weather)
-                
-                # Save prediction to database (only for authenticated users)
-                prediction_obj = None
-                if self.request.user.is_authenticated:
-                    prediction_obj = FireRiskPrediction.objects.create(
-                        location_name=f"Location {lat:.3f}, {lon:.3f}",
-                        latitude=lat,
-                        longitude=lon,
-                        temperature_c=weather['temp_c'],
-                        humidity=weather['humidity'],
-                        wind_speed_ms=weather['wind_speed_ms'],
-                        rainfall_mm_24h=weather['rainfall_mm_24h'],
-                        ndvi=ndvi,
-                        recent_fires=recent_fires,
-                        risk_score=score,
-                        risk_level=level,
-                        created_by=self.request.user
-                    )
-                
-                # Get MISTRAL AI analysis
-                from .fire_risk_analyzer import get_fire_risk_analysis
-                
-                # Prepare data for AI analysis
-                weather_data = {
-                    'temp_c': weather['temp_c'],
-                    'humidity': weather['humidity'],
-                    'wind_speed_ms': weather['wind_speed_ms'],
-                    'rainfall_mm_24h': weather['rainfall_mm_24h'],
-                    'risk_level': level,
-                    'risk_score': score,
-                    'recent_fires': recent_fires,
-                    'ndvi': ndvi
-                }
-                
-                location_data = {
-                    'lat': lat,
-                    'lon': lon,
-                    'region': 'Kenya',
-                    'county': 'Unknown'
-                }
-                
-                # Get AI analysis
-                ai_analysis = get_fire_risk_analysis(weather_data, location_data)
-                
-                # Prepare prediction data for template
-                context['prediction'] = {
-                    'lat': lat,
-                    'lon': lon,
-                    'weather': weather,
-                    'ndvi': ndvi,
-                    'recent_fires': recent_fires,
-                    'score': round(score, 3),
-                    'level': level,
-                    'color': color,
-                    'timestamp': prediction_obj.created_at if prediction_obj else None,
-                    'ai_analysis': ai_analysis,
-                    'risk_explanation': risk_explanation
-                }
-                
-            except (ValueError, Exception) as e:
-                print(f"Error processing fire risk prediction: {e}")
-                context['error'] = "Error calculating fire risk. Please try again."
-        
-        # Get recent fire risk predictions for display (only for authenticated users, exclude field assessments)
-        if self.request.user.is_authenticated:
-            context['recent_predictions'] = FireRiskPrediction.objects.filter(created_by=self.request.user).exclude(location_name__startswith='Field Assessment').order_by('-created_at')[:10]
-        else:
-            context['recent_predictions'] = []
-        
-        # Get fire reports from citizens (only for authenticated users)
-        if self.request.user.is_authenticated:
-            context['recent_reports'] = CitizenFireReport.objects.all().order_by('-created_at')[:5]
-        else:
-            context['recent_reports'] = []
-        
-        return context
 
 
-
-def report_fire_observation(request):
-    if request.method == 'POST':
-        try:
-            # Create the fire report
-            fire_report = CitizenFireReport.objects.create(
-                reporter=request.user if request.user.is_authenticated else None,
-                reporter_name=request.POST.get('reporter_name', '') if not request.user.is_authenticated else '',
-                reporter_phone=request.POST.get('reporter_phone', '') if not request.user.is_authenticated else '',
-                location_name=request.POST.get('location_name'),
-                latitude=float(request.POST.get('latitude')),
-                longitude=float(request.POST.get('longitude')),
-                observation=request.POST.get('observation'),
-                notes=request.POST.get('notes', ''),
-                image=request.FILES.get('image')
-            )
-            
-            # Award token for fire observation report (only for authenticated users)
-            if request.user.is_authenticated:
-                Token.objects.create(
-                    user=request.user,
-                    action_type='report_photo',
-                    tokens_earned=2,  # Higher reward for fire reports as they're critical
-                    description=f'Fire observation report: {fire_report.observation} at {fire_report.location_name}'
-                )
-                request.user.profile.add_tokens(2, f'Fire observation report: {fire_report.observation}')
-            
-            # Redirect to success page instead of showing message
-            return render(request, 'App/fire_report_success.html')
-            
-        except Exception as e:
-            messages.error(request, f'Error submitting report: {str(e)}')
-            return redirect('fire_risk')
-    
-    return redirect('fire_risk')
-
-# Export Views
-from django.http import HttpResponse
-import csv
-from datetime import datetime
 
 @login_required
 def export_reports(request):
@@ -2129,51 +1510,7 @@ def export_tree_data(request):
     
     return response
 
-@login_required
-def export_fire_data(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="fire_risk_predictions_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
-    
-    writer = csv.writer(response)
-    writer.writerow(['Location', 'Risk Level', 'Risk Score', 'Temperature', 'Humidity', 'Wind Speed', 'Rainfall', 'NDVI', 'Date'])
-    
-    predictions = FireRiskPrediction.objects.all().order_by('-created_at')
-    for prediction in predictions:
-        writer.writerow([
-            prediction.location_name,
-            prediction.risk_level,
-            prediction.risk_score,
-            prediction.temperature_c,
-            prediction.humidity,
-            prediction.wind_speed_ms,
-            prediction.rainfall_mm_24h,
-            prediction.ndvi,
-            prediction.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        ])
-    
-    return response
 
-@login_required
-def export_fire_reports(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="citizen_fire_reports_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
-    
-    writer = csv.writer(response)
-    writer.writerow(['Location', 'Observation', 'Reporter', 'Reporter Name', 'Reporter Phone', 'Notes', 'Date'])
-    
-    reports = CitizenFireReport.objects.all().order_by('-created_at')
-    for report in reports:
-        writer.writerow([
-            report.location_name,
-            report.get_observation_display(),
-            report.reporter.username if report.reporter else 'Anonymous',
-            report.reporter_name or (report.reporter.get_full_name() if report.reporter else ''),
-            report.reporter_phone or (report.reporter.profile.phoneNumber if report.reporter and hasattr(report.reporter, 'profile') else ''),
-            report.notes,
-            report.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        ])
-    
-    return response
 
 class TreePredictionView(TemplateView):
     template_name = 'App/tree_prediction.html'
@@ -2198,6 +1535,9 @@ class TreePredictionView(TemplateView):
         else:
             context['prediction_history'] = []
             context['total_predictions'] = 0
+        
+        # Add tree registration link (landing page with Individual/Organization choice)
+        context['tree_registration_url'] = '/tree-registration/'
         
         return context
 
@@ -2258,3 +1598,18 @@ class PlatformRevenueView(LoginRequiredMixin, TemplateView):
         })
         
         return context
+
+from .utils import get_county_environment
+
+def recommend_species(request):
+    #from a form
+    county_name = request.GET.get("county")  
+    #Use env_data to fetch species, playbook, andprediction inputs
+    env_data = get_county_environment(county_name)
+    
+    ...
+
+
+
+
+

@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Profile, Report, ForumPost, Comment, Token, Reward, UserReward, TreePlanting # CustomUser
+from .models import Profile, Report, ForumPost, Comment, TreePlanting # CustomUser
 # from django.contrib.auth.admin import UserAdmin
 # from django.contrib.auth.models import User
 # from .models import CustomUser
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
+from .models import County, Species, CountySpecies, CountyEnvironment
 
 
 # Action to approve selected alerts
@@ -128,7 +129,7 @@ class ReportAdmin(admin.ModelAdmin):
             summary += f'<strong style="color: #856404;">Auto-Approval Benefit:</strong> <span style="color: #856404;">High-probability alerts (≥70%) are published immediately when admin is unavailable - ensuring faster emergency response</span>'
             summary += f'</div>'
             
-            # AI Analysis - Styled Section
+            # AI Analysis
             summary += f'<div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #007bff; margin-bottom: 15px;">'
             summary += f'<h5 style="color: #007bff; margin: 0 0 8px 0; font-size: 14px;">🔍 AI Analysis</h5>'
             summary += f'<div style="margin-left: 10px;">'
@@ -206,7 +207,7 @@ class ReportAdmin(admin.ModelAdmin):
                 risk_tag = 'moderate risk'
                 risk_color = '#fd7e14'
             
-            # Risk Assessment - Styled Section
+            # Risk Assessment
             summary += f'<div style="background: #fff; padding: 12px; border-radius: 6px; border-left: 4px solid {risk_color}; margin-bottom: 15px;">'
             summary += f'<h5 style="color: {risk_color}; margin: 0 0 8px 0; font-size: 14px;">⚠️ Risk Assessment (Probability-Based)</h5>'
             summary += f'<div style="margin-left: 10px;">'
@@ -226,7 +227,7 @@ class ReportAdmin(admin.ModelAdmin):
             else:
                 tags = ['#Infrastructure', '#Damage', '#Repair']
             
-            # Auto-Generated Tags - Styled Section
+            # Auto-Generated Tags 
             if tags:
                 summary += f'<div style="background: #e9ecef; padding: 12px; border-radius: 6px; border-left: 4px solid #6c757d; margin-bottom: 15px;">'
                 summary += f'<h5 style="color: #495057; margin: 0 0 8px 0; font-size: 14px;">🏷️ Auto-Generated Tags</h5>'
@@ -304,28 +305,11 @@ admin.site.register(Profile)
 admin.site.register(ForumPost)
 admin.site.register(Comment)
 
-class TokenAdmin(admin.ModelAdmin):
-    list_display = ('user', 'action_type', 'tokens_earned', 'description', 'earned_at')
-    list_filter = ('action_type', 'earned_at')
-    readonly_fields = ('earned_at',)
-    ordering = ('-earned_at',)
-
-class RewardAdmin(admin.ModelAdmin):
-    list_display = ('name', 'reward_type', 'token_cost', 'is_active')
-    list_filter = ('reward_type', 'is_active')
-    list_editable = ('is_active',)
-
-class UserRewardAdmin(admin.ModelAdmin):
-    list_display = ('user', 'reward', 'redeemed_at', 'status')
-    list_filter = ('status', 'redeemed_at')
-    list_editable = ('status',)
-    ordering = ('-redeemed_at',)
-
 class TreePlantingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'planter_display_name', 'number_of_trees', 'status', 'planted_date', 'tokens_awarded')
-    list_filter = ('status', 'tree_type', 'tokens_awarded')
+    list_display = ('title', 'planter_display_name', 'number_of_trees', 'status', 'planted_date')
+    list_filter = ('status', 'tree_type')
     list_editable = ('status',)
-    readonly_fields = ('planted_date', 'tokens_awarded')
+    readonly_fields = ('planted_date',)
     ordering = ('-planted_date',)
     
     def save_model(self, request, obj, form, change):
@@ -336,11 +320,57 @@ class TreePlantingAdmin(admin.ModelAdmin):
         
         super().save_model(request, obj, form, change)
         
-        # Award tokens if status changed to verified
+        # Award tree points if status changed to verified
         if obj.status == 'verified' and old_status != 'verified':
-            obj.award_tokens()
+            obj.award_tree_points()
 
-admin.site.register(Token, TokenAdmin)
-admin.site.register(Reward, RewardAdmin)
-admin.site.register(UserReward, UserRewardAdmin)
 admin.site.register(TreePlanting, TreePlantingAdmin)
+
+
+#Inline for Species under a County
+class CountySpeciesInline(admin.TabularInline):
+    model = CountySpecies
+    # Don't show extra empty rows
+    extra = 0 
+    #Makes selection easier 
+    autocomplete_fields = ['species']  
+
+#County Admin
+@admin.register(County)
+class CountyAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    search_fields = ['name']
+    #species inline under county
+    inlines = [CountySpeciesInline]  
+
+#Species Admin
+@admin.register(Species)
+class SpeciesAdmin(admin.ModelAdmin):
+    list_display = [
+        'name', 'soil', 'rainfall', 'temperature', 'care_level',
+        'best_season', 'planting_method', 'water'
+    ]
+    search_fields = ['name']
+    #edit JSON fields in detail view
+    readonly_fields = ['planting_guide', 'care_instructions']
+
+#County Environment Admin
+@admin.register(CountyEnvironment)
+class CountyEnvironmentAdmin(admin.ModelAdmin):
+    list_display = [
+        'county', 'climate_zone', 'best_season',
+        'rainfall_mm_min', 'rainfall_mm_max',
+        'temperature_c_min', 'temperature_c_max',
+        'soil_type', 'altitude_m_min', 'altitude_m_max',
+        'soil_ph_min', 'soil_ph_max'
+    ]
+    search_fields = ['county__name']
+
+#CountySpecies Admin
+@admin.register(CountySpecies)
+class CountySpeciesAdmin(admin.ModelAdmin):
+    list_display = ['county', 'species']
+    list_filter = ['county']
+    autocomplete_fields = ['county', 'species']
+
+    

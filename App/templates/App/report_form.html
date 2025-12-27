@@ -1,0 +1,490 @@
+{% extends 'App/base.html' %}
+
+{% block content %}
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 4rem 0 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    }
+    
+    .alert-form {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 25px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out;
+        max-width: 700px;
+        margin: 0 auto;
+        z-index: 1;
+    }
+    
+    .alert-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ef4444, #dc2626, #ef4444);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+    }
+    
+    .success-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        border-left: 4px solid #22c55e;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .warning-card {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid #ef4444;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #ffffff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        width: 100%;
+        animation: pulse 2s infinite;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(239, 68, 68, 0.4);
+        animation: none;
+    }
+    
+    .btn-view-alerts {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        display: inline-block;
+    }
+    
+    .btn-view-alerts:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+        color: white;
+    }
+    
+    .emergency-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        animation: pulse 2s infinite;
+    }
+    
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 2rem 0 1rem;
+        }
+        
+        .alert-form {
+            padding: 2rem 1.5rem;
+        }
+        
+        .emergency-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+        
+        .btn-submit,
+        .btn-view-alerts {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+        
+        .form-control {
+            padding: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .warning-card {
+            padding: 1rem;
+        }
+        
+        .success-card {
+            padding: 2rem 1.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .page-header {
+            padding: 1.5rem 0 1rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .page-header p {
+            font-size: 1rem;
+        }
+        
+        .alert-form {
+            padding: 1.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .emergency-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+        
+        .btn-submit,
+        .btn-view-alerts {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            padding: 0.7rem;
+            font-size: 0.85rem;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+        }
+        
+        .warning-card {
+            padding: 0.8rem;
+        }
+        
+        .warning-card h5 {
+            font-size: 1rem;
+        }
+        
+        .warning-card p {
+            font-size: 0.85rem;
+        }
+        
+        .success-card {
+            padding: 1.5rem 1rem;
+        }
+        
+        .success-card h3 {
+            font-size: 1.3rem;
+        }
+        
+        #getLocationBtn {
+            position: static !important;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        
+        #locationInput {
+            padding-right: 1rem !important;
+        }
+        
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="emergency-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);">
+            <i class="fas fa-leaf"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3">Report Environmental Issue</h1>
+        <p class="lead fs-5">Help protect our environment by reporting threats and violations</p>
+    </div>
+</div>
+
+<!-- Alert Form Section -->
+<section class="py-5">
+    <div class="container">
+        {% if submitted %}
+            <div class="success-card">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: white; font-size: 2rem;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-3" style="color: #166534;">Report Submitted Successfully!</h3>
+                <p class="mb-4" style="color: #15803d;">Thank you for submitting your report! We will check and work on it. Our organization partners will review your environmental report and take appropriate action.</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'home' %}" class="btn" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 1.2rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-home me-2"></i>Continue Exploring MsituGuard
+                    </a>
+                    <a href="{% url 'report_create' %}" class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 1.2rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-plus me-2"></i>Submit Another Report
+                    </a>
+                </div>
+            </div>
+        {% elif messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="success-card">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: white; font-size: 2rem;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3" style="color: #166534;">Success!</h3>
+                        <p class="mb-4" style="color: #15803d;">{{ message }}</p>
+                        <a href="{% url 'latest_reports' %}" class="btn-view-alerts">
+                            <i class="fas fa-eye me-2"></i>View All Reports
+                        </a>
+                    </div>
+                {% elif message.tags == 'error' %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="alert-form">
+                <div class="warning-card" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid rgba(34, 197, 94, 0.2); border-left: 4px solid #22c55e;">
+                    <h5 class="fw-bold mb-2" style="color: #166534;"><i class="fas fa-user-shield me-2"></i>Anonymous & Secure Reporting</h5>
+                    <p class="mb-0 d-none d-md-block" style="color: #15803d;">Your identity is protected. Report environmental threats safely and anonymously.</p>
+                    <p class="mb-0 d-md-none" style="color: #15803d;">Report threats safely and anonymously.</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Hidden GPS coordinate fields -->
+                    <input type="hidden" id="latitudeField" name="latitude">
+                    <input type="hidden" id="longitudeField" name="longitude">
+                    
+                    <!-- Environmental Issue Type -->
+                    <div class="form-group">
+                        <label class="form-label">Environmental Issue Type</label>
+                        <select name="report_type" class="form-control" required>
+                            <option value="">Select Environmental Issue...</option>
+                            <option value="fire">Fire/Wildfire</option>
+                            <option value="illegal_logging">Illegal Logging</option>
+                            <option value="pollution">Pollution</option>
+                            <option value="deforestation">Deforestation</option>
+                            <option value="wildlife_poaching">Wildlife Poaching</option>
+                            <option value="water_contamination">Water Contamination</option>
+                            <option value="air_pollution">Air Pollution</option>
+                            <option value="waste_dumping">Illegal Waste Dumping</option>
+                            <option value="other">Other Environmental Issue</option>
+                        </select>
+                    </div>
+
+                    
+                    <!-- Location -->
+                    <div class="form-group">
+                        <label class="form-label">Location/Area Name</label>
+                        <input type="text" id="locationInput" name="location_name" class="form-control" placeholder="Type location (e.g., Westlands, Nairobi)" required>
+                        <small class="text-muted mt-1">Enter the specific area where you observed the issue</small>
+                    </div>
+
+                    <!-- Photo Evidence -->
+                    <div class="form-group">
+                        <label class="form-label">Photo Evidence</label>
+                        <div class="border border-success rounded p-3" style="background: #f0fdf4;">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-camera text-success" style="font-size: 2rem;"></i>
+                                <h6 class="text-success mt-2 mb-0">Photo Evidence Required</h6>
+                            </div>
+                            <input type="file" id="imageInput" name="image" class="form-control" accept="image/*" required onchange="previewImage(this)">
+                            <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                                <img id="previewImg" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #22c55e;">
+                                <div style="margin-top: 0.5rem; text-center;">
+                                    <small class="text-success">✓ Photo uploaded - </small>
+                                    <button type="button" onclick="removeImage()" style="background: none; border: none; color: #ef4444; font-size: 0.875rem; cursor: pointer;">
+                                        <i class="fas fa-times me-1"></i>Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <small class="text-success fw-bold">📸 Upload clear photos showing the environmental issue (Required for verification)</small>
+                        </div>
+                    </div>
+
+                    <!-- Hidden GPS coordinate fields -->
+                    <input type="hidden" id="latitudeField" name="latitude">
+                    <input type="hidden" id="longitudeField" name="longitude">
+                    
+
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-shield-alt me-2"></i>Submit Environmental Report
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+
+
+<script>
+// Image Preview Functionality
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function removeImage() {
+    const input = document.getElementById('imageInput');
+    const preview = document.getElementById('imagePreview');
+    
+    input.value = '';
+    preview.style.display = 'none';
+}
+
+// GPS Location Detection
+document.getElementById('getLocationBtn').addEventListener('click', function() {
+    const btn = this;
+    const locationInput = document.getElementById('locationInput');
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>...';
+    btn.disabled = true;
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude.toFixed(6);
+                const lng = position.coords.longitude.toFixed(6);
+                
+                // Store coordinates in hidden fields
+                document.getElementById('latitudeField').value = lat;
+                document.getElementById('longitudeField').value = lng;
+                
+                // Use coordinates as location name for now
+                locationInput.value = `${lat}, ${lng}`;
+                
+                btn.innerHTML = '<i class="fas fa-check me-1"></i>✓';
+                btn.style.background = '#10b981';
+                btn.disabled = true;
+                
+                console.log('GPS captured:', lat, lng);
+            },
+            function(error) {
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>!';
+                btn.style.background = '#ef4444';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i>GPS';
+                    btn.style.background = '#22c55e';
+                    btn.disabled = false;
+                }, 2000);
+                
+                let errorMsg = 'Location access denied';
+                if (error.code === 1) errorMsg = 'Location access denied';
+                else if (error.code === 2) errorMsg = 'Location unavailable';
+                else if (error.code === 3) errorMsg = 'Location timeout';
+                
+                alert(errorMsg + '. Please type your location manually.');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+    } else {
+        btn.innerHTML = '<i class="fas fa-times me-1"></i>X';
+        btn.style.background = '#ef4444';
+        alert('GPS not supported by this browser. Please type your location manually.');
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Tree</title>
+    <link href="{% static 'treeregistration/styles.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url("{% static 'treeregistration/images/seedlings_background.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+        .upload-container {
+            max-width: 500px;
+            margin: 80px auto;
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        input[type=file] {
+            margin: 20px 0;
+            padding: 10px;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 1);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'profile_detail' %}" class="back-btn">← Profile</a>
+    <div class="upload-container">
+        <h1>Upload Your Tree Photo</h1>
+        
+        {% if form.non_field_errors %}
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if form.photo.errors %}
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                {% for error in form.photo.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+        </form>
+        <p><a href="{% url 'profile_detail' %}">Back to Profile</a></p>
+    </div>
+</body>
+</html>

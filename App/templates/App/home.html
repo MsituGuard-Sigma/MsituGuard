@@ -710,22 +710,23 @@
 
 
 <!-- About Section -->
-<section class="py-5">
+<section class="py-4">
     <div class="container">
-        <div class="about-section">
-            <div class="text-center mb-5">
-                <h2 class="display-5 fw-bold mb-3">About MsituGuard</h2>
+        <div class="about-section" style="padding: 2rem; margin: 2rem 0;">
+            <div class="text-center mb-4">
+                <h2 class="display-5 fw-bold mb-2">About MsituGuard</h2>
             </div>
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <p class="fs-5 mb-4">MsituGuard is Kenya's comprehensive environmental protection platform featuring AI-powered tree survival prediction, environmental threat reporting, community forums, and fire risk assessment.</p>
-                    <p class="fs-5 mb-0">Our flagship 93.2% accuracy RandomForest model optimizes tree planting for the 15 Billion Trees Initiative using real Kenyan environmental data, GPS auto-detection, and minimal user input.</p>
+                    <p class="lead mb-3">We help you plant trees that actually survive. Our AI tells you which trees will grow best in your exact location.</p>
+                    <p class="lead mb-0">You can also report environmental problems anonymously in your area. When you plant trees, you can register them to track your tree planting progress - all in one simple platform.</p>
                 </div>
                 <div class="col-lg-4 text-center">
                     <div class="hero-image floating">
-                        <img src="{% static 'images/Mau-Forest-in-Kenya.jpg' %}" alt="Mau Forest Kenya" class="img-fluid" style="max-height: 400px; object-fit: cover; width: 100%;">
+                        <img src="{% static 'images/Mau-Forest-in-Kenya.jpg' %}" alt="Mau Forest Kenya" class="img-fluid" style="max-height: 280px; object-fit: cover; width: 100%;">
                         <div class="position-absolute top-3 end-3">
-                            <div class="badge" style="background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 0.8rem 1.2rem; border-radius: 20px; font-weight: 600; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);">
+                            <div class="badge" style="background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 0.6rem 1rem; border-radius: 20px; font-weight: 600; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);">
+                                Mau Forest Complex
                                 🏞️ Mau Forest Complex
                             </div>
                         </div>
@@ -737,146 +738,54 @@
 </section>
 
 <!-- How MsituGuard Works -->
-<section class="py-5 bg-light">
+<section class="py-4 bg-light">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">How MsituGuard Works</h2>
-            <p class="lead text-muted">Get started with environmental protection and AI-powered tree planting optimization</p>
+        <div class="text-center mb-4">
+            <h2 class="display-6 fw-bold mb-2">How It Works</h2>
+            <p class="lead text-muted">Three simple steps to start planting trees that survive</p>
         </div>
         
-        <div class="row g-4">
+        <div class="row g-3">
             <div class="col-md-4">
-                <div class="process-step">
-                    <div class="step-number">1</div>
-                    <h5 class="fw-bold mb-3">Create Account</h5>
-                    <p class="text-muted">Sign up and complete your profile to access environmental protection tools and community features.</p>
+                <div class="process-step" style="padding: 1.5rem;">
+                    <div class="step-number" style="width: 60px; height: 60px; font-size: 1.4rem; margin-bottom: 1rem;">1</div>
+                    <h5 class="fw-bold mb-2">Tell Us Your Location</h5>
+                    <p class="text-muted mb-0">Enter where you want to plant trees. Our AI will analyze your soil, climate, and rainfall data.</p>
                 </div>
             </div>
             
             <div class="col-md-4">
-                <div class="process-step">
-                    <div class="step-number">2</div>
-                    <h5 class="fw-bold mb-3">Choose Your Action</h5>
-                    <p class="text-muted">Report environmental threats, predict tree survival with AI, join community discussions, or assess fire risks.</p>
+                <div class="process-step" style="padding: 1.5rem;">
+                    <div class="step-number" style="width: 60px; height: 60px; font-size: 1.4rem; margin-bottom: 1rem;">2</div>
+                    <h5 class="fw-bold mb-2">Get Tree Recommendations</h5>
+                    <p class="text-muted mb-0">See which tree species will survive best in your area, with survival predictions for each one.</p>
                 </div>
             </div>
             
             <div class="col-md-4">
-                <div class="process-step">
-                    <div class="step-number">3</div>
-                    <h5 class="fw-bold mb-3">Make Impact</h5>
-                    <p class="text-muted">Contribute to Kenya's conservation goals and track your environmental impact through your dashboard.</p>
+                <div class="process-step" style="padding: 1.5rem;">
+                    <div class="step-number" style="width: 60px; height: 60px; font-size: 1.4rem; margin-bottom: 1rem;">3</div>
+                    <h5 class="fw-bold mb-2">Plant & Track Progress</h5>
+                    <p class="text-muted mb-0">Plant your trees and register them to track your environmental impact over time.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 15 Billion Trees Initiative - Modern Design -->
-<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); position: relative; overflow: hidden;">
-    <!-- Background Pattern -->
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.03; background-image: radial-gradient(circle at 25% 25%, #16a34a 2px, transparent 2px), radial-gradient(circle at 75% 75%, #0ea5e9 2px, transparent 2px); background-size: 60px 60px;"></div>
-    
+<!-- Tree Prediction Section -->
+<section class="py-4" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); position: relative; overflow: hidden;">
     <div class="container" style="position: relative; z-index: 2;">
-        <!-- Section Header -->
-        <div class="text-center mb-5" style="max-width: 800px; margin: 0 auto;">
-            <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 20px; box-shadow: 0 10px 30px rgba(22, 163, 74, 0.3);">
-                <i class="fas fa-seedling text-white" style="font-size: 2rem;"></i>
+        <div class="text-center" style="max-width: 600px; margin: 0 auto;">
+            <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background: var(--gradient-primary); border-radius: 20px; box-shadow: 0 10px 30px rgba(22, 163, 74, 0.3);">
+                <i class="fas fa-seedling text-white" style="font-size: 1.8rem;"></i>
             </div>
-            <h2 class="display-4 fw-bold mb-4" style="color: var(--text-primary); letter-spacing: -0.02em;">15 Billion Trees Initiative</h2>
-            <p class="lead" style="color: var(--text-secondary); font-size: 1.25rem; line-height: 1.6;">AI-powered tree planting with 93.2% survival prediction accuracy</p>
-        </div>
-        
-        <!-- Main Content Grid -->
-        <div class="row align-items-center g-5 mb-5">
-            <!-- Image Side -->
-            <div class="col-lg-6">
-                <div class="position-relative">
-                    <img src="{% static 'images/Initiative 3.jpeg' %}" alt="15 Billion Trees Initiative" class="img-fluid" style="border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); width: 100%; height: 400px; object-fit: cover;">
-                    <div class="position-absolute top-0 end-0 m-4">
-                        <div class="badge" style="background: rgba(255, 255, 255, 0.95); color: var(--primary); padding: 0.75rem 1.25rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
-                            🎯 15 Billion Trees Goal
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2 class="display-5 fw-bold mb-3" style="color: var(--text-primary); letter-spacing: -0.02em;">Ready to Plant?</h2>
+            <p class="lead mb-3" style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.5;">Find out which trees will survive in your location before you plant them using AI.</p>
             
-            <!-- Content Side -->
-            <div class="col-lg-6">
-                <div class="mb-4">
-                    <h3 class="h2 fw-bold mb-3" style="color: var(--text-primary);">Smart Tree Planting</h3>
-                    <p class="fs-5 mb-4" style="color: var(--text-secondary); line-height: 1.6;">AI analyzes climate, soil, and location data to recommend optimal trees for maximum survival rates.</p>
-                </div>
-                
-                <!-- Feature Cards -->
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start p-3" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--primary);">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(22, 163, 74, 0.1); border-radius: 10px;">
-                                    <i class="fas fa-brain" style="color: var(--primary); font-size: 1.1rem;"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1" style="color: var(--text-primary); font-size: 0.95rem;">93.2% Accuracy</h6>
-                                <p class="mb-0" style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">ML model trained on 10,000+ Kenyan tree records</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start p-3" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--primary);">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(22, 163, 74, 0.1); border-radius: 10px;">
-                                    <i class="fas fa-map-marker-alt" style="color: var(--primary); font-size: 1.1rem;"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1" style="color: var(--text-primary); font-size: 0.95rem;">GPS Auto-Detection</h6>
-                                <p class="mb-0" style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">Only 3 inputs needed - we detect the rest</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start p-3" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--primary);">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(22, 163, 74, 0.1); border-radius: 10px;">
-                                    <i class="fas fa-leaf" style="color: var(--primary); font-size: 1.1rem;"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1" style="color: var(--text-primary); font-size: 0.95rem;">Species Recommendations</h6>
-                                <p class="mb-0" style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">Optimal tree selection for your location</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start p-3" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid var(--primary);">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(22, 163, 74, 0.1); border-radius: 10px;">
-                                    <i class="fas fa-chart-line" style="color: var(--primary); font-size: 1.1rem;"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h6 class="fw-semibold mb-1" style="color: var(--text-primary); font-size: 0.95rem;">Real Climate Data</h6>
-                                <p class="mb-0" style="color: var(--text-secondary); font-size: 0.85rem; line-line: 1.4;">Rainfall, temperature, soil analysis</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- CTA Button -->
-                <div class="d-flex gap-3 align-items-center">
-                    <a href="{% url 'tree_prediction' %}" class="btn btn-lg px-4 py-3" style="background: var(--gradient-primary); color: white; border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); transition: all 0.3s ease; text-decoration: none;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(22, 163, 74, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(22, 163, 74, 0.3)';">
-                        <i class="fas fa-brain me-2"></i>Try AI Prediction
-                    </a>
-                    <div class="text-muted" style="font-size: 0.9rem;">
-                        <strong style="color: var(--text-primary);">{{ total_trees|default:"12,847" }}</strong> trees planted so far
-                    </div>
-                </div>
-            </div>
+            <a href="{% url 'tree_prediction' %}" class="btn btn-lg px-4 py-3" style="background: var(--gradient-primary); color: white; border: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3); transition: all 0.3s ease; text-decoration: none;" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(22, 163, 74, 0.4)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 25px rgba(22, 163, 74, 0.3)';">
+                <i class="fas fa-brain me-2"></i>Get Tree Recommendations
+            </a>
         </div>
     </div>
 </section>
@@ -887,80 +796,7 @@
 
 
 
-<!-- Other Platform Features -->
-<section class="py-5" style="background: linear-gradient(135deg, #f8fafc, #f1f5f9);">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold mb-3">Complete Environmental Platform</h2>
-            <p class="lead text-muted">AI Tree Prediction is part of our comprehensive environmental protection ecosystem</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="text-center p-4 bg-white rounded-3 shadow-sm h-100">
-                    <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <h6 class="fw-bold mb-2">Environmental Reporting</h6>
-                    <small class="text-muted">GPS-enabled threat reporting with photo evidence</small>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="text-center p-4 bg-white rounded-3 shadow-sm h-100">
-                    <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h6 class="fw-bold mb-2">Community Forums</h6>
-                    <small class="text-muted">Connect with environmental guardians nationwide</small>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="text-center p-4 bg-white rounded-3 shadow-sm h-100">
-                    <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
-                        <i class="fas fa-fire"></i>
-                    </div>
-                    <h6 class="fw-bold mb-2">Fire Risk Assessment</h6>
-                    <small class="text-muted">Real-time weather data for forest protection</small>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="text-center p-4 bg-white rounded-3 shadow-sm h-100">
-                    <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h6 class="fw-bold mb-2">Impact Tracking</h6>
-                    <small class="text-muted">Personal dashboards for conservation contributions</small>
-                </div>
-            </div>
-        </div>
-        
 
-    </div>
-</section>
 
-<!-- Call to Action (Only for visitors) -->
-{% if not user.is_authenticated %}
-<section class="py-5">
-    <div class="container">
-        <div class="cta-section">
-            <div class="cta-content">
-                <h2 class="display-5 fw-bold mb-3">Become an Environmental Guardian</h2>
-                <p class="lead mb-4">Be part of Kenya's AI-powered forest conservation movement. Together, we can preserve our forests, wildlife, and natural heritage for future generations.</p>
-                <div>
-                    <a href="{% url 'register' %}" class="btn-cta">
-                        <i class="fas fa-user-plus me-2"></i>Get Started Now
-                    </a>
-                    <a href="{% url 'login' %}" class="btn-cta">
-                        <i class="fas fa-sign-in-alt me-2"></i>Already a Member?
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
 
 {% endblock %}

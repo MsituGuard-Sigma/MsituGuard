@@ -14,20 +14,28 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             email = sociallogin.account.extra_data.get('email')
             if email:
                 try:
-                    # Find existing user with this email
+                    #Find existing user with this email
                     existing_user = User.objects.get(email=email)
-                    # Connect the social account to existing user
+                    #Connect the social account to existing user
                     sociallogin.connect(request, existing_user)
                     logger.info(f"Connected Google account to existing user: {existing_user.username}")
                 except User.DoesNotExist:
-                    # Mark as new user for welcome message
+                    #Mark as new user for welcome message
                     request.session['is_new_oauth_user'] = True
+                except User.MultipleObjectsReturned:
+                    #Multiple users with same email - use the first one
+                    existing_user = User.objects.filter(email=email).first()
+                    if existing_user:
+                        sociallogin.connect(request, existing_user)
+                        logger.warning(f"Multiple users found with email {email}, connected to {existing_user.username}")
+                    else:
+                        request.session['is_new_oauth_user'] = True
     
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
         
         try:
-            # Only create profile if user doesn't have one
+            #Only create profile if user doesn't have one
             if not hasattr(user, 'profile'):
                 Profile.objects.create(
                     user=user,
@@ -53,15 +61,6 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             del request.session['is_new_oauth_user']
             return '/welcome/'
         return '/'  # Home for existing users
-        
-        return user
-    
-    def add_message(self, request, level, message_tag, message, extra_tags=''):
-        """Suppress login success messages for professional UX"""
-        # Don't show 'Successfully signed in as...' messages
-        if 'signed in as' in message.lower():
-            return
-        super().add_message(request, level, message_tag, message, extra_tags)
     
     def add_message(self, request, level, message_tag, message, extra_tags=''):
         """Suppress login success messages for professional UX"""
@@ -76,7 +75,6 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         
         if commit:
             try:
-                # Use get_or_create to avoid conflicts
                 profile, created = Profile.objects.get_or_create(
                     user=user,
                     defaults={

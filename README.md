@@ -8,7 +8,7 @@ MsituGuard connects forest-adjacent communities with local environmental organiz
 
 ### 🤖 AI & Machine Learning
 - **AI Tree Survival Prediction** - 93.2% accuracy ML model for optimizing tree planting success
-- **MISTRAL AI Integration** - Advanced fire risk analysis and field assessment recommendations
+- **MISTRAL AI Integration** - Advanced environmental analysis and intelligent recommendations
 - **Species Recommendations** - Data-driven suggestions for optimal tree species selection
 - **Predictive Analytics** - Environmental risk assessment and conservation planning
 - **GPS Auto-Detection** - Automatic climate and soil data retrieval from coordinates
@@ -16,7 +16,7 @@ MsituGuard connects forest-adjacent communities with local environmental organiz
 ### 🌍 Environmental Protection
 - **Environmental Report Submission** with GPS coordinates and photo evidence
 - **Tree Planting Registration** for Kenya's 15 Billion Trees Initiative
-- **AI-Powered Fire Risk Assessment** with MISTRAL AI analysis and Kenya-specific parameters
+
 - **Impact Tracking** - Personal dashboards showing conservation contributions
 - **Real-time Weather Integration** - Simulated weather data for cost-effective deployment
 
@@ -28,8 +28,8 @@ MsituGuard connects forest-adjacent communities with local environmental organiz
 
 ### 🏢 Organization Tools
 - **Organization Dashboard** for comprehensive report management
-- **AI-Enhanced Field Assessment Tools** - MISTRAL AI analysis for environmental monitoring
-- **Export Functionality** - Field assessment reports with AI recommendations
+- **Enhanced Environmental Monitoring** - Comprehensive data analysis and reporting tools
+- **Export Functionality** - Comprehensive environmental reports and data export
 - **Analytics & Reporting** - Data insights for conservation decision making
 - **Verification System** - Quality control for environmental reports
 
@@ -63,11 +63,12 @@ MsituGuard connects forest-adjacent communities with local environmental organiz
 ## 🧠 AI Model Performance
 
 ### Tree Survival Prediction Model
-- **Algorithm**: RandomForest Classifier
-- **Accuracy**: 93.2% on test dataset
-- **Features**: 13 environmental and planting factors
+- **Algorithm**: GradientBoosting Classifier
+- **Accuracy**: 77.3% on test dataset
+- **Features**: 16 environmental + engineered factors
 - **Training Data**: 10,000+ Kenyan tree planting records
-- **Validation**: Cross-validated with stratified sampling
+- **Validation**: Stratified train-test split (80/20)
+- **Engineered Features**: water_balance, is_high_altitude, soil_acidity
 
 ### Key Prediction Factors
 1. **Tree Species** - Native vs non-native adaptation
@@ -80,14 +81,13 @@ MsituGuard connects forest-adjacent communities with local environmental organiz
 
 ### User Experience
 - **Anonymous Users**: Tree prediction with basic features
-- **Registered Users**: Unlimited predictions + species recommendations + AI fire risk analysis
-- **Organizations**: Full dashboard + AI field assessments + export functionality
+- **Registered Users**: Unlimited predictions + species recommendations + advanced analytics
+- **Organizations**: Full dashboard + environmental monitoring + export functionality
 - **Admin**: Complete platform management and analytics
 
 ### AI Features Available
-- **Tree Survival Prediction**: 93.2% accuracy ML model
-- **Fire Risk Analysis**: MISTRAL AI-powered assessment
-- **Field Assessment AI**: Environmental monitoring with AI insights
+- **Tree Survival Prediction**: 77.3% accuracy GradientBoosting model
+- **Environmental Analysis**: MISTRAL AI-powered insights
 - **Species Recommendations**: Location-based tree selection
 
 ## 🛠️ Installation & Setup
@@ -134,7 +134,12 @@ cd Tree_Prediction/training
 # Train the model (optional - pre-trained models included)
 python train_tree_model.py
 
-# Models are automatically loaded from Tree_Prediction/models/
+# Models are automatically loaded from Tree_Prediction/training/models/
+# Model files:
+# - tree_survival_model.pkl (GradientBoosting model)
+# - tree_scaler.pkl (StandardScaler for preprocessing)
+# - tree_encoders.pkl (LabelEncoders for categorical features)
+# - feature_columns.pkl (List of 16 features used)
 ```
 
 ## 🌐 Live Demo
@@ -143,7 +148,7 @@ python train_tree_model.py
 
 ### Live Features
 - ✅ Full AI tree prediction system with 93.2% accuracy
-- ✅ MISTRAL AI fire risk analysis and field assessments
+- ✅ MISTRAL AI environmental analysis and insights
 - ✅ Environmental reporting with GPS auto-detection
 - ✅ Community forum and rewards system
 - ✅ Enhanced organization dashboard with AI tools
@@ -155,15 +160,12 @@ python train_tree_model.py
 ```
 MsituGuard/
 ├── App/                          # Main Django application
-│   ├── fire_risk_analyzer.py   # MISTRAL AI fire risk analysis
 │   ├── mistral_ai.py           # AI integration utilities
 │   ├── climate_data.py         # Climate data processing
 │   ├── ml_utils.py              # AI model utilities
 │   ├── views_ml.py              # ML API endpoints
 │   ├── templates/App/           # HTML templates
 │   │   ├── tree_prediction.html # AI prediction interface
-│   │   ├── field_assessment.html # AI field assessment
-│   │   ├── fire_risk.html      # Fire risk analysis
 │   │   ├── home.html           # Landing page
 │   │   └── ...                 # Other templates
 │   └── static/                 # CSS, JS, images
@@ -179,12 +181,12 @@ MsituGuard/
 ## 🆕 Recent Updates
 
 ### Version 2.0 - AI Enhancement Release
-- **MISTRAL AI Integration**: Advanced fire risk analysis and field assessments
+- **MISTRAL AI Integration**: Advanced environmental analysis and intelligent insights
 - **Enhanced UI/UX**: Improved branding emphasizing AI-powered conservation
 - **Registration Improvements**: Streamlined account creation with better UX
 - **Access Control**: Species recommendations restricted to registered users
 - **Mobile Optimization**: Better responsive design and spacing
-- **Export Functionality**: AI field assessment reports with recommendations
+- **Export Functionality**: Comprehensive environmental reports with AI insights
 - **Navigation Enhancement**: Reordered menu prioritizing Tree Prediction
 
 ## 📄 License
