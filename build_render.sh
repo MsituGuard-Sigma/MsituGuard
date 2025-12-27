@@ -24,5 +24,8 @@ python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crisis_co
 echo "=== Running collectstatic ==="
 python manage.py collectstatic --no-input --verbosity 2
 
+echo "=== Loading species data ==="
+python manage.py load_species_data
+
 echo "=== Running migrations ==="
 python manage.py migrate --no-input
