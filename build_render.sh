@@ -27,5 +27,8 @@ python manage.py collectstatic --no-input --verbosity 2
 echo "=== Loading species data ==="
 python manage.py load_species_data
 
+echo "=== Loading county data ==="
+python manage.py load_county_data
+
 echo "=== Running migrations ==="
 python manage.py migrate --no-input
