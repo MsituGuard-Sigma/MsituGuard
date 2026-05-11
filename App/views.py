@@ -46,6 +46,9 @@ from django.conf import settings
 from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+# For safer aggregates on home page
+from django.db.models import Sum, Count
+from django.db.utils import DatabaseError
 # from django.core.mail import EmailMultiAlternatives
 # from django.conf import settings
 # from .models import Notification
@@ -67,13 +70,29 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['alerts'] = Report.objects.filter(status__in=['verified', 'resolved'])
-        context['resources'] = Resource.objects.all()
-        
-        # Tree planting stats for homepage
-        plantings = TreePlanting.objects.all()
-        context['total_trees'] = sum(p.number_of_trees for p in plantings)
-        context['total_planters'] = plantings.values('planter').distinct().count()
+        # Keep the homepage resilient in production: if the DB is temporarily
+        # unavailable (or migrations/data are in flux), still render the landing page.
+        try:
+            context['alerts'] = Report.objects.filter(status__in=['verified', 'resolved'])
+        except DatabaseError:
+            context['alerts'] = Report.objects.none()
+
+        try:
+            context['resources'] = Resource.objects.all()
+        except DatabaseError:
+            context['resources'] = Resource.objects.none()
+
+        # Tree planting stats for homepage (use DB aggregates; avoids iterating rows)
+        try:
+            stats = TreePlanting.objects.aggregate(
+                total_trees=Sum('number_of_trees'),
+                total_planters=Count('planter', distinct=True),
+            )
+            context['total_trees'] = stats.get('total_trees') or 0
+            context['total_planters'] = stats.get('total_planters') or 0
+        except DatabaseError:
+            context['total_trees'] = 0
+            context['total_planters'] = 0
         
         if self.request.user.is_authenticated:
             try:

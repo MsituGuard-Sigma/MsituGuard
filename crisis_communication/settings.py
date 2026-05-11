@@ -311,6 +311,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
     'loggers': {
         'App.adapters': {
             'handlers': ['console'],
@@ -319,6 +323,12 @@ LOGGING = {
         'allauth': {
             'handlers': ['console'],
             'level': 'DEBUG',
+        },
+        # Make sure unhandled exceptions (HTTP 500) show up in Render logs.
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
         },
     },
 }
