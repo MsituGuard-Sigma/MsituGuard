@@ -113,10 +113,10 @@
 <body>
     <a href="{% url 'tree_landing' %}" class="back-btn">← Back</a>
     <div class="form-container">
-        <h1>🌱 Sign In</h1>
+        <h1> Sign In</h1>
         
         <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #4caf50;">
-            <h3 style="color: #2e7d32; margin-bottom: 10px; font-size: 1.2rem;">Ready to Register Your Trees? 🌳</h3>
+            <h3 style="color: #2e7d32; margin-bottom: 10px; font-size: 1.2rem;">Ready to Register Your Trees? </h3>
             <p style="color: #2e7d32; margin: 0; font-size: 0.95rem; line-height: 1.4;">Sign in to continue your environmental journey. Track your tree planting progress, earn badges, and make a real impact on our planet's future!</p>
         </div>
         
@@ -135,7 +135,7 @@
                     {{ form.password }}
                     <button type="button" onclick="togglePassword('{{ form.password.id_for_label }}')"
                         style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem;" id="toggleBtn">
-                        👁️
+                        <i class="fas fa-eye"></i>
                     </button>
                 </div>
             </div>
@@ -167,11 +167,11 @@
             
             if (passwordVisible) {
                 passwordField.type = 'text';
-                toggleBtn.innerHTML = '🙈';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
                 toggleBtn.title = 'Hide password';
             } else {
                 passwordField.type = 'password';
-                toggleBtn.innerHTML = '👁️';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
                 toggleBtn.title = 'Show password';
             }
             

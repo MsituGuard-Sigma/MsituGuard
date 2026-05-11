@@ -94,7 +94,6 @@ urlpatterns = [
     # path('api/climate-data/', get_climate_data, name='get_climate_data'),
     # path('api/get-location-data/', get_location_data, name='get_location_data'),
      path('api/get-species-recommendations/', get_species_recommendations, name='get_species_recommendations'),
-    path('api/predict-tree-survival/', predict_tree_survival, name='predict_tree_survival'),
     path('api/detect-soil/', views.detect_soil_api, name='detect_soil_api'),
     path('api/detect-county/', detect_county_api, name='detect_county_api'),
     path('tree-prediction/', views.TreePredictionView.as_view(), name='tree_prediction'),

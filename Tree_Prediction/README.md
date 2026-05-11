@@ -1,8 +1,8 @@
-# 🌳 Tree Survival Prediction System
+#  Tree Survival Prediction System
 
 This folder contains all files related to the AI-powered tree survival prediction feature for MsituGuard.
 
-## 📁 Folder Structure
+##  Folder Structure
 
 ### `/training/` - Model Training Files
 - `train_tree_model.py` - Script that trains the AI model
@@ -19,7 +19,7 @@ This folder contains all files related to the AI-powered tree survival predictio
 - `views_ml.py` - Web API endpoints
 - `tree_prediction.html` - User interface template
 
-## 🚀 How to Use
+##  How to Use
 
 ### 1. Training (Already Done)
 ```bash
@@ -38,15 +38,15 @@ The integration files are copied to the Django app structure:
 http://localhost:8000/tree-prediction/
 ```
 
-## 📊 Model Performance
+##  Model Performance
 - **Accuracy**: 93.2%
 - **Top Features**: Temperature, Altitude, Rainfall, Soil pH, Tree Age
 
-## 🔗 API Endpoints
+##  API Endpoints
 - `POST /api/predict-tree-survival/` - Get survival prediction
 - `POST /api/species-recommendations/` - Get species recommendations
 
-## 📝 Notes
+##  Notes
 - Model trained on 10,000+ tree records from Kenya
 - Uses Random Forest algorithm
 - Integrates real climate data from World Bank

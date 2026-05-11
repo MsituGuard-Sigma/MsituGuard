@@ -1,200 +1,151 @@
-# 🌿 MsituGuard - Environmental Protection Platform
+# MsituGuard - Environmental Protection Platform
 
-**Kenya's AI-Powered Environmental Monitoring & Protection System**
+MsituGuard is an AI-assisted environmental monitoring and tree conservation platform for Kenya. It helps communities report environmental threats, supports organizations reviewing those reports, and guides tree planting through county-based species recommendations and survival prediction.
 
-MsituGuard connects forest-adjacent communities with local environmental organizations to monitor, report, and address environmental threats across Kenya. Supporting Kenya's 15 Billion Trees Initiative with cutting-edge AI technology.
+## Key Features
 
-## ✨ Key Features
+### AI and Tree Survival Prediction
+- Tree survival prediction using a GradientBoosting model and rule-based fallbacks.
+- County and species recommendations based on local environmental data.
+- Planting guidance using rainfall, temperature, altitude, soil, season, method, and care level.
+- Optional Mistral AI integration for clearer explanations and care instructions.
 
-### 🤖 AI & Machine Learning
-- **AI Tree Survival Prediction** - 93.2% accuracy ML model for optimizing tree planting success
-- **MISTRAL AI Integration** - Advanced environmental analysis and intelligent recommendations
-- **Species Recommendations** - Data-driven suggestions for optimal tree species selection
-- **Predictive Analytics** - Environmental risk assessment and conservation planning
-- **GPS Auto-Detection** - Automatic climate and soil data retrieval from coordinates
+### Environmental Reporting
+- Environmental issue submission with location, coordinates, image evidence, and contact details.
+- Report categories such as fire, illegal logging, pollution, deforestation, wildlife poaching, water contamination, air pollution, and waste dumping.
+- Review status tracking for new, verified, and resolved reports.
+- Organization dashboard and export tools for monitoring reports.
 
-### 🌍 Environmental Protection
-- **Environmental Report Submission** with GPS coordinates and photo evidence
-- **Tree Planting Registration** for Kenya's 15 Billion Trees Initiative
+### Tree Planting and Rewards
+- Tree planting registration for individual and public users.
+- Before/after tree planting photos and verification workflow.
+- Tree points, badges, and profile impact tracking.
+- Separate tree photo registration flow with duplicate image detection.
 
-- **Impact Tracking** - Personal dashboards showing conservation contributions
-- **Real-time Weather Integration** - Simulated weather data for cost-effective deployment
+### Community and Accounts
+- User registration, login, profile management, and Google OAuth support.
+- Community forum posts and comments.
+- Account types for community members, donors, and organizations.
+- Verification workflow for trusted contributors and organizations.
 
-### 👥 Community Engagement
-- **Community Forum** for environmental discussions and knowledge sharing
-- **Rewards System** with tokens, badges, and incentives for environmental actions
-- **User Role Management** - Differentiated experiences for community members vs organizations
-- **Gamification** - Progressive rewards system encouraging sustained participation
+## Technology Stack
 
-### 🏢 Organization Tools
-- **Organization Dashboard** for comprehensive report management
-- **Enhanced Environmental Monitoring** - Comprehensive data analysis and reporting tools
-- **Export Functionality** - Comprehensive environmental reports and data export
-- **Analytics & Reporting** - Data insights for conservation decision making
-- **Verification System** - Quality control for environmental reports
+- Backend: Django 5, Python 3.11
+- Database: SQLite for development, PostgreSQL-ready for production
+- Deployment: Render, Gunicorn, WhiteNoise
+- Media storage: local development storage or Cloudinary in production
+- ML: scikit-learn, pandas, numpy, joblib
+- AI: Mistral API integration
+- Frontend: Django templates, Bootstrap, CSS, JavaScript
 
-### 📱 User Experience
-- **Mobile-First Design** - Optimized for field use on smartphones and tablets
-- **Responsive Interface** - Seamless experience across all device sizes
-- **Professional UI/UX** - Modern design following industry best practices
-- **Accessibility** - Inclusive design for diverse user needs
+## Quick Start
 
-## 🚀 Technology Stack
-
-### Backend & AI
-- **Framework**: Django (Python 3.11+)
-- **Machine Learning**: scikit-learn, pandas, numpy
-- **AI Models**: RandomForest Classifier with 93.2% accuracy + MISTRAL AI
-- **AI Integration**: mistralai==1.0.1 for advanced environmental analysis
-- **Data Processing**: Advanced feature engineering and model serialization
-
-### Frontend & Design
-- **Frontend**: HTML5, CSS3, JavaScript ES6+, Bootstrap 5
-- **UI Framework**: Modern responsive design with CSS Grid/Flexbox
-- **Icons**: Font Awesome 6.4+
-- **Fonts**: Inter, Poppins (Google Fonts)
-
-### Infrastructure & Services
-- **Database**: Supabase PostgreSQL (Production), SQLite (Development)
-- **Media Storage**: Cloudinary CDN for images and file uploads
-- **Deployment**: Render.com with automatic deployments
-- **Version Control**: Git with comprehensive commit history
-
-## 🧠 AI Model Performance
-
-### Tree Survival Prediction Model
-- **Algorithm**: GradientBoosting Classifier
-- **Accuracy**: 77.3% on test dataset
-- **Features**: 16 environmental + engineered factors
-- **Training Data**: 10,000+ Kenyan tree planting records
-- **Validation**: Stratified train-test split (80/20)
-- **Engineered Features**: water_balance, is_high_altitude, soil_acidity
-
-### Key Prediction Factors
-1. **Tree Species** - Native vs non-native adaptation
-2. **Soil Conditions** - pH, type, and drainage
-3. **Climate Data** - Rainfall, temperature, altitude
-4. **Planting Method** - Technique and timing optimization
-5. **Care Level** - Maintenance and monitoring intensity
-
-## 🎯 Platform Access
-
-### User Experience
-- **Anonymous Users**: Tree prediction with basic features
-- **Registered Users**: Unlimited predictions + species recommendations + advanced analytics
-- **Organizations**: Full dashboard + environmental monitoring + export functionality
-- **Admin**: Complete platform management and analytics
-
-### AI Features Available
-- **Tree Survival Prediction**: 77.3% accuracy GradientBoosting model
-- **Environmental Analysis**: MISTRAL AI-powered insights
-- **Species Recommendations**: Location-based tree selection
-
-## 🛠️ Installation & Setup
-
-### Prerequisites
-- Python 3.11+
-- pip (Python package manager)
-- Git
-
-### Quick Start
 ```bash
-# Clone repository
-git clone https://github.com/Melbride/MsituGuard.git
+git clone https://github.com/MsituGuard-Sigma/MsituGuard.git
 cd MsituGuard
 
-# Create virtual environment
 python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Database setup
 python manage.py migrate
-
-# Create superuser (optional)
-python manage.py createsuperuser
-
-# Run development server
 python manage.py runserver
 ```
 
-### Access Points
-- **Local Development**: `http://localhost:8000`
-- **Admin Panel**: `http://localhost:8000/admin`
-- **API Endpoints**: `http://localhost:8000/api/`
+Local app: `http://localhost:8000`
 
-### ML Model Setup
+Admin: `http://localhost:8000/admin`
+
+## Environment Variables
+
+Create a `.env` file for local development:
+
+```env
+SECRET_KEY=your-secret-key
+DEBUG=true
+DATABASE_URL=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+DEFAULT_FROM_EMAIL=MsituGuard <noreply@msituguard.com>
+MISTRAL_API_KEY=
+OPENWEATHER_API_KEY=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+GOOGLE_OAUTH2_CLIENT_ID=
+GOOGLE_OAUTH2_CLIENT_SECRET=
+LOCATIONIQ_API_KEY=
+```
+
+For production, use `DEBUG=false` or `DEBUG=release`.
+
+## ML Model
+
+The model can be rebuilt from the training data:
+
 ```bash
-# Navigate to ML training directory
 cd Tree_Prediction/training
-
-# Train the model (optional - pre-trained models included)
 python train_tree_model.py
-
-# Models are automatically loaded from Tree_Prediction/training/models/
-# Model files:
-# - tree_survival_model.pkl (GradientBoosting model)
-# - tree_scaler.pkl (StandardScaler for preprocessing)
-# - tree_encoders.pkl (LabelEncoders for categorical features)
-# - feature_columns.pkl (List of 16 features used)
 ```
 
-## 🌐 Live Demo
+Generated model files are stored in:
 
-**Production URL**: https://msituguard.onrender.com
-
-### Live Features
-- ✅ Full AI tree prediction system with 93.2% accuracy
-- ✅ MISTRAL AI environmental analysis and insights
-- ✅ Environmental reporting with GPS auto-detection
-- ✅ Community forum and rewards system
-- ✅ Enhanced organization dashboard with AI tools
-- ✅ Mobile-responsive design with improved UX
-- ✅ Real-time notifications and impact tracking
-
-## 📊 Project Structure
-
+```text
+Tree_Prediction/training/models/
 ```
+
+The Render build scripts retrain the model during deployment so the saved model artifacts match the deployed scikit-learn version.
+
+## Main Routes
+
+- `/` - home page
+- `/reports/new/` - submit environmental report
+- `/environmental-reports/` - latest public reports
+- `/organization-dashboard/` - organization review dashboard
+- `/tree-prediction/` - tree survival prediction interface
+- `/tree-initiative/` - tree initiative page
+- `/plant-trees/` - register tree planting
+- `/tree-registration/` - tree photo registration app
+- `/forums/` - community forum
+
+## Project Structure
+
+```text
 MsituGuard/
-├── App/                          # Main Django application
-│   ├── mistral_ai.py           # AI integration utilities
-│   ├── climate_data.py         # Climate data processing
-│   ├── ml_utils.py              # AI model utilities
-│   ├── views_ml.py              # ML API endpoints
-│   ├── templates/App/           # HTML templates
-│   │   ├── tree_prediction.html # AI prediction interface
-│   │   ├── home.html           # Landing page
-│   │   └── ...                 # Other templates
-│   └── static/                 # CSS, JS, images
-├── Tree_Prediction/             # AI/ML system
-│   ├── models/                 # Trained ML models
-│   ├── training/               # Model training scripts
-│   └── integration/            # Django integration files
-├── crisis_communication/        # Django project settings
-├── requirements.txt            # Python dependencies (includes mistralai)
-└── README.md                   # This file
+├── App/                    Main Django application
+├── treeregistration/       Tree photo registration and badge app
+├── Tree_Prediction/        ML training data, model artifacts, and integration files
+├── crisis_communication/   Django project package
+├── images/                 Project images
+├── media/                  Local uploaded media
+├── requirements.txt        Python dependencies
+├── runtime.txt             Render Python version
+├── render.yaml             Render service configuration
+└── manage.py               Django management entrypoint
 ```
 
-## 🆕 Recent Updates
+Note: the Django project package is still named `crisis_communication` for compatibility with existing settings, imports, and deployment commands. The product name is MsituGuard.
 
-### Version 2.0 - AI Enhancement Release
-- **MISTRAL AI Integration**: Advanced environmental analysis and intelligent insights
-- **Enhanced UI/UX**: Improved branding emphasizing AI-powered conservation
-- **Registration Improvements**: Streamlined account creation with better UX
-- **Access Control**: Species recommendations restricted to registered users
-- **Mobile Optimization**: Better responsive design and spacing
-- **Export Functionality**: Comprehensive environmental reports with AI insights
-- **Navigation Enhancement**: Reordered menu prioritizing Tree Prediction
+## MVP Status
 
-## 📄 License
+MsituGuard is a working MVP. The core user value is already present:
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+- Communities can report environmental threats.
+- Organizations/admins can review reports.
+- Users can register tree planting activity.
+- The platform can recommend species and estimate survival probability.
+- Users can track environmental impact through points and badges.
 
----
+## Deployment Notes
 
-**Built for Kenya's Environmental Future with AI Innovation** 🌿🤖
+Render should use Python 3.11.9. This is pinned in:
 
-*MsituGuard - Where Technology Meets Conservation*
+- `runtime.txt`
+- `.python-version`
+- `render.yaml`
+
+If Render still selects Python 3.13, clear the build cache and confirm the service is deploying the latest branch and commit.
+
+## License
+
+This project is licensed under the MIT License.

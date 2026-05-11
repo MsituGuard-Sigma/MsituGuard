@@ -6,7 +6,7 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
-from .models import Profile, Resource, EmergencyContact, Report, ResourceRequest, ForumPost, Comment, TreePlanting, TreePrediction
+from .models import Profile, Resource, Report, ResourceRequest, ForumPost, Comment, TreePlanting, TreePrediction
 # Keep Alert as alias for backward compatibility
 Alert = Report
 from .forms import UserRegistrationForm,  ResourceForm, ReportForm, ProfileForm,  ResourceRequestForm, ForumPostForm,  FormComment, EditProfileForm, PasswordChangingForm
@@ -360,7 +360,7 @@ class ReportCreateView(CreateView):
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>🌱 MsituGuard</h1>
+                        <h1>MsituGuard</h1>
                         <h2>Report Submitted Successfully</h2>
                         <p>Thank you for protecting our environment!</p>
                     </div>
@@ -371,7 +371,7 @@ class ReportCreateView(CreateView):
                         <p>Our team will investigate and verify this issue. You will receive email updates when the status changes.</p>
                         
                         <div class="details">
-                            <h4>📄 Report Details:</h4>
+                            <h4>Report Details:</h4>
                             <p><strong>Type:</strong> {report.get_report_type_display()}</p>
                             <p><strong>Location:</strong> {report.location_name}</p>
                             <p><strong>Status:</strong> Under Review</p>
@@ -381,7 +381,7 @@ class ReportCreateView(CreateView):
                             <a href="{dashboard_url}" class="btn">Track Your Report Progress</a>
                         </div>
                         
-                        <p>Thank you for being an environmental guardian! 🌿</p>
+                        <p>Thank you for being an environmental guardian.</p>
                         
                         <p>Best regards,<br><strong>MsituGuard Team</strong></p>
                     </div>
@@ -394,7 +394,7 @@ class ReportCreateView(CreateView):
             """
             
             msg = EmailMultiAlternatives(
-                subject='🌱 Report Submitted Successfully',
+                subject='Report Submitted Successfully',
                 body=f'Hello {report.reporter.username},\n\nThank you for submitting "{report.title}". Track progress: {dashboard_url}',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[report.reporter.email]
@@ -864,15 +864,15 @@ def send_tree_verification_notification(tree_planting):
         
         # Determine badge based on tree count
         if tree_planting.number_of_trees >= 50:
-            badge = "🌳 Forest Hero"
+            badge = " Forest Hero"
         elif tree_planting.number_of_trees >= 20:
-            badge = "🌲 Tree Champion"
+            badge = " Tree Champion"
         elif tree_planting.number_of_trees >= 10:
-            badge = "🌿 Green Warrior"
+            badge = " Green Warrior"
         elif tree_planting.number_of_trees >= 5:
-            badge = "🌱 Eco Defender"
+            badge = " Eco Defender"
         else:
-            badge = "🍃 Nature Friend"
+            badge = " Nature Friend"
         
         # Add badge to user profile
         tree_planting.planter.profile.add_badge(badge)
@@ -880,7 +880,7 @@ def send_tree_verification_notification(tree_planting):
         # Add special 15 billion trees initiative badge for first-time planters
         user_tree_count = TreePlanting.objects.filter(planter=tree_planting.planter, status='verified').count()
         if user_tree_count == 1:  # First verified tree planting
-            tree_planting.planter.profile.add_badge("🌍 15 Billion Trees Initiative Participant")
+            tree_planting.planter.profile.add_badge("15 Billion Trees Initiative Participant")
         
         print(f"Awarded {points_earned} tree points and badge to user")
         
@@ -912,8 +912,8 @@ def send_tree_verification_notification(tree_planting):
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🌱 MsituGuard</h1>
-                    <h2>🎉 Tree Planting Verified!</h2>
+                    <h1> MsituGuard</h1>
+                    <h2> Tree Planting Verified!</h2>
                     <p>Your environmental contribution has been officially verified</p>
                 </div>
                 <div class="content">
@@ -921,15 +921,15 @@ def send_tree_verification_notification(tree_planting):
                     <p>Great news! Your tree planting contribution has been verified by our local organization partners.</p>
                     
                     <div class="details">
-                        <h4>🌳 {tree_planting.title}</h4>
+                        <h4> {tree_planting.title}</h4>
                         <p><strong>Location:</strong> {tree_planting.location_name}</p>
                         <p><strong>Trees Planted:</strong> {tree_planting.number_of_trees}</p>
                         <p><strong>Tree Type:</strong> {tree_planting.get_tree_type_display()}</p>
-                        <p style="color: #22c55e; font-weight: bold;">✅ VERIFIED</p>
+                        <p style="color: #22c55e; font-weight: bold;"> VERIFIED</p>
                     </div>
                     
                     <div class="rewards">
-                        <h3 style="color: #92400e; margin-top: 0;">🎉 Congratulations! You've Earned Rewards!</h3>
+                        <h3 style="color: #92400e; margin-top: 0;"> Congratulations! You've Earned Rewards!</h3>
                         <div style="text-align: center;">
                             <div class="reward-item">
                                 <div style="font-size: 24px; font-weight: bold; color: #22c55e;">{points_earned}</div>
@@ -944,7 +944,7 @@ def send_tree_verification_notification(tree_planting):
                     </div>
                     
                     <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #0ea5e9;">
-                        <h4 style="color: #0c4a6e; margin-top: 0;">🏆 Certificate Earned!</h4>
+                        <h4 style="color: #0c4a6e; margin-top: 0;"> Certificate Earned!</h4>
                         <p style="color: #0c4a6e; margin: 10px 0;">You've earned your official 15 Billion Trees Initiative Certificate! View it in your dashboard.</p>
                     </div>
                     
@@ -954,7 +954,7 @@ def send_tree_verification_notification(tree_planting):
                         <a href="http://127.0.0.1:8000/" class="btn">Visit MsituGuard</a>
                     </div>
                     
-                    <p style="margin-top: 30px;">Keep up the great work protecting our forests and environment. 🌿</p>
+                    <p style="margin-top: 30px;">Keep up the great work protecting our forests and environment. </p>
                     
                     <p>Best regards,<br><strong>MsituGuard Team</strong><br><em>Protecting Kenya's Environment Together</em></p>
                 </div>
@@ -992,15 +992,15 @@ def send_unregistered_reward_notification(tree_planting):
         points_earned = tree_planting.number_of_trees
         
         if tree_planting.number_of_trees >= 50:
-            badge = "🌳 Forest Hero"
+            badge = " Forest Hero"
         elif tree_planting.number_of_trees >= 20:
-            badge = "🌲 Tree Champion"
+            badge = " Tree Champion"
         elif tree_planting.number_of_trees >= 10:
-            badge = "🌿 Green Warrior"
+            badge = " Green Warrior"
         elif tree_planting.number_of_trees >= 5:
-            badge = "🌱 Eco Defender"
+            badge = " Eco Defender"
         else:
-            badge = "🍃 Nature Friend"
+            badge = " Nature Friend"
         
         # Tokens are awarded by the award_tokens method when status changes to verified
         
@@ -1045,8 +1045,8 @@ def send_unregistered_reward_notification(tree_planting):
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🌱 MsituGuard</h1>
-                    <h2>🎉 Tree Planting Verified!</h2>
+                    <h1> MsituGuard</h1>
+                    <h2> Tree Planting Verified!</h2>
                     <p>Your environmental contribution has been officially verified</p>
                 </div>
                 <div class="content">
@@ -1054,15 +1054,15 @@ def send_unregistered_reward_notification(tree_planting):
                     <p>Great news! Your tree planting contribution has been verified by our local organization partners.</p>
                     
                     <div class="details">
-                        <h4>🌳 {tree_planting.title}</h4>
+                        <h4> {tree_planting.title}</h4>
                         <p><strong>Location:</strong> {tree_planting.location_name}</p>
                         <p><strong>Trees Planted:</strong> {tree_planting.number_of_trees}</p>
                         <p><strong>Tree Type:</strong> {tree_planting.get_tree_type_display()}</p>
-                        <p style="color: #22c55e; font-weight: bold;">✅ VERIFIED</p>
+                        <p style="color: #22c55e; font-weight: bold;"> VERIFIED</p>
                     </div>
                     
                     <div class="rewards">
-                        <h3 style="color: #92400e; margin-top: 0;">🎉 You've Earned Rewards!</h3>
+                        <h3 style="color: #92400e; margin-top: 0;"> You've Earned Rewards!</h3>
                         <div style="text-align: center;">
                             <div class="reward-item">
                                 <div style="font-size: 24px; font-weight: bold; color: #22c55e;">{tokens_earned}</div>
@@ -1077,14 +1077,14 @@ def send_unregistered_reward_notification(tree_planting):
                     </div>
                     
                     <div class="cta-section">
-                        <h3 style="color: #1d4ed8; margin-top: 0;">🎆 Claim Your Complete Rewards!</h3>
+                        <h3 style="color: #1d4ed8; margin-top: 0;"> Claim Your Complete Rewards!</h3>
                         <p style="color: #1e40af; margin-bottom: 20px;">Create your free MsituGuard account to:</p>
                         <ul style="text-align: left; color: #1e40af; max-width: 400px; margin: 0 auto;">
-                            <li>✅ View your complete reward dashboard</li>
-                            <li>🏆 Track your environmental impact</li>
-                            <li>🌳 Join Kenya's tree planting leaderboard</li>
-                            <li>📊 Submit more environmental reports</li>
-                            <li>🌟 Earn more badges and recognition</li>
+                            <li> View your complete reward dashboard</li>
+                            <li> Track your environmental impact</li>
+                            <li> Join Kenya's tree planting leaderboard</li>
+                            <li> Submit more environmental reports</li>
+                            <li> Earn more badges and recognition</li>
                         </ul>
                         <div style="margin-top: 25px;">
                             <a href="{register_url}" class="btn">Create Free Account & Claim Rewards</a>
@@ -1093,13 +1093,13 @@ def send_unregistered_reward_notification(tree_planting):
                     </div>
                     
                     <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #0ea5e9;">
-                        <h4 style="color: #0c4a6e; margin-top: 0;">🏆 Certificate Available!</h4>
+                        <h4 style="color: #0c4a6e; margin-top: 0;"> Certificate Available!</h4>
                         <p style="color: #0c4a6e; margin: 10px 0;">You've earned an official 15 Billion Trees Initiative Certificate! Register to claim and download it.</p>
                     </div>
                     
                     <p>Your contribution to Kenya's 15 billion trees initiative is now officially recognized. Thank you for being an environmental guardian!</p>
                     
-                    <p style="margin-top: 30px;">Keep up the great work protecting our forests and environment. 🌿</p>
+                    <p style="margin-top: 30px;">Keep up the great work protecting our forests and environment. </p>
                     
                     <p>Best regards,<br><strong>MsituGuard Team</strong><br><em>Protecting Kenya's Environment Together</em></p>
                 </div>
@@ -1228,12 +1228,12 @@ def ussd_callback(request):
 
     if text == '':
         # Initial welcome message for all users
-        response = "CON Welcome to the Crisis Communication Platform\n"
-        response += "1. Latest Alerts\n"
+        response = "CON Welcome to MsituGuard\n"
+        response += "1. Latest Environmental Reports\n"
         response += "2. Request a Resource\n"
         response += "3. Share a Resource\n"
         response += "4. Volunteer Opportunities\n"
-        response += "5. Emergency Contacts\n"
+        response += "5. Response Contacts\n"
         response += "6. View Resources\n"
         response += "7. Your Profile\n"
         response += "8. About the Platform\n"
@@ -1241,7 +1241,7 @@ def ussd_callback(request):
         response += "0. Exit"
 
     elif input_steps[0] == '1':
-        response = "END Here are the latest alerts:\n"  # Logic to fetch and display alerts
+        response = "END Here are the latest environmental reports:\n"
 
     elif input_steps[0] == '2':  # Request a Resource flow
         if len(input_steps) == 1:
@@ -1268,18 +1268,18 @@ def ussd_callback(request):
         response = "CON Share a Resource:\nPlease enter the details of the resource you're sharing."
     elif input_steps[0] == '4':  # Volunteer Opportunities
         response = "CON Volunteer Opportunities:\nPlease enter your availability."
-    elif input_steps[0] == '5':  # Emergency Contacts
-        response = "CON Emergency Contacts:\n1. Local Disaster Response Team\n2. Police\n3. Ambulance"
+    elif input_steps[0] == '5':  # Response Contacts
+        response = "CON Response Contacts:\n1. Local Environmental Office\n2. Forest Service\n3. County Response Team"
     elif input_steps[0] == '6':  # View Resources
         response = "CON View Resources:\n1. Food\n2. Clothes"
     elif input_steps[0] == '7':  # Your Profile
         response = "CON Your Profile:\n1. View Details\n2. Edit Profile"
     elif input_steps[0] == '8':  # About the Platform
-        response = "END About the Platform:\nThis platform helps communities during crises by sharing resources and sending alerts."
+        response = "END About MsituGuard:\nThis platform helps communities report environmental threats and coordinate conservation action."
     elif input_steps[0] == '9':  # Register/Login
         if len(input_steps) == 1:
             # Step 1: Show login/registration options
-            response = "CON Welcome to the Crisis Communication Platform\n"
+            response = "CON Welcome to MsituGuard\n"
             response += "1. Register\n"
             response += "2. Login\n"
         elif input_steps[1] == '1':  # Registration Flow
@@ -1314,11 +1314,11 @@ def ussd_callback(request):
 
                 if authenticate_user(username=username, password=password):
                     response = "CON Welcome back, {}!\n".format(username)
-                    response += "1. Latest Alerts\n"
+                    response += "1. Latest Environmental Reports\n"
                     response += "2. Request a Resource\n"
                     response += "3. Share a Resource\n"
                     response += "4. Volunteer Opportunities\n"
-                    response += "5. Emergency Contacts\n"
+                    response += "5. Response Contacts\n"
                     response += "6. View Resources\n"
                     response += "7. Your Profile\n"
                     response += "8. About the Platform\n"
@@ -1327,7 +1327,7 @@ def ussd_callback(request):
                     response = "END Invalid login. Please check your credentials."
 
     elif text == '0':
-        response = "END Thank you for using the Crisis Communication Platform. Goodbye!"
+        response = "END Thank you for using MsituGuard. Goodbye!"
 
     return HttpResponse(response, content_type='text/plain')
 
@@ -1400,7 +1400,7 @@ def public_tree_planting(request):
             # Send verification email with password
             send_verification_email(user, request, temp_password if created else None)
             
-            messages.success(request, f'🌱 Thank you {full_name}! Your tree planting has been registered successfully. We\'ve sent verification details to your email.')
+            messages.success(request, f' Thank you {full_name}! Your tree planting has been registered successfully. We\'ve sent verification details to your email.')
             return redirect('http://localhost:8000/rewards/')
             
         except Exception as e:

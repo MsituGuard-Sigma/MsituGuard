@@ -30,7 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-a#((2n(2x!ytaj+a0#&y%jn!l!+9k9_v#=qg&zk3pq#m1pt6er')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG_VALUE = config('DEBUG', default='false').strip().lower()
+DEBUG = DEBUG_VALUE in ('1', 'true', 'yes', 'on', 'dev', 'development')
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
@@ -175,6 +176,8 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Use Cloudinary for media files in production
 if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -182,7 +185,6 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
 else:
     # Local development
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type

@@ -214,7 +214,7 @@ class ProfileForm(forms.ModelForm):
             'placeholder': 'City, State/Province, Country',
             'autocomplete': 'address-level2'
         }),
-        help_text="Your current location for emergency response"
+        help_text="Your current location for environmental response"
     )
     
     class Meta:
@@ -242,12 +242,12 @@ class ProfileForm(forms.ModelForm):
         if location:
             location = location.strip()
             if len(location) < 3:
-                raise forms.ValidationError("📍 Please provide a more specific location (at least 3 characters)")
+                raise forms.ValidationError("Please provide a more specific location (at least 3 characters)")
             if len(location) > 200:
-                raise forms.ValidationError("📍 Location is too long (maximum 200 characters)")
+                raise forms.ValidationError("Location is too long (maximum 200 characters)")
             # Check for basic location format
             if not any(char.isalpha() for char in location):
-                raise forms.ValidationError("📍 Location must contain at least some letters")
+                raise forms.ValidationError("Location must contain at least some letters")
         return location
 
 class UserForm(forms.ModelForm):

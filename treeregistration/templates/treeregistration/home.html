@@ -178,28 +178,24 @@
     </style>
 </head>
 <body>
-    <a href="{% url 'tree_landing' %}" class="back-btn">🏠</a>
+    <a href="{% url 'tree_landing' %}" class="back-btn"><i class="fas fa-home"></i></a>
     
     <div class="dashboard-container">
         <div class="welcome-section">
-            <h1 class="welcome-title">Welcome back, {{ request.user.username }}! 🌱</h1>
+            <h1 class="welcome-title">Welcome back, {{ request.user.username }}!</h1>
             <p class="welcome-subtitle">Track your environmental impact and continue making a difference</p>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">🌳</div>
+                <div class="stat-icon"><i class="fas fa-tree"></i></div>
                 <div class="stat-number">{{ tree_count }}</div>
                 <div class="stat-label">Trees Planted</div>
             </div>
             
             <div class="stat-card">
                 <div class="stat-icon">
-                    {% if badge == 'Gold' %}🥇
-                    {% elif badge == 'Silver' %}🥈
-                    {% elif badge == 'Bronze' %}🥉
-                    {% elif badge == 'Diamond' %}💎
-                    {% else %}🌱{% endif %}
+                    <i class="fas fa-award"></i>
                 </div>
                 <div class="stat-number">{{ badge }}</div>
                 <div class="stat-label">Current Badge</div>
@@ -211,7 +207,7 @@
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon">🌍</div>
+                <div class="stat-icon"><i class="fas fa-leaf"></i></div>
                 <div class="stat-number">{{ tree_count|floatformat:0 }}kg</div>
                 <div class="stat-label">CO₂ Absorbed*</div>
                 <small style="opacity: 0.7;">*Estimated: ~1kg per tree/year</small>
@@ -248,27 +244,27 @@
                     {% if tree_count < 100 %}Keep planting to reach Bronze Badge (100 trees)
                     {% elif tree_count < 300 %}Keep planting to reach Silver Badge (300 trees)
                     {% elif tree_count < 500 %}Keep planting to reach Gold Badge (500 trees)
-                    {% else %}Gold achieved! Plant 500 more for Diamond 💎{% endif %}
+                    {% else %}Gold achieved! Plant 500 more for Diamond{% endif %}
                 {% else %}
                     {% if tree_count < 1000 %}Keep planting to reach Bronze Badge (1000 trees)
                     {% elif tree_count < 3000 %}Keep planting to reach Silver Badge (3000 trees)
                     {% elif tree_count < 5000 %}Keep planting to reach Gold Badge (5000 trees)
-                    {% else %}Gold achieved! Plant 5000 more for Diamond 💎{% endif %}
+                    {% else %}Gold achieved! Plant 5000 more for Diamond{% endif %}
                 {% endif %}
             </div>
         </div>
         
         <div class="action-buttons">
             <a href="{% url 'tree_upload' %}" class="action-btn">
-                📤 Upload Tree Photo
+                <i class="fas fa-upload"></i> Upload Tree Photo
             </a>
             <a href="{% url 'profile_detail' %}" class="action-btn">
-                👤 View Profile
+                <i class="fas fa-user"></i> View Profile
             </a>
             <form method="POST" action="{% url 'tree_logout' %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="action-btn" style="border: none; background: rgba(76, 175, 80, 0.9); cursor: pointer;">
-                    🚪 Logout
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </form>
         </div>

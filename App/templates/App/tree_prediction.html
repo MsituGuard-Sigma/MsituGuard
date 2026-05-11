@@ -70,7 +70,7 @@ body {
 }
 
 .species-card li::before {
-    content: '✓';
+    content: '';
     position: absolute;
     left: 0;
     color: #22c55e;
@@ -204,10 +204,10 @@ label {
                 
                 <!-- GPS Detection -->
                 <div id="location-box" class="mb-3">
-                    <p id="location-status" class="text-center text-muted">📍 Detecting your location...</p>
+                    <p id="location-status" class="text-center text-muted"><i class="fas fa-location-crosshairs"></i> Detecting your location...</p>
                     <div class="text-center">
                         <button id="confirm-county" class="btn btn-outline-success btn-sm" style="display:none;">
-                            ✔ Confirm County
+                            <i class="fas fa-check"></i> Confirm County
                         </button>
                         <button id="detect-location" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-crosshairs"></i> Detect My Location
@@ -231,7 +231,7 @@ label {
             <div class="location-badge" id="locationBadge"></div>
         </div>
         
-        <h5 class="text-success mb-4 text-center">🌿 Recommended Species & Planting Info:</h5>
+        <h5 class="text-success mb-4 text-center"><i class="fas fa-seedling"></i> Recommended Species & Planting Info:</h5>
         
         <!-- Species Cards Grid -->
         <div class="row" id="speciesGrid"></div>
@@ -311,25 +311,25 @@ const treeRegistrationUrl = '{{ tree_registration_url }}';
 
 // GPS Detection Logic - Minimal & Guaranteed
 document.getElementById('detect-location').addEventListener('click', function() {
-    console.log('🔍 Button clicked - requesting location');
+    console.log('Button clicked - requesting location');
     
     if (!navigator.geolocation) {
         document.getElementById('location-status').innerHTML = 
-            '❌ Location is not supported by your browser.';
+            '<i class="fas fa-exclamation-circle"></i> Location is not supported by your browser.';
         return;
     }
     
     document.getElementById('location-status').innerHTML = 
-        '🔄 <strong>Please allow location access when prompted</strong>';
+        '<i class="fas fa-location-crosshairs"></i> <strong>Please allow location access when prompted</strong>';
     
     navigator.geolocation.getCurrentPosition(
         function(position) {
-            console.log('✅ GPS Success!', position.coords);
+            console.log('GPS success', position.coords);
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             
             document.getElementById('location-status').innerHTML = 
-                `📍 <strong>Location found!</strong><br>Detecting county...`;
+                `<i class="fas fa-check"></i> <strong>Location found!</strong><br>Detecting county...`;
             
             // Detect county
             fetch('/api/detect-county/', {
@@ -342,7 +342,7 @@ document.getElementById('detect-location').addEventListener('click', function() 
                 if(data.success) {
                     detectedCounty = data.county;
                     document.getElementById('location-status').innerHTML = 
-                        `✅ <strong>Found: ${detectedCounty} County</strong><br><small>Is this correct?</small>`;
+                        `<i class="fas fa-map-marker-alt"></i> <strong>Found: ${detectedCounty} County</strong><br><small>Is this correct?</small>`;
                     document.getElementById('confirm-county').style.display = 'inline-block';
                     document.getElementById('detect-location').style.display = 'none';
                     
@@ -350,31 +350,31 @@ document.getElementById('detect-location').addEventListener('click', function() 
                     const changeBtn = document.createElement('button');
                     changeBtn.id = 'change-county';
                     changeBtn.className = 'btn btn-outline-secondary btn-sm ms-2';
-                    changeBtn.innerHTML = '✏️ Change County';
+                    changeBtn.innerHTML = '<i class="fas fa-edit"></i> Change County';
                     document.getElementById('confirm-county').parentNode.appendChild(changeBtn);
                 } else {
                     document.getElementById('location-status').innerHTML = 
-                        '⚠️ Could not determine county. Please type manually.';
+                        '<i class="fas fa-exclamation-triangle"></i> Could not determine county. Please type manually.';
                 }
             })
             .catch(function(err) {
                 document.getElementById('location-status').innerHTML = 
-                    '⚠️ County detection failed. Please type manually.';
+                    '<i class="fas fa-exclamation-triangle"></i> County detection failed. Please type manually.';
                 // Hide detect button on county detection failure
                 document.getElementById('detect-location').style.display = 'none';
             });
         },
         function(error) {
-            console.log('❌ GPS Error:', error.code, error.message);
+            console.log('GPS error:', error.code, error.message);
             let msg = '';
             if (error.code === 1) {
-                msg = '🚫 <strong>Location permission denied</strong><br>Please type your county manually.';
+                msg = '<i class="fas fa-ban"></i> <strong>Location permission denied</strong><br>Please type your county manually.';
             } else if (error.code === 2) {
-                msg = '📡 <strong>Location unavailable</strong><br>Please type your county manually.';
+                msg = '<i class="fas fa-satellite-dish"></i> <strong>Location unavailable</strong><br>Please type your county manually.';
             } else if (error.code === 3) {
-                msg = '⏰ <strong>Location request timed out</strong><br>Please type your county manually.';
+                msg = '<i class="fas fa-clock"></i> <strong>Location request timed out</strong><br>Please type your county manually.';
             } else {
-                msg = '❌ <strong>Location detection failed</strong><br>Please type your county manually.';
+                msg = '<i class="fas fa-exclamation-circle"></i> <strong>Location detection failed</strong><br>Please type your county manually.';
             }
             document.getElementById('location-status').innerHTML = msg;
             // Hide detect button on error, allow manual input
@@ -388,7 +388,7 @@ document.getElementById('confirm-county').addEventListener('click', () => {
     if(detectedCounty) {
         document.getElementById('county').value = detectedCounty;
         document.getElementById('location-status').innerHTML = 
-            `✔ <strong>Using detected county: ${detectedCounty}</strong>`;
+            `<i class="fas fa-check"></i> <strong>Using detected county: ${detectedCounty}</strong>`;
         
         // Hide all GPS-related buttons after confirmation
         document.getElementById('confirm-county').style.display = 'none';
@@ -402,7 +402,7 @@ document.getElementById('confirm-county').addEventListener('click', () => {
 document.addEventListener('click', function(e) {
     if(e.target && e.target.id === 'change-county') {
         document.getElementById('location-status').innerHTML = 
-            '✏️ <strong>Please type your correct county below</strong>';
+            '<i class="fas fa-edit"></i> <strong>Please type your correct county below</strong>';
         
         // Clear the input field and focus on it
         document.getElementById('county').value = '';
@@ -434,7 +434,7 @@ submitCounty.addEventListener('click', async () => {
         document.getElementById('countySection').style.display = 'none';
         
         // Show location badge
-        locationBadge.textContent = `📍 Your Location: ${selectedCounty}`;
+        locationBadge.innerHTML = `<i class="fas fa-map-marker-alt"></i> Your Location: ${selectedCounty}`;
         recommendationsSection.style.display = 'block';
 
         // Display species info in grid format
@@ -445,7 +445,7 @@ submitCounty.addEventListener('click', async () => {
             gridHtml += `
                 <div class="col-md-6 mb-4">
                     <div class="species-card h-100">
-                        <h6>🌳 ${s}</h6>
+                        <h6><i class="fas fa-tree"></i> ${s}</h6>
                         <p><strong>Best Planting Season:</strong> ${info.best_month.includes(',') ? info.best_month + ' (You can plant in any of these months)' : info.best_month}</p>
                         <p><strong>Recommended Method:</strong> ${info.planting_method || 'Seedling'}</p>
                         <p><strong>Soil Type:</strong> ${info.soil}</p>

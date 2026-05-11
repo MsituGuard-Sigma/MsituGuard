@@ -179,7 +179,7 @@
 </head>
 <body>
     <div class="landing-container">
-        <h1 class="hero-title">🌱 TreePlant</h1>
+        <h1 class="hero-title"> TreePlant</h1>
         <p class="hero-subtitle">
             Join the global movement to restore our planet.<br>
             Plant trees, track your impact, and help create a greener future for all.
@@ -195,14 +195,14 @@
             
             <div class="account-options">
                 <div class="account-card" onclick="window.location.href='{% url 'tree_register' %}?type=individual'">
-                    <div class="card-icon">🌳</div>
+                    <div class="card-icon"></div>
                     <h3 class="card-title">Individual</h3>
                     <p class="card-description">Perfect for personal tree planting goals and environmental impact tracking</p>
                     <a href="{% url 'tree_register' %}?type=individual" class="btn">Join as Individual</a>
                 </div>
                 
                 <div class="account-card" onclick="window.location.href='{% url 'tree_register' %}?type=organization'">
-                    <div class="card-icon">🏢</div>
+                    <div class="card-icon"></div>
                     <h3 class="card-title">Organization</h3>
                     <p class="card-description">For companies, NGOs, and groups planning large-scale tree planting initiatives</p>
                     <a href="{% url 'tree_register' %}?type=organization" class="btn">Join as Organization</a>

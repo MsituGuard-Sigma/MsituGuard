@@ -63,12 +63,12 @@ class Profile(models.Model):
     
     @property
     def environmental_level(self):
-        if self.tree_points >= 500: return "🌳 Forest Guardian"
-        elif self.tree_points >= 200: return "🌲 Tree Champion"
-        elif self.tree_points >= 100: return "🌿 Green Warrior"
-        elif self.tree_points >= 50: return "🌱 Eco Defender"
-        elif self.tree_points >= 10: return "🍃 Nature Friend"
-        return "🌾 Environmental Supporter"
+        if self.tree_points >= 500: return "Forest Guardian"
+        elif self.tree_points >= 200: return "Tree Champion"
+        elif self.tree_points >= 100: return "Green Warrior"
+        elif self.tree_points >= 50: return "Eco Defender"
+        elif self.tree_points >= 10: return "Nature Friend"
+        return "Environmental Supporter"
     
     @property
     def is_donor(self):
@@ -80,11 +80,11 @@ class Profile(models.Model):
         if not self.is_donor or self.total_donated <= 0:
             return None
         badges = {
-            'basic': '🥉 Basic Supporter',
-            'standard': '🥈 Community Donor', 
-            'premium': '🥇 Premium Supporter'
+            'basic': 'Basic Supporter',
+            'standard': 'Community Donor',
+            'premium': 'Premium Supporter'
         }
-        return badges.get(self.donor_tier, '💝 Supporter')
+        return badges.get(self.donor_tier, 'Supporter')
     
     @property
     def is_active_donor(self):
@@ -112,12 +112,12 @@ class Profile(models.Model):
     @property
     def conservation_rank(self):
         """User rank based on tree points"""
-        if self.tree_points >= 100: return "🏆 Conservation Champion"
-        elif self.tree_points >= 50: return "🥇 Environmental Leader"
-        elif self.tree_points >= 25: return "🥈 Green Guardian"
-        elif self.tree_points >= 10: return "🥉 Eco Warrior"
-        elif self.tree_points >= 5: return "🌟 Nature Defender"
-        return "🌱 Environmental Supporter"
+        if self.tree_points >= 100: return "Conservation Champion"
+        elif self.tree_points >= 50: return "Environmental Leader"
+        elif self.tree_points >= 25: return "Green Guardian"
+        elif self.tree_points >= 10: return "Eco Warrior"
+        elif self.tree_points >= 5: return "Nature Defender"
+        return "Environmental Supporter"
     
 
     def __str__(self):
@@ -355,7 +355,7 @@ class TreePlanting(models.Model):
             # Award special initiative badge for first-time planters
             user_tree_count = TreePlanting.objects.filter(planter=self.planter, status='verified').count()
             if user_tree_count == 1:  # First verified tree planting
-                self.planter.profile.add_badge("🌍 15 Billion Trees Initiative Participant")
+                self.planter.profile.add_badge("15 Billion Trees Initiative Participant")
             
             self.planter.profile.save()
             return True

@@ -21,6 +21,11 @@ python manage.py help
 echo "=== Checking INSTALLED_APPS ==="
 python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crisis_communication.settings'); from django.conf import settings; print('staticfiles' in str(settings.INSTALLED_APPS))"
 
+echo "=== Training ML model with deployed dependency versions ==="
+pushd Tree_Prediction/training
+python train_tree_model.py
+popd
+
 echo "=== Running collectstatic ==="
 python manage.py collectstatic --no-input --verbosity 2
 

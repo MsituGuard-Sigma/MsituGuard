@@ -1,0 +1,4 @@
+*.sh text eol=lf
+runtime.txt text eol=lf
+.python-version text eol=lf
+requirements.txt text eol=lf

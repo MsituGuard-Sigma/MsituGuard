@@ -667,7 +667,7 @@
                                 </a>
                             {% else %}
                                 <span class="missing">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>Emergency contact required - Update immediately
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Contact number required - update your profile
                                 </span>
                             {% endif %}
                         </div>
@@ -696,7 +696,7 @@
                                 </span>
                             {% else %}
                                 <span class="missing">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>Location required for emergency response
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Location required for environmental response
                                 </span>
                             {% endif %}
                         </div>
@@ -745,7 +745,7 @@
             </div>
         {% elif object.is_donor %}
             <div style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; padding: 0.5rem 1rem; border-radius: 15px; text-align: center; margin: 1rem 0; font-weight: 600; box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3); font-size: 0.85rem; display: inline-block; max-width: 300px;">
-                💳 Payment Pending
+                 Payment Pending
             </div>
         {% endif %}
         
@@ -782,7 +782,7 @@
         <!-- Tree Gallery Section -->
         <div class="activity-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: rgba(34, 197, 94, 0.2); border-left-color: #22c55e;">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h4 class="fw-bold mb-0" style="color: #1f2937;">🌳 Your Tree Gallery</h4>
+                <h4 class="fw-bold mb-0" style="color: #1f2937;"> Your Tree Gallery</h4>
                 <a href="{% url 'tree_home' %}" class="btn-action btn-secondary" style="font-size: 0.85rem; padding: 0.3rem 0.6rem;">
                     <i class="fas fa-home me-1"></i>Tree Dashboard
                 </a>
@@ -811,7 +811,7 @@
                 </div>
             {% else %}
                 <div style="text-align: center; padding: 3rem 1rem; background: rgba(255,255,255,0.5); border-radius: 15px; margin: 2rem 0;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                    <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
                     <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 1.5rem;">No trees uploaded yet. Start your journey!</p>
                 </div>
             {% endif %}
