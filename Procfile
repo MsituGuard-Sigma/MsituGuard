@@ -1,1 +1,1 @@
-web: gunicorn crisis_communication.wsgi:application
+web: bash start_render.sh
