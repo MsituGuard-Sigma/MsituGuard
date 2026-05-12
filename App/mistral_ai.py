@@ -18,7 +18,11 @@ GROQ_API_URL = os.environ.get("GROQ_API_URL", "https://api.groq.com/openai/v1/ch
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
 
 # Prefer Groq going forward.
-api_key = os.environ.get("GROQ_API_KEY") or os.environ.get("MISTRAL_API_KEY")
+_groq_api_key = os.environ.get("GROQ_API_KEY")
+_legacy_key = os.environ.get("MISTRAL_API_KEY")
+
+# Allow legacy env var name only if it clearly contains a Groq key.
+api_key = _groq_api_key or (_legacy_key if (_legacy_key and _legacy_key.startswith("gsk_")) else None)
 client = bool(api_key)
 
 print(f"[GROQ] API Key configured: {'Yes' if api_key else 'No'}")

@@ -291,14 +291,18 @@ if not GROQ_API_KEY:
                         if line.startswith('GROQ_API_KEY='):
                             GROQ_API_KEY = line.split('=', 1)[1].strip()
                             break
-                        if not GROQ_API_KEY and line.startswith('MISTRAL_API_KEY='):
-                            # Accept legacy key name if present
-                            GROQ_API_KEY = line.split('=', 1)[1].strip()
-                            break
+                        if (not GROQ_API_KEY) and line.startswith('MISTRAL_API_KEY='):
+                            # Accept legacy env var name only if it looks like a Groq key.
+                            candidate = line.split('=', 1)[1].strip()
+                            if candidate.startswith('gsk_'):
+                                GROQ_API_KEY = candidate
+                                break
                 else:
                     # If a secret file contains only the key, accept it.
                     # Prefer groq_key, but allow legacy mistral_key as fallback.
-                    if str(path).endswith('groq_key') or str(path).endswith('mistral_key'):
+                    if str(path).endswith('groq_key'):
+                        GROQ_API_KEY = content
+                    elif str(path).endswith('mistral_key') and content.startswith('gsk_'):
                         GROQ_API_KEY = content
 
                 if GROQ_API_KEY:
