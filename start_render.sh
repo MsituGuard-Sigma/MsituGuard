@@ -11,4 +11,9 @@ echo "=== Loading county data ==="
 python manage.py load_county_data
 
 echo "=== Starting web server ==="
-exec gunicorn crisis_communication.wsgi:application --bind 0.0.0.0:${PORT:-10000}
+exec gunicorn crisis_communication.wsgi:application \
+	--bind 0.0.0.0:${PORT:-10000} \
+	--access-logfile - \
+	--error-logfile - \
+	--log-level info \
+	--capture-output
