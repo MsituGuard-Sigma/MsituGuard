@@ -8,7 +8,7 @@ MsituGuard is an AI-assisted environmental monitoring and tree conservation plat
 - Tree survival prediction using a GradientBoosting model and rule-based fallbacks.
 - County and species recommendations based on local environmental data.
 - Planting guidance using rainfall, temperature, altitude, soil, season, method, and care level.
-- Optional Mistral AI integration for clearer explanations and care instructions.
+- Optional Groq API integration for clearer explanations and care instructions.
 
 ### Environmental Reporting
 - Environmental issue submission with location, coordinates, image evidence, and contact details.
@@ -35,7 +35,7 @@ MsituGuard is an AI-assisted environmental monitoring and tree conservation plat
 - Deployment: Render, Gunicorn, WhiteNoise
 - Media storage: local development storage or Cloudinary in production
 - ML: scikit-learn, pandas, numpy, joblib
-- AI: Mistral API integration
+- AI: Groq API integration (OpenAI-compatible chat completions)
 - Frontend: Django templates, Bootstrap, CSS, JavaScript
 
 ## Quick Start
@@ -67,7 +67,7 @@ DATABASE_URL=
 EMAIL_HOST_USER=
 EMAIL_HOST_PASSWORD=
 DEFAULT_FROM_EMAIL=MsituGuard <noreply@msituguard.com>
-MISTRAL_API_KEY=
+GROQ_API_KEY=
 OPENWEATHER_API_KEY=
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=

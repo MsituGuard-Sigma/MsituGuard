@@ -2,20 +2,9 @@
 LLM integration for Tree Prediction explanations and care instructions
 """
 import os
-try:
-    from mistralai.client import MistralClient
-    from mistralai.models.chat_completion import ChatMessage
-except ImportError:
-    try:
-        from mistralai import Mistral
-        MistralClient = Mistral
-        class ChatMessage:
-            def __init__(self, role, content):
-                self.role = role
-                self.content = content
-    except ImportError:
-        MistralClient = None
-        ChatMessage = None
+import re
+
+import requests
 
 # Initialize Mistral client
 # Load environment variables
@@ -25,16 +14,44 @@ try:
 except ImportError:
     pass
 
-api_key = os.environ.get("MISTRAL_API_KEY")
-client = MistralClient(api_key=api_key) if api_key else None
+GROQ_API_URL = os.environ.get("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
 
-print(f"[MISTRAL] API Key configured: {'Yes' if api_key else 'No'}")
-print(f"[MISTRAL] Client initialized: {'Yes' if client else 'No'}")
+# Prefer Groq going forward.
+api_key = os.environ.get("GROQ_API_KEY") or os.environ.get("MISTRAL_API_KEY")
+client = bool(api_key)
+
+print(f"[GROQ] API Key configured: {'Yes' if api_key else 'No'}")
+
+
+def _groq_chat(prompt: str, *, max_tokens: int, temperature: float) -> str:
+    if not api_key:
+        raise RuntimeError("No GROQ_API_KEY configured")
+
+    payload = {
+        "model": GROQ_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=30)
+    if response.status_code >= 400:
+        # Avoid dumping full response body (could include sensitive info in some cases).
+        raise RuntimeError(f"Groq API error {response.status_code}: {response.text[:300]}")
+
+    data = response.json()
+    return data["choices"][0]["message"]["content"]
 
 def generate_tree_explanation(context):
     """Generate natural explanation for tree prediction using LLM"""
     if not client:
-        print("[MISTRAL] No client available, using fallback explanation")
+        print("[GROQ] No client available, using fallback explanation")
         # Fallback to enhanced static explanation when no API key
         species = context['species']
         county = context['county']
@@ -72,32 +89,12 @@ def generate_tree_explanation(context):
     
     Example style: "Pine grows well in Meru's highland climate with good rainfall. March planting is ideal because it coincides with long rains when trees establish strong roots."
     """
-    
-    messages = [ChatMessage(role="user", content=prompt)]
-    
+
     try:
-        if hasattr(client, 'chat'):
-            response = client.chat(
-                model="mistral-small",
-                messages=messages,
-                max_tokens=150,
-                temperature=0.3
-            )
-        else:
-            # Try newer API format
-            response = client.completions.create(
-                model="mistral-small",
-                messages=messages,
-                max_tokens=150,
-                temperature=0.3
-            )
-        # Clean up LLM response
-        content = response.choices[0].message.content.strip()
+        content = _groq_chat(prompt, max_tokens=150, temperature=0.3).strip()
         # Remove markdown formatting, quotes, and word count
         content = content.replace('**', '').replace('*', '')
         content = content.replace('"', '').replace("'", "")
-        # Remove word count pattern
-        import re
         content = re.sub(r'\(Word count:.*?\)', '', content)
         content = re.sub(r'\(\d+\s*words?\)', '', content)
         return content.strip()
@@ -107,7 +104,7 @@ def generate_tree_explanation(context):
 def generate_care_instructions(context):
     """Generate personalized care instructions using LLM"""
     if not client:
-        print("[MISTRAL] No client available, using fallback care instructions")
+        print("[GROQ] No client available, using fallback care instructions")
         # Fallback to enhanced care instructions when no API key
         base_care = context.get('base_care', [])
         survival_rate = context['survival_rate']
@@ -150,18 +147,8 @@ def generate_care_instructions(context):
     - Keep each instruction under 100 characters
     """
     
-    messages = [ChatMessage(role="user", content=prompt)]
-    
     try:
-        response = client.chat(
-            model="mistral-small",
-            messages=messages,
-            max_tokens=200,
-            temperature=0.3
-        )
-        
-        # Parse response into list
-        care_text = response.choices[0].message.content.strip()
+        care_text = _groq_chat(prompt, max_tokens=200, temperature=0.3).strip()
         care_lines = [line.strip() for line in care_text.split('\n') if line.strip()]
         
         # Clean up numbered items
@@ -190,7 +177,7 @@ def generate_care_instructions(context):
 def analyze_prediction_with_llm(context):
     """Use LLM to analyze and adjust prediction based on multiple factors"""
     if not client:
-        print("[MISTRAL] No client available, using fallback analysis")
+        print("[GROQ] No client available, using fallback analysis")
         # Fallback intelligent analysis when no API key
         species = context['species']
         county = context['county']

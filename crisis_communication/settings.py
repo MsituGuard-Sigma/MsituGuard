@@ -266,41 +266,48 @@ OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# MISTRAL AI Configuration - Debug and load from secret file
-MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
-print(f"Environment MISTRAL_API_KEY: {'Found' if MISTRAL_API_KEY else 'Not found'}")
+# LLM API Configuration
+# Preferred provider: Groq (set GROQ_API_KEY)
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+print(f"Environment GROQ_API_KEY: {'Found' if GROQ_API_KEY else 'Not found'}")
 
-if not MISTRAL_API_KEY:
-    # Try multiple secret file locations
-    secret_paths = ['/etc/secrets/.env', '/etc/secrets/mistral_key', BASE_DIR / '.env']
-    
+# Legacy support (older deployments may still set this).
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
+
+if not GROQ_API_KEY:
+    # Try multiple secret file locations (Render mounts secrets under /etc/secrets/)
+    secret_paths = ['/etc/secrets/.env', '/etc/secrets/groq_key', '/etc/secrets/mistral_key', BASE_DIR / '.env']
+
     for path in secret_paths:
         try:
-            print(f"Trying to read from: {path}")
             with open(path, 'r') as f:
                 content = f.read().strip()
-                print(f"File content length: {len(content)}")
-                
-                # Handle different file formats
+
+                # Handle KEY=VALUE format (.env)
                 if '=' in content:
                     for line in content.split('\n'):
-                        if line.startswith('MISTRAL_API_KEY='):
-                            MISTRAL_API_KEY = line.split('=', 1)[1].strip()
-                            print(f"Found API key in {path}")
+                        if not line or line.strip().startswith('#'):
+                            continue
+                        if line.startswith('GROQ_API_KEY='):
+                            GROQ_API_KEY = line.split('=', 1)[1].strip()
+                            break
+                        if not GROQ_API_KEY and line.startswith('MISTRAL_API_KEY='):
+                            # Accept legacy key name if present
+                            GROQ_API_KEY = line.split('=', 1)[1].strip()
                             break
                 else:
-                    # Assume the entire file is the key
-                    MISTRAL_API_KEY = content
-                    print(f"Using entire file as API key from {path}")
-                
-                if MISTRAL_API_KEY:
+                    # If a secret file contains only the key, accept it.
+                    # Prefer groq_key, but allow legacy mistral_key as fallback.
+                    if str(path).endswith('groq_key') or str(path).endswith('mistral_key'):
+                        GROQ_API_KEY = content
+
+                if GROQ_API_KEY:
                     break
-                    
-        except Exception as e:
-            print(f"Failed to read {path}: {e}")
+
+        except Exception:
             continue
 
-print(f"Final MISTRAL_API_KEY status: {'Available' if MISTRAL_API_KEY else 'Not available'}")
+print(f"Final GROQ_API_KEY status: {'Available' if GROQ_API_KEY else 'Not available'}")
 
 # Logging configuration
 LOGGING = {
