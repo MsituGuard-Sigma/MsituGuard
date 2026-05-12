@@ -497,8 +497,10 @@ class Command(BaseCommand):
         # Load all species
         self.stdout.write("\nLoading species profiles...")
         species_objects = {}
+        species_field_names = {field.name for field in Species._meta.fields}
         for name, profile in species_profiles.items():
-            sp, created = Species.objects.update_or_create(name=name, defaults=profile)
+            filtered_profile = {k: v for k, v in profile.items() if k in species_field_names}
+            sp, created = Species.objects.update_or_create(name=name, defaults=filtered_profile)
             species_objects[name] = sp
             if created:
                 self.stdout.write(f"  Created species: {name}")

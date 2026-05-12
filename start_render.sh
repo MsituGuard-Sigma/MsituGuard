@@ -10,6 +10,9 @@ python manage.py load_species_data
 echo "=== Loading county data ==="
 python manage.py load_county_data
 
+echo "=== Loading tree planting playbook (county-species mappings) ==="
+python manage.py load_playbook
+
 echo "=== Starting web server ==="
 exec gunicorn crisis_communication.wsgi:application \
 	--bind 0.0.0.0:${PORT:-10000} \
