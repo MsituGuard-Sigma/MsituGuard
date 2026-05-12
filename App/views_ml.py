@@ -4,9 +4,99 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
 import re
+from django.db import IntegrityError
 
 from App.models import County, CountySpecies, Species, TreePrediction
 from .ml_utils import tree_predictor  # your ML model loader
+
+
+def _normalize_county_name(value: str | None) -> str:
+    if not value:
+        return ""
+    cleaned = value.strip()
+    cleaned = re.sub(r"\s+county\s*$", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s+", " ", cleaned)
+    return cleaned
+
+
+def _ensure_default_species():
+    """Ensure a small set of baseline species exists for fallback flows."""
+    defaults_by_name = {
+        "Indigenous Mix": {
+            "soil": "Various",
+            "rainfall": "600-1200mm",
+            "temperature": "15-30°C",
+            "care_level": "Low",
+            "best_season": "March–May, Oct–Dec",
+            "planting_method": "Seedling",
+            "water": "Low to moderate",
+            "planting_guide": ["Dig hole", "Add compost", "Plant seedling", "Mulch"],
+            "care_instructions": ["Weed regularly", "Mulch base", "Protect from livestock"],
+        },
+        "Grevillea": {
+            "soil": "Well-drained",
+            "rainfall": "600-1000mm",
+            "temperature": "15-28°C",
+            "care_level": "Low",
+            "best_season": "March–May, Oct–Dec",
+            "planting_method": "Seedling",
+            "water": "Low to moderate",
+            "planting_guide": ["Plant in open area", "Space trees", "Water initially"],
+            "care_instructions": ["Minimal maintenance", "Prune lightly", "Monitor pests"],
+        },
+        "Neem": {
+            "soil": "Sandy to clay",
+            "rainfall": "400-1200mm",
+            "temperature": "20-35°C",
+            "care_level": "Low",
+            "best_season": "March–May, Oct–Dec",
+            "planting_method": "Seedling",
+            "water": "Low",
+            "planting_guide": ["Plant in warm area", "Water weekly first month", "Mulch"],
+            "care_instructions": ["Drought tolerant", "Prune for shape", "Minimal inputs"],
+        },
+        "Eucalyptus": {
+            "soil": "Well-drained",
+            "rainfall": "600-1200mm",
+            "temperature": "15-25°C",
+            "care_level": "Medium",
+            "best_season": "March–May, Oct–Dec",
+            "planting_method": "Seedling",
+            "water": "Moderate",
+            "planting_guide": ["Plant seedlings", "Space 3-4m", "Water first 6 months"],
+            "care_instructions": ["Monitor pests", "Prune lower branches"],
+        },
+    }
+
+    species_objects = []
+    for name, defaults in defaults_by_name.items():
+        obj, _ = Species.objects.get_or_create(name=name, defaults=defaults)
+        species_objects.append(obj)
+    return species_objects
+
+
+def _ensure_default_county_species(county: County):
+    """Ensure the county has at least some CountySpecies mappings."""
+    existing = CountySpecies.objects.filter(county=county)
+    if existing.exists():
+        return
+
+    species_objects = list(Species.objects.all()[:8])
+    if not species_objects:
+        species_objects = _ensure_default_species()
+
+    for idx, sp in enumerate(species_objects, start=1):
+        CountySpecies.objects.get_or_create(
+            county=county,
+            species=sp,
+            defaults={
+                "survival_rate": 70.0,
+                "species_rank": idx,
+                "environmental_match_score": 70.0,
+                "seasonal_performance": {},
+                "recommendation_reason": "Baseline recommendation (no county-specific playbook loaded yet).",
+            },
+        )
 
 
 # ============================================================
@@ -21,9 +111,24 @@ def get_species_recommendations(request):
     """
     try:
         data = json.loads(request.body)
-        county_name = data.get('county')
-        
-        county = County.objects.filter(name=county_name).first()
+        county_name = _normalize_county_name(data.get('county'))
+        if not county_name:
+            return JsonResponse({
+                "success": False,
+                "error": "Missing county",
+                "species": [],
+                "playbook": {}
+            })
+
+        county = County.objects.filter(name__iexact=county_name).first()
+        if not county:
+            # If DB seeding hasn't happened yet in production, create the county
+            # so the UX can still proceed.
+            try:
+                county = County.objects.create(name=county_name)
+            except IntegrityError:
+                county = County.objects.filter(name__iexact=county_name).first()
+
         if not county:
             return JsonResponse({
                 "success": False,
@@ -32,9 +137,10 @@ def get_species_recommendations(request):
                 "playbook": {}
             })
 
-        county_species_qs = CountySpecies.objects.filter(
-            county=county
-        ).select_related('species')
+        # Ensure we can return something even if CountySpecies isn't populated.
+        _ensure_default_county_species(county)
+
+        county_species_qs = CountySpecies.objects.filter(county=county).select_related('species')
 
         species_list = [cs.species for cs in county_species_qs]
 
@@ -43,6 +149,7 @@ def get_species_recommendations(request):
             playbook[s.name] = {
                 "planting_guide": s.planting_guide,
                 "best_month": s.best_season,
+                "planting_method": getattr(s, "planting_method", "Seedling"),
                 "soil": s.soil,
                 "rainfall_mm": s.rainfall,
                 "temperature_c": s.temperature,
@@ -78,8 +185,8 @@ def predict_tree_survival(request):
         data = json.loads(request.body)
 
         # Required input
-        tree_species_name = data.get('tree_species')
-        county_name = data.get('county')
+        tree_species_name = (data.get('tree_species') or "").strip()
+        county_name = _normalize_county_name(data.get('county'))
         planting_season = data.get('planting_season')
         planting_method = data.get('planting_method')
         care_level = data.get('care_level', "Medium")
@@ -89,16 +196,31 @@ def predict_tree_survival(request):
             return JsonResponse({"success": False, "error": "Missing required fields"})
 
         # Get county-species compatibility from database
-        try:
-            county = County.objects.get(name=county_name)
-            species = Species.objects.get(name=tree_species_name)
-            county_species = CountySpecies.objects.get(county=county, species=species)
-        except County.DoesNotExist:
+        county = County.objects.filter(name__iexact=county_name).first()
+        if not county:
+            # Allow predictions even if counties were not seeded.
+            try:
+                county = County.objects.create(name=county_name)
+            except IntegrityError:
+                county = County.objects.filter(name__iexact=county_name).first()
+        if not county:
             return JsonResponse({"success": False, "error": f"County '{county_name}' not found"})
-        except Species.DoesNotExist:
+
+        species = Species.objects.filter(name__iexact=tree_species_name).first()
+        if not species:
+            # Bootstrap a baseline set if DB wasn't seeded.
+            _ensure_default_species()
+            species = Species.objects.filter(name__iexact=tree_species_name).first()
+        if not species:
             return JsonResponse({"success": False, "error": f"Species '{tree_species_name}' not found"})
-        except CountySpecies.DoesNotExist:
-            return JsonResponse({"success": False, "error": f"'{tree_species_name}' is not recommended for '{county_name}'"})
+
+        county_species = CountySpecies.objects.filter(county=county, species=species).first()
+        if not county_species:
+            # Create a baseline mapping so predictions can proceed.
+            _ensure_default_county_species(county)
+            county_species = CountySpecies.objects.filter(county=county, species=species).first()
+        if not county_species:
+            return JsonResponse({"success": False, "error": f"'{tree_species_name}' is not available for '{county_name}' yet"})
 
         # Get base survival rate from database
         base_survival_rate = county_species.survival_rate
