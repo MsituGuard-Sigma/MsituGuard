@@ -188,17 +188,13 @@ def upload_tree(request):
                 tree.latitude = float(latitude)
                 tree.longitude = float(longitude)
                 
-                # Use location service to detect county and region
+                # Detect county from GPS coordinates
                 try:
-                    from Tree_Prediction.integration.location_service import get_accurate_location
-                    location_data = get_accurate_location(float(latitude), float(longitude))
-                    if location_data.get('success', False):
-                        tree.detected_county = location_data.get('county', '')
-                        if not location_name:
-                            tree.location_name = location_data.get('county', 'Unknown Location')
-                    else:
-                        tree.detected_county = ''
-                        tree.location_name = location_name or 'Unknown Location'
+                    from App.utils import detect_nearest_county
+                    county_name_detected = detect_nearest_county(float(latitude), float(longitude))
+                    tree.detected_county = county_name_detected or ''
+                    if not location_name:
+                        tree.location_name = county_name_detected or 'Unknown Location'
                 except Exception as e:
                     print(f"Location detection error: {e}")
                     tree.detected_county = ''

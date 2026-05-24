@@ -49,6 +49,8 @@ from django.conf import settings
 # For safer aggregates on home page
 from django.db.models import Sum, Count
 from django.db.utils import DatabaseError
+from Tree_Prediction.integration.utils import get_county_environment
+
 # from django.core.mail import EmailMultiAlternatives
 # from django.conf import settings
 # from .models import Notification
@@ -1617,8 +1619,6 @@ class PlatformRevenueView(LoginRequiredMixin, TemplateView):
         })
         
         return context
-
-from .utils import get_county_environment
 
 def recommend_species(request):
     #from a form

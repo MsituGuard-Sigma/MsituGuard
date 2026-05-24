@@ -10,7 +10,7 @@ from .views import CustomPasswordResetView
 from .views import request_verification  
 # from .forms import CustomLoginForm
 from django.contrib.auth.views import LoginView
-from .views_ml import predict_tree_survival, get_species_recommendations, detect_county_api
+from Tree_Prediction.integration.views_ml import predict_tree_survival, get_species_recommendations, detect_county_api
 
 
 from .views import(HomeView,   UserLogoutView, ResourceListView, ResourceCreateView,

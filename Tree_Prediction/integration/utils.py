@@ -40,7 +40,7 @@ def get_confidence_label(has_weather, used_ml):
     """Calculate confidence level based on data sources used"""
     if has_weather and used_ml:
         return "High"
-    if has_weather:
+    if used_ml or has_weather:
         return "Moderate"
     return "Low"
 

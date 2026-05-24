@@ -658,10 +658,9 @@ function getSoilFromCoords(lat, lng) {
 function validatePredictionInputs() {
     const region = document.getElementById('regionField').value;
     const species = document.getElementById('treeSpeciesSelect').value;
-    const numTrees = document.getElementById('numberOfTrees').value;
     
-    if (!region || !species || !numTrees) {
-        alert('Please use GPS detection first, then fill in Tree Species and Number of Trees to check survival prediction.');
+    if (!region || !species) {
+        alert('Please use GPS detection first, then select a Tree Species to check survival prediction.');
         return false;
     }
     return true;
@@ -678,18 +677,10 @@ function predictTreeSurvival() {
     
     const predictionData = {
         tree_species: document.getElementById('treeSpeciesSelect').value,
-        region: document.getElementById('regionField').value,
         county: document.getElementById('countyField').value,
-        soil_type: document.getElementById('soilTypeField').value,
-        rainfall_mm: 800, 
-        temperature_c: 22, 
-        altitude_m: 1500, 
-        soil_ph: 6.5, 
         planting_season: document.getElementById('plantingSeasonSelect').value,
-        planting_method: 'Seedling',
-        care_level: 'Medium',
-        water_source: 'Rain-fed',
-        tree_age_months: 12
+        planting_method: 'Auto',
+        care_level: 'Medium'
     };
     
     fetch('/predict-tree-survival/', {
@@ -748,22 +739,23 @@ function displayPredictionResult(data) {
                 </div>
             </div>
             <div class="mt-2">
-                <strong>AI Recommendation:</strong><br>
-                ${data.recommendation || 'Proceed with standard planting practices.'}
+                <strong>Recommended Method:</strong> ${data.recommended_method || 'Auto'}<br>
+                ${data.explanation ? `<div class="mt-2"><strong>Note:</strong> ${data.explanation}</div>` : ''}
             </div>
         </div>
     `;
 }
 
 // Event listeners
-document.getElementById('checkSurvivalBtn').addEventListener('click', predictTreeSurvival);
-document.getElementById('predictFirstBtn').addEventListener('click', function() {
-    document.getElementById('predictionSection').style.display = 'block';
-    document.getElementById('predictionSection').scrollIntoView({ behavior: 'smooth' });
-    
-    // Auto-fill prediction if form has data
-    if (validatePredictionInputs()) {
-        predictTreeSurvival();
+document.addEventListener('DOMContentLoaded', function() {
+    const checkBtn = document.getElementById('checkSurvivalBtn');
+    if (checkBtn) {
+        checkBtn.addEventListener('click', predictTreeSurvival);
+    }
+
+    const speciesSelect = document.getElementById('treeSpeciesSelect');
+    if (speciesSelect) {
+        speciesSelect.addEventListener('change', checkFormCompletion);
     }
 });
 
@@ -777,7 +769,6 @@ function checkFormCompletion() {
     }
 }
 
-document.getElementById('treeSpeciesSelect').addEventListener('change', checkFormCompletion);
 
 // Clear form after successful submission
 window.addEventListener('load', function() {

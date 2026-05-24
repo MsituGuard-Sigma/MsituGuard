@@ -1034,15 +1034,19 @@
             const navbar = document.querySelector('.navbar-modern');
             const hamburger = document.querySelector('.hamburger-menu');
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (!navbar) {
+                return;
+            }
             
             clearTimeout(scrollTimeout);
             
             if (scrollTop > 80) {
                 navbar.classList.add('scrolled');
-                hamburger.classList.add('scrolled');
+                if (hamburger) hamburger.classList.add('scrolled');
             } else {
                 navbar.classList.remove('scrolled');
-                hamburger.classList.remove('scrolled');
+                if (hamburger) hamburger.classList.remove('scrolled');
             }
             
             const scrollDelta = Math.abs(scrollTop - lastScrollTop);
@@ -1057,14 +1061,15 @@
             }
             
             scrollTimeout = setTimeout(() => {
-                navbar.classList.remove('hidden');
+                if (navbar) navbar.classList.remove('hidden');
             }, 1500);
             
         }, { passive: true });
         
         document.addEventListener('mousemove', function(e) {
             if (e.clientY < 100) {
-                document.querySelector('.navbar-modern').classList.remove('hidden');
+                const navbar = document.querySelector('.navbar-modern');
+                if (navbar) navbar.classList.remove('hidden');
             }
         });
         

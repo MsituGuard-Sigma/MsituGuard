@@ -18,6 +18,7 @@ class UtilityTests(TestCase):
     def test_confidence_labels(self):
         self.assertEqual(get_confidence_label(has_weather=True, used_ml=True), "High")
         self.assertEqual(get_confidence_label(has_weather=True, used_ml=False), "Moderate")
+        self.assertEqual(get_confidence_label(has_weather=False, used_ml=True), "Moderate")
         self.assertEqual(get_confidence_label(has_weather=False, used_ml=False), "Low")
 
     def test_nearest_county_falls_back_to_nairobi_when_no_counties_exist(self):

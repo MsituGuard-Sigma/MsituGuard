@@ -2,8 +2,17 @@ def normalize_rainfall(weather_data):
     """
     Converts OpenWeather rainfall into daily rainfall estimate
     """
-    hourly_rain = weather_data.get("rainfall", 0.0)
-    daily_rain = hourly_rain * 24
+    # Accept either:
+    # - hourly rain in mm (OpenWeather: rain['1h']) under keys: 'rainfall' or 'rain_mm_hour'
+    # - daily rain estimate already computed under key: 'rainfall_mm'
+    hourly_rain = weather_data.get("rainfall")
+    if hourly_rain is None:
+        hourly_rain = weather_data.get("rain_mm_hour")
+
+    if hourly_rain is not None:
+        daily_rain = float(hourly_rain) * 24
+    else:
+        daily_rain = float(weather_data.get("rainfall_mm", 0.0))
 
     if daily_rain < 2:
         rain_status = "Dry"

@@ -24,57 +24,48 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .species-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
     background: linear-gradient(135deg, #22c55e, #16a34a);
 }
 
 .species-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(34,197,94,0.15);
     border-color: #22c55e;
+}
+
+.species-card.selected {
+    border-color: #16a34a;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    box-shadow: 0 8px 25px rgba(34,197,94,0.25);
 }
 
 .species-card h6 {
     color: #15803d;
     font-weight: 700;
-    font-size: 1.3rem;
-    margin-bottom: 15px;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
 }
 
-.species-card p {
-    margin-bottom: 10px;
-    color: #374151;
-    line-height: 1.6;
+.survival-bar-wrap {
+    background: #e5e7eb;
+    border-radius: 20px;
+    height: 10px;
+    width: 100%;
+    margin: 6px 0 10px;
 }
 
-.species-card ul {
-    background: #f0fdf4;
-    border-radius: 8px;
-    padding: 15px 20px;
-    margin-top: 10px;
-}
-
-.species-card li {
-    color: #166534;
-    margin-bottom: 5px;
-    position: relative;
-    padding-left: 20px;
-}
-
-.species-card li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    color: #22c55e;
-    font-weight: bold;
+.survival-bar {
+    height: 10px;
+    border-radius: 20px;
+    transition: width 0.8s ease;
 }
 
 .location-badge {
@@ -86,7 +77,7 @@ body {
     font-size: 1.1rem;
     display: inline-block;
     margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 4px 15px rgba(34,197,94,0.3);
 }
 
 .form-section {
@@ -96,53 +87,134 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     margin-bottom: 25px;
     border: 1px solid #e5e7eb;
-    transition: all 0.3s ease;
 }
 
-.form-section:hover {
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
+/* Step 3 (Customise) — scoped styling so other steps stay unchanged */
+.customize-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #e5e7eb;
+}
+
+.customize-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.customize-title {
+    margin: 0;
+    font-weight: 800;
+    color: #1f2937;
+    font-size: 1.15rem;
+    line-height: 1.3;
+}
+
+.customize-subtitle {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.field-block {
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    height: 100%;
+}
+
+.field-block label {
+    margin-bottom: 2px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.field-help {
+    display: block;
+    color: #6b7280;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+}
+
+.customize-card .form-control {
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.customize-card .form-control:focus {
+    background: #ffffff;
+}
+
+.predict-summary {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+    color: #166534;
+    line-height: 1.7;
 }
 
 .form-control {
     border: 2px solid #e5e7eb;
     border-radius: 12px;
     padding: 12px 16px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
     background: #fafafa;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .form-control:focus {
     border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
     background: white;
-    transform: translateY(-1px);
+}
+
+select.form-control {
+    appearance: auto;
+    padding-right: 8px;
+    cursor: pointer;
 }
 
 label {
     font-weight: 600;
     color: #374151;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     display: block;
 }
+
 
 .btn-predict {
     background: linear-gradient(135deg, #22c55e, #16a34a);
     border: none;
-    padding: 15px 35px;
+    padding: 15px 40px;
     border-radius: 30px;
     font-weight: 700;
     color: white;
     font-size: 1.1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 6px 20px rgba(34,197,94,0.3);
 }
 
 .btn-predict:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 10px 30px rgba(34,197,94,0.4);
     color: white;
+}
+
+.btn-predict:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-success {
@@ -151,12 +223,7 @@ label {
     border-radius: 25px;
     padding: 10px 25px;
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-}
-
-.btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 4px 15px rgba(34,197,94,0.3);
 }
 
 .card {
@@ -173,38 +240,56 @@ label {
     font-weight: 500;
 }
 
+.step-badge {
+    background: #22c55e;
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-right: 8px;
+}
+
+.gps-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.88rem;
+    color: #1e40af;
+    margin-bottom: 16px;
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .form-section {
-        padding: 20px;
-    }
-    
-    .species-card {
-        padding: 15px;
-    }
-    
-    .btn-predict {
-        width: 100%;
-    }
+    .form-section { padding: 20px; }
+    .btn-predict { width: 100%; }
 }
 </style>
 
 <div class="container mt-4">
-    <!-- Tree Survival Prediction Header -->
+
     <div class="text-center mb-5">
-        <h2 class="fw-bold mb-3" style="color: #1f2937; font-size: 2.5rem;">Tree Survival Prediction</h2>
-        <p class="lead mb-2" style="color: #6b7280; font-size: 1.2rem;">AI-powered recommendations for successful tree planting</p>
-        <p class="text-muted" style="font-size: 1rem;">Get personalized species recommendations based on your location's climate and soil conditions</p>
+        <h2 class="fw-bold mb-3" style="color:#1f2937; font-size:2.5rem;">Tree Survival Prediction</h2>
+        <p class="lead mb-2" style="color:#6b7280;">AI-powered recommendations for successful tree planting</p>
+        <p class="text-muted">Get personalized species recommendations based on your location's climate and soil conditions</p>
     </div>
-    
-    <!-- County Input Section -->
+
+    <!-- STEP 1: County input -->
     <div class="row justify-content-center" id="countySection">
         <div class="col-md-6">
             <div class="form-section">
-                <h5 class="mb-3 text-center"><i class="fas fa-map-marker-alt text-success"></i> Enter Your County / Location</h5>
-                
-                <!-- GPS Detection -->
+                <h5 class="mb-3 text-center">
+                    <span class="step-badge">1</span>Enter Your Location
+                </h5>
+
                 <div id="location-box" class="mb-3">
-                    <p id="location-status" class="text-center text-muted"><i class="fas fa-location-crosshairs"></i> Detecting your location...</p>
+                    <p id="location-status" class="text-center text-muted">
+                        <i class="fas fa-location-crosshairs"></i> Detecting your location...
+                    </p>
                     <div class="text-center">
                         <button id="confirm-county" class="btn btn-outline-success btn-sm" style="display:none;">
                             <i class="fas fa-check"></i> Confirm County
@@ -214,414 +299,666 @@ label {
                         </button>
                     </div>
                 </div>
-                
+
+                <!-- GPS active banner shown when coordinates are locked in -->
+                <div class="gps-banner" id="gpsBanner">
+                    <i class="fas fa-crosshairs me-2"></i>
+                    <strong>GPS active</strong> — your exact location will be used for a more accurate prediction.
+                    <span id="gpsCoordDisplay" style="color:#6b7280; font-size:0.8rem;"></span>
+                </div>
+
                 <div class="form-group mb-3">
-                    <input type="text" class="form-control" id="county" placeholder="Type your county (e.g., Meru, Nairobi)">
+                    <input type="text" class="form-control" id="county"
+                           placeholder="Type your county (e.g., Meru, Nairobi)">
                 </div>
                 <div class="text-center">
-                    <button id="submitCounty" class="btn btn-success">Get Species Recommendations</button>
+                    <button id="submitCounty" class="btn btn-success">
+                        <i class="fas fa-seedling me-1"></i> Show Best Species for My Area
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Species Recommendations Section -->
+    <!-- STEP 2: Species comparison cards -->
     <div id="recommendationsSection" style="display:none;">
         <div class="text-center mb-4">
             <div class="location-badge" id="locationBadge"></div>
         </div>
-        
-        <h5 class="text-success mb-4 text-center"><i class="fas fa-seedling"></i> Recommended Species & Planting Info:</h5>
-        
-        <!-- Species Cards Grid -->
+
+        <div class="text-center mb-2">
+            <span class="step-badge">2</span>
+            <span class="fw-bold" style="color:#1f2937; font-size:1.1rem;">
+                Top species for your county — compare and pick one
+            </span>
+        </div>
+        <p class="text-center text-muted mb-4" style="font-size:0.92rem;">
+            These scores use <strong>Medium care</strong> as a baseline so you can compare species fairly.
+            Select the one you want to plant, then customise your details in Step 3 below.
+        </p>
+
         <div class="row" id="speciesGrid"></div>
-        
-        <!-- Species Selection Form -->
-        <div class="row justify-content-center mt-4" id="selectionSection" style="display:none;">
+
+        <!-- STEP 3: Customise and predict -->
+        <div class="row justify-content-center mt-2" id="selectionSection" style="display:none;">
             <div class="col-md-8">
-                <div class="form-section">
-                    <h5 class="mb-4 text-center"><i class="fas fa-seedling text-success"></i> Make Your Selection</h5>
-                    
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="species">Choose Species</label>
-                            <select class="form-control" id="species">
-                                <option value="">-- Select Species --</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="planting_season">Planting Season</label>
-                            <select class="form-control" id="planting_season" required>
-                                <option value="">-- Select Season --</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="planting_method">Planting Method</label>
-                            <select class="form-control" id="planting_method" required>
-                                <option value="">-- Select Method --</option>
-                                <option value="Seedling">Seedling</option>
-                                <option value="Direct Seeding">Direct Seeding</option>
-                                <option value="Cutting">Cutting</option>
-                            </select>
+                <div class="form-section customize-card">
+                    <div class="mb-3 customize-header">
+                        <span class="step-badge">3</span>
+                        <div>
+                            <h5 class="customize-title">Customise your prediction</h5>
+                            <p class="customize-subtitle">
+                                The scores on the cards above use default settings.
+                                Change anything below and click <strong>Predict</strong> to get a result
+                                tailored to your exact situation — including a full care plan.
+                            </p>
                         </div>
                     </div>
 
-                    <div class="text-center mt-3">
-                        <button id="predictBtn" class="btn-predict"><i class="fas fa-brain"></i> Predict Survival</button>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="field-block">
+                                <label for="species">Which species?</label>
+                                <small class="field-help">Click a card above or pick here</small>
+                            <select class="form-control" id="species">
+                                <option value="">Best for my county (auto)</option>
+                            </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <div class="field-block">
+                                <label for="planting_month">When are you planting?</label>
+                                <small class="field-help">Leave blank to use current month</small>
+                                <select class="form-control" id="planting_month"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <div class="field-block">
+                                <label for="care_level">Care level</label>
+                                <small class="field-help">Affects the survival score</small>
+                                <select class="form-control" id="care_level">
+                                    <option value="Low">Low — minimal care</option>
+                                    <option value="Medium" selected>Medium — occasional care</option>
+                                    <option value="High">High — frequent care</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="predict-summary" id="predictSummary"></div>
+
+                    <div class="text-center mt-2">
+                        <button id="predictBtn" class="btn-predict">
+                            <i class="fas fa-brain me-2"></i>Predict Survival
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Prediction Results Section -->
+    <!-- STEP 4: Results -->
     <div class="row justify-content-center mt-4" id="resultsCard" style="display:none;">
         <div class="col-md-8">
             <div class="card border-0 shadow">
-                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
-                    <h5 class="mb-0 text-center"><i class="fas fa-chart-line"></i> Prediction Results</h5>
+                <div class="card-header text-white text-center"
+                     style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Prediction Results
+                    </h5>
                 </div>
                 <div class="card-body" id="resultsDiv"></div>
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
-const submitCounty = document.getElementById('submitCounty');
-const countyInput = document.getElementById('county');
-const recommendationsSection = document.getElementById('recommendationsSection');
-const selectionSection = document.getElementById('selectionSection');
-const locationBadge = document.getElementById('locationBadge');
-const speciesSelect = document.getElementById('species');
-const playbookInfo = document.getElementById('playbookInfo');
-const plantingSeasonSelect = document.getElementById('planting_season');
-const plantingMethodSelect = document.getElementById('planting_method');
-const predictBtn = document.getElementById('predictBtn');
-const newPredictionBtn = document.getElementById('newPredictionBtn');
-const resultsCard = document.getElementById('resultsCard');
-const resultsDiv = document.getElementById('resultsDiv');
+const MONTH_NAMES = ['','January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
 
-let speciesPlaybook = {};
-let selectedCounty = '';
-let detectedCounty = null;
+const NOW_MONTH      = new Date().getMonth() + 1;
+const NOW_MONTH_NAME = MONTH_NAMES[NOW_MONTH];
+
 const treeRegistrationUrl = '{{ tree_registration_url }}';
 
-// GPS Detection Logic - Minimal & Guaranteed
-document.getElementById('detect-location').addEventListener('click', function() {
-    console.log('Button clicked - requesting location');
-    
+let recommendedSpecies = [];
+let selectedCounty     = '';
+let detectedCounty     = null;
+let refreshTimer       = null;
+
+// GPS coordinates — set when the user allows location access
+// These are sent with every prediction so the backend can use
+// real altitude and live weather at the exact planting spot
+let userLat = null;
+let userLon = null;
+
+const countyInput         = document.getElementById('county');
+const locationBadge       = document.getElementById('locationBadge');
+const speciesSelect       = document.getElementById('species');
+const plantingMonthSelect = document.getElementById('planting_month');
+const careLevelSelect     = document.getElementById('care_level');
+const predictBtn          = document.getElementById('predictBtn');
+const resultsCard         = document.getElementById('resultsCard');
+const resultsDiv          = document.getElementById('resultsDiv');
+const predictSummary      = document.getElementById('predictSummary');
+const gpsBanner           = document.getElementById('gpsBanner');
+const gpsCoordDisplay     = document.getElementById('gpsCoordDisplay');
+
+function buildMonthDropdown() {
+    plantingMonthSelect.innerHTML = '';
+    const nowOpt = document.createElement('option');
+    nowOpt.value = '';
+    nowOpt.textContent = `Now (${NOW_MONTH_NAME} — this month)`;
+    plantingMonthSelect.appendChild(nowOpt);
+    MONTH_NAMES.slice(1).forEach((name, idx) => {
+        const m   = idx + 1;
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m === NOW_MONTH ? `${name} (current)` : name;
+        plantingMonthSelect.appendChild(opt);
+    });
+}
+buildMonthDropdown();
+
+function updateSummary() {
+    const speciesVal   = speciesSelect.value;
+    const speciesLabel = speciesVal || 'the best species for your county';
+    const monthVal     = plantingMonthSelect.value;
+    const monthLabel   = monthVal ? MONTH_NAMES[parseInt(monthVal)] : `${NOW_MONTH_NAME} (this month)`;
+    const care         = careLevelSelect.value;
+    const careDesc     = { Low: 'minimal care', Medium: 'occasional care', High: 'frequent care' }[care] || care;
+    const gpsNote      = (userLat && userLon)
+        ? `<span style="color:#2563eb;"> · <i class="fas fa-crosshairs"></i> GPS active</span>`
+        : '';
+
+    predictSummary.innerHTML =
+        `<i class="fas fa-seedling me-2"></i>` +
+        `You will predict: <strong>${speciesLabel}</strong> · ` +
+        `planted in <strong>${monthLabel}</strong> · ` +
+        `with <strong>${careDesc}</strong> · ` +
+        `in <strong>${selectedCounty}</strong>${gpsNote}.<br>` +
+        `<span style="font-size:0.85rem; color:#4ade80;">` +
+        `Changing care level to High usually adds 3–8% to the score.</span>`;
+}
+
+function renderRecommendations() {
+    const grid = document.getElementById('speciesGrid');
+    let html   = '';
+
+    recommendedSpecies.forEach(item => {
+        const pct      = item.survival_percentage;
+        const barColor = pct >= 75 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+        const label    = pct >= 75 ? 'Good conditions' : pct >= 60 ? 'Moderate risk' : 'High risk';
+
+        html += `
+        <div class="col-md-6 mb-4">
+            <div class="species-card h-100" data-species="${item.species}">
+                <h6><i class="fas fa-tree me-1"></i>${item.species}</h6>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span style="font-size:0.85rem; color:#6b7280;">Survival baseline (Medium care)</span>
+                    <strong style="color:${barColor}; font-size:1.1rem;">${pct}%</strong>
+                </div>
+                <div class="survival-bar-wrap">
+                    <div class="survival-bar" style="width:${pct}%; background:${barColor};"></div>
+                </div>
+                <p class="mb-1" style="font-size:0.9rem;">
+                    <strong>Best method:</strong> ${item.recommended_method}
+                </p>
+                <p class="mb-0" style="font-size:0.82rem; color:${barColor};">
+                    <i class="fas fa-circle me-1" style="font-size:0.6rem;"></i>${label}
+                </p>
+                <p class="mb-0 mt-2 text-muted" style="font-size:0.8rem;">
+                    <i class="fas fa-hand-pointer me-1"></i>Click to select this species
+                </p>
+            </div>
+        </div>`;
+    });
+
+    if (!html) {
+        html = `<div class="col-12">
+                    <div class="alert alert-warning text-center">
+                        No recommendations available yet for this county.
+                    </div>
+                </div>`;
+    }
+
+    grid.innerHTML = html;
+
+    grid.querySelectorAll('.species-card').forEach(card => {
+        card.addEventListener('click', () => {
+            grid.querySelectorAll('.species-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            speciesSelect.value = card.dataset.species;
+            updateSummary();
+            document.getElementById('selectionSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    const current = speciesSelect.value;
+    speciesSelect.innerHTML = '<option value="">Best for my county (auto)</option>';
+    recommendedSpecies.forEach(item => {
+        const opt       = document.createElement('option');
+        opt.value       = item.species;
+        opt.textContent = `${item.species} (${item.survival_percentage}% baseline)`;
+        speciesSelect.appendChild(opt);
+    });
+    if (current && recommendedSpecies.some(r => r.species === current)) {
+        speciesSelect.value = current;
+    }
+
+    updateSummary();
+}
+
+async function refreshRecommendations() {
+    if (!selectedCounty) return;
+    const payload = { county: selectedCounty, care_level: careLevelSelect.value };
+    if (plantingMonthSelect.value) payload.planting_month = plantingMonthSelect.value;
+    // Pass GPS on refresh so the cards also reflect specific-location scores
+    if (userLat !== null && userLon !== null) {
+        payload.latitude         = userLat;
+        payload.longitude        = userLon;
+        payload.use_live_weather = true;
+    }
+
+    const resp = await fetch('/api/predict-tree-survival/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (data.success) {
+        recommendedSpecies = data.recommended_species || [];
+        renderRecommendations();
+    }
+}
+
+function scheduleRefresh() {
+    if (!selectedCounty) return;
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+        refreshRecommendations().catch(err => console.error('Refresh failed:', err));
+        updateSummary();
+    }, 300);
+}
+
+// Reverse-geocode coordinates using OpenStreetMap Nominatim as a free fallback.
+// Called when your own detect-county API fails or returns no result.
+// Nominatim returns county/state_district/city from the address object —
+// we try each in order so rural coordinates still resolve.
+function _nominatimFallback() {
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`, {
+        headers: { 'Accept-Language': 'en' }
+    })
+    .then(r => r.json())
+    .then(geo => {
+        const raw = geo.address?.county
+            || geo.address?.state_district
+            || geo.address?.city
+            || geo.address?.town
+            || '';
+        const cleanCounty = raw.replace(/\s+county$/i, '').trim();
+        if (cleanCounty) {
+            countyInput.value = cleanCounty;
+            detectedCounty    = cleanCounty;
+            document.getElementById('location-status').innerHTML =
+                `<i class="fas fa-map-marker-alt text-success"></i> <strong>Detected: ${cleanCounty}</strong> — confirm or change below`;
+            document.getElementById('confirm-county').style.display = 'inline-block';
+            document.getElementById('detect-location').style.display = 'none';
+
+            const existing = document.getElementById('change-county');
+            if (!existing) {
+                const changeBtn = document.createElement('button');
+                changeBtn.id        = 'change-county';
+                changeBtn.className = 'btn btn-outline-secondary btn-sm ms-2';
+                changeBtn.innerHTML = '<i class="fas fa-edit"></i> Change County';
+                document.getElementById('confirm-county').parentNode.appendChild(changeBtn);
+            }
+        } else {
+            document.getElementById('location-status').innerHTML =
+                '<i class="fas fa-exclamation-triangle"></i> Could not detect county — please type it below.';
+        }
+    })
+    .catch(() => {
+        document.getElementById('location-status').innerHTML =
+            '<i class="fas fa-exclamation-triangle"></i> Could not detect county — please type it below.';
+    });
+}
+
+// GPS detection
+document.getElementById('detect-location').addEventListener('click', function () {
     if (!navigator.geolocation) {
-        document.getElementById('location-status').innerHTML = 
-            '<i class="fas fa-exclamation-circle"></i> Location is not supported by your browser.';
+        document.getElementById('location-status').innerHTML =
+            '<i class="fas fa-exclamation-circle"></i> Location not supported by your browser.';
         return;
     }
-    
-    document.getElementById('location-status').innerHTML = 
+    document.getElementById('location-status').innerHTML =
         '<i class="fas fa-location-crosshairs"></i> <strong>Please allow location access when prompted</strong>';
-    
+
     navigator.geolocation.getCurrentPosition(
-        function(position) {
-            console.log('GPS success', position.coords);
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            
-            document.getElementById('location-status').innerHTML = 
-                `<i class="fas fa-check"></i> <strong>Location found!</strong><br>Detecting county...`;
-            
-            // Detect county
+        function (pos) {
+            // Store GPS coordinates — these are passed to the backend with every prediction
+            // so the model can use real altitude and live weather at the exact planting spot
+            userLat = pos.coords.latitude;
+            userLon = pos.coords.longitude;
+
+            document.getElementById('location-status').innerHTML =
+                '<i class="fas fa-check text-success"></i> <strong>Location found!</strong> Detecting county...';
+
+            // Show the GPS active banner so the user knows their exact location is captured
+            gpsBanner.style.display = 'block';
+            gpsCoordDisplay.textContent = ` (${userLat.toFixed(4)}, ${userLon.toFixed(4)})`;
+
             fetch('/api/detect-county/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lat: lat, lon: lon })
+                body: JSON.stringify({ lat: userLat, lon: userLon })
             })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                if(data.success) {
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
                     detectedCounty = data.county;
-                    document.getElementById('location-status').innerHTML = 
-                        `<i class="fas fa-map-marker-alt"></i> <strong>Found: ${detectedCounty} County</strong><br><small>Is this correct?</small>`;
+                    document.getElementById('location-status').innerHTML =
+                        `<i class="fas fa-map-marker-alt text-success"></i> <strong>Found: ${detectedCounty} County</strong><br>
+                         <small class="text-muted">Is this correct?</small>`;
                     document.getElementById('confirm-county').style.display = 'inline-block';
                     document.getElementById('detect-location').style.display = 'none';
-                    
-                    // Add "Change County" button for wrong detection
+
                     const changeBtn = document.createElement('button');
                     changeBtn.id = 'change-county';
                     changeBtn.className = 'btn btn-outline-secondary btn-sm ms-2';
                     changeBtn.innerHTML = '<i class="fas fa-edit"></i> Change County';
                     document.getElementById('confirm-county').parentNode.appendChild(changeBtn);
                 } else {
-                    document.getElementById('location-status').innerHTML = 
-                        '<i class="fas fa-exclamation-triangle"></i> Could not determine county. Please type manually.';
+                    // Your detect-county API could not resolve the coordinates.
+                    // Fall back to OpenStreetMap Nominatim which is free and needs no API key.
+                    _nominatimFallback();
                 }
             })
-            .catch(function(err) {
-                document.getElementById('location-status').innerHTML = 
-                    '<i class="fas fa-exclamation-triangle"></i> County detection failed. Please type manually.';
-                // Hide detect button on county detection failure
-                document.getElementById('detect-location').style.display = 'none';
+            .catch(() => {
+                // Network failure hitting detect-county — try Nominatim before giving up
+                _nominatimFallback();
             });
         },
-        function(error) {
-            console.log('GPS error:', error.code, error.message);
-            let msg = '';
-            if (error.code === 1) {
-                msg = '<i class="fas fa-ban"></i> <strong>Location permission denied</strong><br>Please type your county manually.';
-            } else if (error.code === 2) {
-                msg = '<i class="fas fa-satellite-dish"></i> <strong>Location unavailable</strong><br>Please type your county manually.';
-            } else if (error.code === 3) {
-                msg = '<i class="fas fa-clock"></i> <strong>Location request timed out</strong><br>Please type your county manually.';
-            } else {
-                msg = '<i class="fas fa-exclamation-circle"></i> <strong>Location detection failed</strong><br>Please type your county manually.';
-            }
-            document.getElementById('location-status').innerHTML = msg;
-            // Hide detect button on error, allow manual input
+        function (err) {
+            const msgs = {
+                1: '<i class="fas fa-ban"></i> <strong>Permission denied</strong> — please type your county manually.',
+                2: '<i class="fas fa-satellite-dish"></i> <strong>Location unavailable</strong> — please type manually.',
+                3: '<i class="fas fa-clock"></i> <strong>Request timed out</strong> — please type manually.',
+            };
+            document.getElementById('location-status').innerHTML =
+                msgs[err.code] || '<i class="fas fa-exclamation-circle"></i> Detection failed — please type manually.';
             document.getElementById('detect-location').style.display = 'none';
         }
     );
 });
 
-// Confirm detected county
 document.getElementById('confirm-county').addEventListener('click', () => {
-    if(detectedCounty) {
-        document.getElementById('county').value = detectedCounty;
-        document.getElementById('location-status').innerHTML = 
-            `<i class="fas fa-check"></i> <strong>Using detected county: ${detectedCounty}</strong>`;
-        
-        // Hide all GPS-related buttons after confirmation
+    if (detectedCounty) {
+        countyInput.value = detectedCounty;
+        document.getElementById('location-status').innerHTML =
+            `<i class="fas fa-check text-success"></i> <strong>Using: ${detectedCounty}</strong>`;
         document.getElementById('confirm-county').style.display = 'none';
         document.getElementById('detect-location').style.display = 'none';
-        const changeBtn = document.getElementById('change-county');
-        if(changeBtn) changeBtn.style.display = 'none';
+        const c = document.getElementById('change-county');
+        if (c) c.style.display = 'none';
     }
 });
 
-// Handle wrong location detection - allow manual input
-document.addEventListener('click', function(e) {
-    if(e.target && e.target.id === 'change-county') {
-        document.getElementById('location-status').innerHTML = 
+document.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'change-county') {
+        document.getElementById('location-status').innerHTML =
             '<i class="fas fa-edit"></i> <strong>Please type your correct county below</strong>';
-        
-        // Clear the input field and focus on it
-        document.getElementById('county').value = '';
-        document.getElementById('county').focus();
-        
-        // Hide GPS buttons, allow manual input
+        countyInput.value = '';
+        countyInput.focus();
         document.getElementById('confirm-county').style.display = 'none';
         document.getElementById('detect-location').style.display = 'none';
         e.target.style.display = 'none';
     }
 });
 
-// STEP 1: Submit county
-submitCounty.addEventListener('click', async () => {
+// STEP 1: Load recommendations for the county
+document.getElementById('submitCounty').addEventListener('click', async () => {
     selectedCounty = countyInput.value.trim();
-    if(!selectedCounty) return alert('Please enter your county.');
+    if (!selectedCounty) return alert('Please enter your county.');
 
-    const resp = await fetch('/api/get-species-recommendations/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({county: selectedCounty})
-    });
+    const btn = document.getElementById('submitCounty');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Loading...';
 
-    const data = await resp.json();
-    if(data.success){
-        speciesPlaybook = data.playbook;
-        
-        // Hide county input section
-        document.getElementById('countySection').style.display = 'none';
-        
-        // Show location badge
-        locationBadge.innerHTML = `<i class="fas fa-map-marker-alt"></i> Your Location: ${selectedCounty}`;
-        recommendationsSection.style.display = 'block';
-
-        // Display species info in grid format
-        const speciesGrid = document.getElementById('speciesGrid');
-        let gridHtml = '';
-        Object.keys(speciesPlaybook).forEach(s => {
-            const info = speciesPlaybook[s];
-            gridHtml += `
-                <div class="col-md-6 mb-4">
-                    <div class="species-card h-100">
-                        <h6><i class="fas fa-tree"></i> ${s}</h6>
-                        <p><strong>Best Planting Season:</strong> ${info.best_month.includes(',') ? info.best_month + ' (You can plant in any of these months)' : info.best_month}</p>
-                        <p><strong>Recommended Method:</strong> ${info.planting_method || 'Seedling'}</p>
-                        <p><strong>Soil Type:</strong> ${info.soil}</p>
-                        <p><strong>Water Requirement:</strong> ${info.rainfall_mm}</p>
-                        <p><strong>Planting Guide:</strong></p>
-                        <ul class="mb-0">${info.planting_guide.map(i=>`<li>${i}</li>`).join('')}</ul>
-                    </div>
-                </div>
-            `;
-        });
-        speciesGrid.innerHTML = gridHtml;
-
-        // Populate species dropdown
-        speciesSelect.innerHTML = '<option value="">-- Select Species --</option>';
-        Object.keys(speciesPlaybook).forEach(s => {
-            const option = document.createElement('option');
-            option.value = s;
-            option.textContent = s;
-            speciesSelect.appendChild(option);
-        });
-
-        selectionSection.style.display = 'block';
-        resultsCard.style.display = 'none';
-    } else {
-        alert('No species found for this county. Please try another county.');
+    const payload = { county: selectedCounty };
+    // Pass GPS on initial load so first-time recommendation cards
+    // already reflect the user's exact location
+    if (userLat !== null && userLon !== null) {
+        payload.latitude         = userLat;
+        payload.longitude        = userLon;
+        payload.use_live_weather = true;
     }
-});
-
-// STEP 2: Update Planting Season and Method based on selected species
-speciesSelect.addEventListener('change', () => {
-    const species = speciesSelect.value;
-    if(!species) return;
-    const info = speciesPlaybook[species];
-
-    // Update planting seasons
-    plantingSeasonSelect.innerHTML = '<option value="">-- Select Season --</option>';
-    const seasons = info.best_month.split(',');
-    seasons.forEach(season => {
-        const option = document.createElement('option');
-        option.value = season.trim();
-        option.textContent = season.trim();
-        plantingSeasonSelect.appendChild(option);
-    });
-    
-    // Update planting methods based on species (keep existing options but highlight recommended)
-    const recommendedMethod = info.planting_method || 'Seedling';
-    plantingMethodSelect.innerHTML = '<option value="">-- Select Method --</option>';
-    
-    const methods = ['Seedling', 'Direct Seeding', 'Cutting'];
-    methods.forEach(method => {
-        const option = document.createElement('option');
-        option.value = method;
-        option.textContent = method + (method === recommendedMethod ? ' (Recommended)' : '');
-        plantingMethodSelect.appendChild(option);
-    });
-});
-
-// STEP 3: Predict survival
-predictBtn.addEventListener('click', async () => {
-    const species = speciesSelect.value;
-    const plantingSeason = plantingSeasonSelect.value;
-    const plantingMethod = plantingMethodSelect.value;
-    
-    if(!species) return alert('Please select a species.');
-    if(!plantingSeason) return alert('Please select a planting season.');
-    if(!plantingMethod) return alert('Please select a planting method.');
-
-    const payload = {
-        county: selectedCounty,
-        tree_species: species,
-        planting_season: plantingSeason,
-        planting_method: plantingMethod
-    };
 
     const resp = await fetch('/api/predict-tree-survival/', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     });
 
-    const result = await resp.json();
-    console.log('Prediction result:', result); // Debug log
-    if(result.success){
-        resultsCard.style.display = 'block';
-        
-        // Build explanation section only if explanation exists
-        let explanationHtml = '';
-        if(result.explanation) {
-            explanationHtml = `
-                <div class="mt-4">
-                    <h5 class="mb-3"><i class="fas fa-info-circle text-primary me-2"></i>Why This Result?</h5>
-                    <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                        <p style="color: #1e40af; margin: 0; line-height: 1.6; font-size: 1rem;">${result.explanation}</p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        resultsDiv.innerHTML = `
-            <div class="text-center mb-4">
-                <div style="font-size: 3.5rem; font-weight: 800; color: #22c55e; margin-bottom: 10px;">${result.survival_percentage || result.survival_probability}%</div>
-                <p class="text-muted fs-5">Survival Probability</p>
-                <span class="badge bg-${result.confidence_level === 'Very High' ? 'success' : result.confidence_level === 'High' ? 'primary' : result.confidence_level === 'Moderate' ? 'warning' : 'secondary'} fs-6">
-                    ${result.confidence_level || 'High'} Confidence
-                </span>
-            </div>
-            <div class="alert alert-${result.risk_level === 'Low' ? 'success' : result.risk_level === 'Medium' ? 'warning' : 'danger'} text-center">
-                <i class="fas fa-${result.risk_level === 'Low' ? 'check-circle' : result.risk_level === 'Medium' ? 'exclamation-triangle' : 'times-circle'} me-2"></i>
-                <strong>${result.prediction || 'Prediction Available'}</strong> (${result.risk_level} Risk)
-            </div>
-            
-            ${result.reasons && result.reasons.length > 0 ? `
-            <div class="mt-4">
-                <h5 class="mb-3"><i class="fas fa-lightbulb text-success me-2"></i>Why This Works</h5>
-                <div style="background: #f0fdf4; border-radius: 15px; padding: 20px;">
-                    ${result.reasons.map(reason => `<div class="d-flex align-items-start mb-2"><i class="fas fa-check-circle text-success me-3 mt-1"></i><span style="color: #166534;">${reason}</span></div>`).join('')}
-                </div>
-            </div>
-            ` : ''}
-            
-            ${result.risks && result.risks.length > 0 ? `
-            <div class="mt-4">
-                <h5 class="mb-3"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Potential Risks</h5>
-                <div style="background: #fef3c7; border-radius: 15px; padding: 20px;">
-                    ${result.risks.map(risk => `<div class="d-flex align-items-start mb-2"><i class="fas fa-exclamation-circle text-warning me-3 mt-1"></i><span style="color: #92400e;">${risk}</span></div>`).join('')}
-                </div>
-            </div>
-            ` : ''}
-            
-            ${explanationHtml}
-            
-            <div class="mt-4">
-                <h5 class="mb-3"><i class="fas fa-leaf text-success me-2"></i>After-Care Instructions</h5>
-                <div style="background: #f0fdf4; border-radius: 15px; padding: 20px;">
-                    ${result.after_care.map(i=>`<div class="d-flex align-items-start mb-2"><i class="fas fa-check-circle text-success me-3 mt-1"></i><span style="color: #166534;">${i}</span></div>`).join('')}
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <button id="newPredictionBtn2" class="btn btn-success btn-lg px-4">
-                    <i class="fas fa-plus me-2"></i>Make New Prediction
-                </button>
-            </div>
-            
-            <div class="text-center mt-3">
-                <a href="${treeRegistrationUrl}" class="btn btn-primary btn-lg px-4">
-                    <i class="fas fa-tree me-2"></i>Register Your Trees With Us
-                </a>
-            </div>
-        `;
-        
-        // Hide county input, recommendations and selection sections after prediction
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-seedling me-1"></i> Show Best Species for My Area';
+
+    const data = await resp.json();
+    if (data.success) {
+        recommendedSpecies = data.recommended_species || [];
+
         document.getElementById('countySection').style.display = 'none';
-        document.getElementById('recommendationsSection').style.display = 'none';
-        document.getElementById('selectionSection').style.display = 'none';
-        
-        // Add event listener to new prediction button in results
-        document.getElementById('newPredictionBtn2').addEventListener('click', () => {
-            // Show county and selection sections again
-            document.getElementById('countySection').style.display = 'block';
-            document.getElementById('selectionSection').style.display = 'block';
-            
-            // Hide results
-            resultsCard.style.display = 'none';
-            
-            // Reset form
-            countyInput.value = '';
-            recommendationsSection.style.display = 'none';
-            selectionSection.style.display = 'none';
-        });
+        locationBadge.innerHTML = `<i class="fas fa-map-marker-alt me-1"></i>Your Location: ${selectedCounty}`;
+        document.getElementById('recommendationsSection').style.display = 'block';
+
+        renderRecommendations();
+
+        document.getElementById('selectionSection').style.display = 'block';
+        resultsCard.style.display = 'none';
     } else {
-        console.error('Prediction failed:', result.error);
-        resultsCard.style.display = 'block';
-        resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> ${result.error}</div>`;
+        alert(data.error || 'Could not load recommendations. Please try another county.');
     }
 });
 
-// Old new prediction button (removed - now in results)
+speciesSelect.addEventListener('change', updateSummary);
+plantingMonthSelect.addEventListener('change', scheduleRefresh);
+careLevelSelect.addEventListener('change', scheduleRefresh);
+
+// STEP 3: Run the personalised prediction
+predictBtn.addEventListener('click', async () => {
+    const species       = speciesSelect.value;
+    const plantingMonth = plantingMonthSelect.value;
+    const careLevel     = careLevelSelect.value;
+
+    const payload = {
+        county:         selectedCounty,
+        care_level:     careLevel,
+        planting_month: plantingMonth ? parseInt(plantingMonth) : NOW_MONTH,
+    };
+    if (species) payload.tree_species = species;
+
+    // Send GPS coordinates so the backend fetches real altitude
+    // at the exact planting spot and enables live weather at those coordinates
+    if (userLat !== null && userLon !== null) {
+        payload.latitude         = userLat;
+        payload.longitude        = userLon;
+        payload.use_live_weather = true;
+    }
+
+    predictBtn.disabled = true;
+    predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Predicting...';
+
+    const resp = await fetch('/api/predict-tree-survival/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    predictBtn.disabled = false;
+    predictBtn.innerHTML = '<i class="fas fa-brain me-2"></i>Predict Survival';
+
+    const result = await resp.json();
+    if (!result.success) {
+        resultsCard.style.display = 'block';
+        resultsDiv.innerHTML = `<div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>${result.error}</div>`;
+        return;
+    }
+
+    const chosenSpecies = species || (result.recommended_species?.[0]?.species || 'Best species');
+    const monthLabel    = MONTH_NAMES[plantingMonth ? parseInt(plantingMonth) : NOW_MONTH];
+    const pct           = result.survival_percentage || result.survival_probability;
+    const confidence    = result.confidence_level || 'Moderate';
+    const confClass     = confidence === 'High' ? 'success' : confidence === 'Moderate' ? 'warning' : 'secondary';
+    const riskClass     = pct >= 75 ? 'success' : pct >= 60 ? 'warning' : 'danger';
+    const riskIcon      = pct >= 75 ? 'check-circle' : pct >= 60 ? 'exclamation-triangle' : 'times-circle';
+    const barColor      = pct >= 75 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+    const afterCare     = Array.isArray(result.after_care) ? result.after_care : [];
+
+    // Show whether the prediction used GPS or county-level data
+    // so the user understands the accuracy level of the result
+    const locationLabel = (result.gps_used && result.gps_altitude_m)
+        ? `<span class="badge bg-info ms-2" style="font-size:0.75rem;">
+               <i class="fas fa-crosshairs me-1"></i>GPS · ${Math.round(result.gps_altitude_m)}m altitude
+           </span>`
+        : `<span class="badge bg-secondary ms-2" style="font-size:0.75rem;">
+               <i class="fas fa-map-marker-alt me-1"></i>County-level data
+           </span>`;
+
+    const compareHtml = (result.recommended_species?.length)
+        ? `<div class="mt-4">
+               <h5 class="mb-3"><i class="fas fa-seedling text-success me-2"></i>Top Species for This County</h5>
+               <div style="background:#f0fdf4; border-radius:15px; padding:20px;">
+                   ${result.recommended_species.map(r => {
+                       const isChosen = r.species === chosenSpecies;
+                       const c = r.survival_percentage >= 75 ? '#16a34a' : r.survival_percentage >= 60 ? '#d97706' : '#dc2626';
+                       return `<div class="d-flex justify-content-between align-items-center mb-3">
+                           <span style="color:#166534; font-weight:${isChosen ? 700 : 500};">
+                               ${isChosen ? '<i class="fas fa-check-circle text-success me-1"></i>' : ''}${r.species}
+                           </span>
+                           <div style="text-align:right; min-width:130px;">
+                               <small class="text-muted d-block">${r.recommended_method}</small>
+                               <strong style="color:${c};">${r.survival_percentage}%</strong>
+                           </div>
+                       </div>`;
+                   }).join('')}
+               </div>
+           </div>`
+        : '';
+
+    const reasonsHtml = result.reasons?.length
+        ? `<div class="mt-4">
+               <h5 class="mb-3"><i class="fas fa-lightbulb text-success me-2"></i>Why This Works</h5>
+               <div style="background:#f0fdf4; border-radius:15px; padding:20px;">
+                   ${result.reasons.map(r => `
+                   <div class="d-flex align-items-start mb-2">
+                       <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                       <span style="color:#166534;">${r}</span>
+                   </div>`).join('')}
+               </div>
+           </div>`
+        : '';
+
+    const risksHtml = result.risks?.length
+        ? `<div class="mt-4">
+               <h5 class="mb-3"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Potential Risks</h5>
+               <div style="background:#fef3c7; border-radius:15px; padding:20px;">
+                   ${result.risks.map(r => `
+                   <div class="d-flex align-items-start mb-2">
+                       <i class="fas fa-exclamation-circle text-warning me-3 mt-1"></i>
+                       <span style="color:#92400e;">${r}</span>
+                   </div>`).join('')}
+               </div>
+           </div>`
+        : '';
+
+    const explanationHtml = result.explanation
+        ? `<div class="mt-4">
+               <h5 class="mb-3"><i class="fas fa-info-circle text-primary me-2"></i>Why This Result?</h5>
+               <div style="background:#f8fafc; border-left:4px solid #3b82f6; border-radius:8px; padding:20px;">
+                   <p style="color:#1e40af; margin:0; line-height:1.6;">${result.explanation}</p>
+               </div>
+           </div>`
+        : '';
+
+    const careHtml = afterCare.length
+        ? `<div class="mt-4">
+               <h5 class="mb-3"><i class="fas fa-leaf text-success me-2"></i>After-Care Instructions</h5>
+               <div style="background:#f0fdf4; border-radius:15px; padding:20px;">
+                   ${afterCare.map(i => `
+                   <div class="d-flex align-items-start mb-2">
+                       <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                       <span style="color:#166534;">${i}</span>
+                   </div>`).join('')}
+               </div>
+           </div>`
+        : '';
+
+    resultsDiv.innerHTML = `
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px;
+                    padding:14px 20px; margin-bottom:20px; font-size:0.95rem; color:#166534;">
+            <i class="fas fa-seedling me-2"></i>
+            <strong>${chosenSpecies}</strong> ·
+            planted in <strong>${monthLabel}</strong> ·
+            <strong>${careLevel.toLowerCase()} care</strong> ·
+            <strong>${selectedCounty}</strong>
+            ${locationLabel}
+        </div>
+
+        <div class="text-center mb-4">
+            <div style="font-size:3.5rem; font-weight:800; color:${barColor}; margin-bottom:8px;">${pct}%</div>
+            <p class="text-muted fs-5 mb-2">Survival Probability</p>
+            <div style="background:#e5e7eb; border-radius:20px; height:12px; max-width:300px; margin:0 auto 12px;">
+                <div style="width:${pct}%; height:12px; border-radius:20px; background:${barColor};"></div>
+            </div>
+            <span class="badge bg-${confClass} fs-6">${confidence} Confidence</span>
+        </div>
+
+        <div class="text-center mt-3">
+            <span class="badge bg-success fs-6">
+                <i class="fas fa-seedling me-1"></i>Recommended Method: ${result.recommended_method}
+            </span>
+        </div>
+
+        <div class="alert alert-${riskClass} text-center mt-3">
+            <i class="fas fa-${riskIcon} me-2"></i>
+            <strong>${result.prediction || 'Prediction Available'}</strong>
+            ${result.risk_level ? `(${result.risk_level})` : ''}
+        </div>
+
+        ${compareHtml}
+        ${reasonsHtml}
+        ${risksHtml}
+        ${explanationHtml}
+        ${careHtml}
+
+        <div class="text-center mt-4">
+            <button id="newPredictionBtn2" class="btn btn-success btn-lg px-4 me-2">
+                <i class="fas fa-plus me-2"></i>New Prediction
+            </button>
+            <a href="${treeRegistrationUrl}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-tree me-2"></i>Register Your Trees
+            </a>
+        </div>
+    `;
+
+    document.getElementById('countySection').style.display = 'none';
+    document.getElementById('recommendationsSection').style.display = 'none';
+    document.getElementById('selectionSection').style.display = 'none';
+    resultsCard.style.display = 'block';
+    resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    document.getElementById('newPredictionBtn2').addEventListener('click', () => {
+        document.getElementById('countySection').style.display = 'block';
+        resultsCard.style.display = 'none';
+        document.getElementById('recommendationsSection').style.display = 'none';
+        countyInput.value = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
 </script>
 {% endblock %}
