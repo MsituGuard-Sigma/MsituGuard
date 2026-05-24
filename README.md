@@ -25,6 +25,6 @@ Environmental threats such as illegal logging, pollution, and waste dumping also
 - Frontend: Django templates, JavaScript, Bootstrap/CSS
 - Database: SQLite (development) and PostgreSQL-ready for production
 - Weather data: OpenWeather (when available)
-- Machine learning: scikit-learn (optional model) plus rule-based fallbacks
+- Machine learning: scikit-learn 
 - LLM text generation: Groq API (explanations and care instructions)
 - Deployment: Render
